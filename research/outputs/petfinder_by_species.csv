@@ -1,0 +1,5 @@
+species,crop,queries,top1,top5,auc,thr_at_1pct_fpr,recall_at_thr
+cat,full,22756,0.545,0.674,0.908,0.688,0.44
+cat,crop,22756,0.498,0.628,0.895,0.709,0.396
+dog,full,25786,0.7,0.819,0.955,0.58,0.637
+dog,crop,25786,0.66,0.782,0.944,0.593,0.604

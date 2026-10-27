@@ -1,0 +1,5 @@
+species,crop,pool50_top1,pool50_top3,pool200_top1,pool200_top3
+cat,full,0.852,0.933,0.756,0.856
+cat,crop,0.827,0.922,0.729,0.828
+dog,full,0.938,0.974,0.891,0.946
+dog,crop,0.921,0.964,0.867,0.934

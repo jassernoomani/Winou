@@ -1,0 +1,13 @@
+dataset,model,crop,distractors,queries,top1,top5,auc
+dogfacenet,clip-b16,full,4990,8363,0.614,0.76,0.917
+dogfacenet,clip-b16,crop,4990,8363,0.582,0.736,0.909
+dogfacenet,dinov2-b14,full,4990,8363,0.909,0.966,0.995
+dogfacenet,dinov2-b14,crop,4990,8363,0.911,0.967,0.995
+petfinder,clip-b16,full,7390,48542,0.493,0.622,0.847
+petfinder,clip-b16,crop,7390,48542,0.4,0.528,0.832
+petfinder,dinov2-b14,full,7390,48542,0.627,0.75,0.935
+petfinder,dinov2-b14,crop,7390,48542,0.583,0.709,0.923
+own,clip-b16,full,2400,5,1.0,1.0,0.858
+own,clip-b16,crop,2400,5,1.0,1.0,0.856
+own,dinov2-b14,full,2400,5,1.0,1.0,0.999
+own,dinov2-b14,crop,2400,5,1.0,1.0,0.999

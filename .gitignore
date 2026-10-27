@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+
+# Research data and model weights (large, downloaded on demand)
+research/data/raw/
+research/data/own/*
+!research/data/own/README.md
+research/outputs/embeddings/
+research/outputs/crops/
+*.pt
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Contact sheets contain dataset images that may not be redistributed
+research/outputs/*failures*.png
