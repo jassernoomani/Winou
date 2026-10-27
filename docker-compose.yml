@@ -1,7 +1,64 @@
-# Winou local stack. Phase 2 adds Postgres/PostGIS, MinIO and the API.
+# Winou local stack.
 name: winou
 
+x-api: &api
+  build: ./api
+  image: winou-api   # shared by api and worker
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    # Service addresses inside the compose network (override localhost values from .env)
+    DATABASE_URL: postgresql+psycopg://winou:${POSTGRES_PASSWORD:-winou}@postgres:5432/winou
+    QDRANT_URL: http://qdrant:6333
+    ML_SERVICE_URL: http://ml-service:8000
+    S3_ENDPOINT: minio:9000
+  depends_on:
+    postgres:
+      condition: service_healthy
+    minio:
+      condition: service_healthy
+    qdrant:
+      condition: service_started
+  restart: unless-stopped
+
 services:
+  postgres:
+    image: postgis/postgis:18-3.6
+    environment:
+      POSTGRES_USER: winou
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-winou}
+      POSTGRES_DB: winou
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U winou -d winou"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # Official MinIO images are no longer published; this is Chainguard's build of the same server.
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-winou}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-winou-dev-secret}
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # web console at http://localhost:9001
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "/usr/bin/mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
   qdrant:
     image: qdrant/qdrant:v1.20.0
     ports:
@@ -19,5 +76,19 @@ services:
       - "8000:8000"   # OpenAPI docs at http://localhost:8000/docs
     restart: unless-stopped
 
+  api:
+    <<: *api
+    ports:
+      - "8080:8080"   # OpenAPI docs at http://localhost:8080/docs
+
+  # Processes uploaded photos: ML embedding, Qdrant indexing and matching.
+  worker:
+    <<: *api
+    command: ["python", "-m", "app.worker"]
+    healthcheck:
+      disable: true
+
 volumes:
+  postgres_data:
+  minio_data:
   qdrant_data:

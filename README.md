@@ -11,7 +11,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 |---|---|---|
 | 0 | Validate matching (research) | done, see [RESULTS](research/RESULTS.md) |
 | 1 | ML service | done |
-| 2 | Backend core | – |
+| 2 | Backend core | done |
 | 3 | Flutter app | – |
 | 4 | Close the loop | – |
 | 5 | Stray map layer | – |
@@ -21,7 +21,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 ```
 research/     Phase 0: can embeddings tell individual animals apart?
 ml-service/   FastAPI: detect, crop, embed
-api/          main backend
+api/          FastAPI backend + background matching worker
 mobile/       Flutter app
 scripts/      Qdrant collection setup
 docs/         brief, architecture notes, API spec
@@ -32,13 +32,69 @@ docs/         brief, architecture notes, API spec
 ```bash
 cp .env.example .env
 docker compose up --build -d                  # first build downloads ~2 GB (PyTorch + model weights)
-
-pip install -r scripts/requirements.txt
-python scripts/setup_qdrant.py --smoke        # create the collection + indexes, test a matching query
 ```
 
-- ML service: http://localhost:8000/docs
-- Qdrant dashboard: http://localhost:6333/dashboard
+The API applies database migrations on start and creates the Qdrant collection and the
+storage bucket if missing. `python scripts/setup_qdrant.py --smoke` still works to test a
+matching query directly against Qdrant.
+
+| Service | URL |
+|---|---|
+| API (OpenAPI docs) | http://localhost:8080/docs |
+| ML service | http://localhost:8000/docs |
+| Qdrant dashboard | http://localhost:6333/dashboard |
+| MinIO console | http://localhost:9001 (`S3_ACCESS_KEY` / `S3_SECRET_KEY`) |
+| Postgres + PostGIS | localhost:5432, user/db `winou` |
+
+Set real `JWT_SECRET` and `LOCATION_FUZZ_SECRET` values in `.env` for anything beyond local
+development. `JWT_SECRET` can be rotated (it logs everyone out); `LOCATION_FUZZ_SECRET` must
+never change once real reports exist, or old and new public positions together reveal the real one.
+
+## API
+
+Auth is email + password; send the token as `Authorization: Bearer <token>`. In the docs
+page, use **Authorize** with your email as the username.
+
+| Endpoint | What it does |
+|---|---|
+| `POST /auth/register`, `POST /auth/login` | returns an access token (JWT) |
+| `GET/PATCH /me` | profile, FCM token |
+| `POST /lost-reports`, `GET/PATCH/DELETE /lost-reports/{id}`, `GET /me/lost-reports` | lost pets |
+| `POST /sightings`, `GET/PATCH/DELETE /sightings/{id}`, `GET /me/sightings` | loose animals and strays (`is_stray`) |
+| `POST /lost-reports/{id}/photos`, `POST /sightings/{id}/photos` | upload one photo (max 5 per report, 3 per sighting) |
+| `GET /photos/{id}` | processing status: `PENDING` → `READY`, or `NO_ANIMAL` (retake the photo) |
+| `GET /photos/{id}/image`, `/crop` | EXIF-free JPEG, cropped animal (public, cacheable) |
+| `GET /map?bbox=min_lon,min_lat,max_lon,max_lat` | public map; filters `type`, `species`, `condition`, `since`, `until` |
+| `GET /me/matches` | possible sightings of your lost pets, best first |
+
+**How matching runs.** An upload stores the original (private, never served) and an
+EXIF-free copy in MinIO, then queues the photo. The `worker` service picks it up, calls
+the ML service, indexes the vector in Qdrant and searches the other side with species,
+10 km radius and time-window filters (see `MATCH_*` in `.env.example`). The best
+photo-to-photo score per (lost report, sighting) pair above the species threshold
+becomes a `Match`. The queue is the `photos` table (`FOR UPDATE SKIP LOCKED`), so
+several workers can run and failed photos are retried with backoff. Editing a report's
+location, date or species re-runs matching with the stored vectors.
+
+**Privacy.** Lost-report positions are moved up to 300 m (fixed per report) for
+everyone but the owner. Sighting reporters and user emails are never exposed. Creating
+reports, sightings and photos is rate-limited per user.
+
+Notifications are only logged for now; Firebase Cloud Messaging comes with the app in
+Phase 3.
+
+Without Docker:
+
+```bash
+docker compose up -d postgres minio qdrant ml-service
+cd api
+python -m venv .venv && .venv/Scripts/activate
+pip install -r requirements-dev.txt
+alembic upgrade head
+uvicorn app.main:app --port 8080     # and in another shell: python -m app.worker
+
+pytest                               # needs the postgres container; creates a winou_test database
+```
 
 ## ML service
 
