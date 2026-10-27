@@ -1,0 +1,10 @@
+# torch/torchvision are installed separately (CPU or CUDA wheel), see Dockerfile and README.
+# ML versions match research/ so Phase 0 results still apply.
+transformers==5.21.0
+ultralytics==8.4.190
+pillow==12.3.0
+numpy==2.5.2
+pi-heif==1.4.0
+fastapi==0.162.0
+uvicorn[standard]
+python-multipart

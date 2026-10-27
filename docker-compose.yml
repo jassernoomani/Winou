@@ -1,0 +1,23 @@
+# Winou local stack. Phase 2 adds Postgres/PostGIS, MinIO and the API.
+name: winou
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.20.0
+    ports:
+      - "6333:6333"   # REST + web UI at http://localhost:6333/dashboard
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  ml-service:
+    build: ./ml-service
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"   # OpenAPI docs at http://localhost:8000/docs
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
