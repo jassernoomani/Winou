@@ -1,24 +1,26 @@
 import uuid
 from datetime import timedelta
 
-from fastapi import APIRouter, HTTPException, Request, Response, UploadFile, status
+from fastapi import APIRouter, Form, HTTPException, Request, Response, UploadFile, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.config import PHOTO_LIMITS, settings
 from app.deps import check_rate_limit, not_found, services
 from app.images import make_public_copy, read_upload
-from app.models import LostReport, Photo, Sighting, User
+from app.models import LostReport, Photo, PhotoSource, Sighting, User
 from app.schemas import PhotoOut, photo_out
 from app.security import DB, CurrentUser, require_owner_or_admin
 
 router = APIRouter(tags=["photos"])
 
+SourceField = Form(None, description="CAMERA or GALLERY, as picked in the app. Not shown to other users.")
+
 ORIGINAL_EXTENSIONS = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heif": "heic"}
 
 
 def add_photo(request: Request, db: Session, user: User, record: LostReport | Sighting,
-              file: UploadFile) -> PhotoOut:
+              file: UploadFile, source: PhotoSource | None) -> PhotoOut:
     """Validate and store an upload, then queue it for the worker (embedding + matching)."""
     owner_type = "LOST_REPORT" if isinstance(record, LostReport) else "SIGHTING"
     owner_column = Photo.lost_report_id if owner_type == "LOST_REPORT" else Photo.sighting_id
@@ -32,7 +34,7 @@ def add_photo(request: Request, db: Session, user: User, record: LostReport | Si
     public_jpeg, original_type = make_public_copy(data, settings.max_image_pixels,
                                                   settings.public_image_max_side)
     photo_id = uuid.uuid4()
-    photo = Photo(id=photo_id, uploader_id=user.id,
+    photo = Photo(id=photo_id, uploader_id=user.id, source=source,
                   original_key=f"originals/{photo_id}.{ORIGINAL_EXTENSIONS[original_type]}",
                   public_key=f"public/{photo_id}.jpg",
                   **({"lost_report_id": record.id} if owner_type == "LOST_REPORT" else {"sighting_id": record.id}))

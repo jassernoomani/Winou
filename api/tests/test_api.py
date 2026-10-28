@@ -81,6 +81,41 @@ def test_lost_report_validation(client):
         **base, "last_seen": {"lat": 91, "lon": 0}, "last_seen_at": "2026-10-20T10:00:00Z"}).status_code == 422
 
 
+def test_list_open_reports_newest_first(client):
+    owner, viewer = register(client, "owner"), register(client, "viewer")
+    older = lost_report(client, owner, color=None, last_seen_at="2026-10-20T10:00:00Z")
+    newer = lost_report(client, owner, species="dog", color=None, last_seen_at="2026-10-22T10:00:00Z")
+    found = lost_report(client, owner, color=None)
+    client.patch(f"/lost-reports/{found['id']}", headers=owner, json={"status": "FOUND"})
+    lost_report(client, owner, location={"lat": 34.74, "lon": 10.76}, color=None,  # Sfax, ~230 km away
+                last_seen_at="2026-10-21T10:00:00Z")
+
+    def ids(**params):
+        return [r["id"] for r in client.get("/lost-reports", headers=viewer, params=params).json()]
+
+    assert len(ids()) == 3 and ids()[0] == newer["id"]  # found ones are not listed
+    assert ids(lat=TUNIS["lat"], lon=TUNIS["lon"]) == [newer["id"], older["id"]]
+    assert ids(species="cat", lat=TUNIS["lat"], lon=TUNIS["lon"]) == [older["id"]]
+    assert ids(limit=1, offset=1, lat=TUNIS["lat"], lon=TUNIS["lon"]) == [older["id"]]
+    listed = client.get("/lost-reports", headers=viewer, params={"limit": 1}).json()[0]
+    assert listed["location_is_approximate"] is True and listed["last_seen"] != TUNIS
+    assert client.get("/lost-reports", headers=viewer, params={"lat": 36.8}).status_code == 422
+
+
+def test_list_radius_uses_the_shown_position(client):
+    owner, viewer = register(client, "owner"), register(client, "viewer")
+    report = lost_report(client, owner, color=None)
+    shown = client.get(f"/lost-reports/{report['id']}", headers=viewer).json()["last_seen"]
+    # A tiny circle around the real point misses it unless the fuzz happens to land inside
+    near_shown = client.get("/lost-reports", headers=viewer,
+                            params={**shown, "radius_km": 0.01}).json()
+    assert [r["id"] for r in near_shown] == [report["id"]]
+    near_real = client.get("/lost-reports", headers=viewer, params={**TUNIS, "radius_km": 0.01}).json()
+    assert near_real == [] or distance_m(TUNIS, shown) <= 10
+    near_real_owner = client.get("/lost-reports", headers=owner, params={**TUNIS, "radius_km": 0.01}).json()
+    assert [r["id"] for r in near_real_owner] == [report["id"]]
+
+
 def test_only_owner_can_edit_or_delete(client):
     owner, other = register(client, "owner"), register(client, "other")
     report = lost_report(client, owner, color=None)
@@ -209,3 +244,20 @@ def test_photo_status_is_private(client):
     photo = upload(client, owner, f"/lost-reports/{report['id']}/photos", RED)
     assert client.get(f"/photos/{photo['id']}", headers=owner).status_code == 200
     assert client.get(f"/photos/{photo['id']}", headers=other).status_code == 403
+
+
+def test_photo_source_is_stored_but_not_exposed(client):
+    from sqlalchemy import text
+    from app.db import engine
+
+    auth = register(client)
+    item = sighting(client, auth, color=None)
+    response = client.post(f"/sightings/{item['id']}/photos", headers=auth, data={"source": "GALLERY"},
+                           files={"file": ("p.jpg", image_bytes(), "image/jpeg")})
+    assert response.status_code == 201 and "source" not in response.json()
+    upload(client, auth, f"/sightings/{item['id']}/photos")  # older clients: no source
+    with engine.connect() as conn:
+        assert sorted(conn.scalars(text("SELECT coalesce(source, '-') FROM photos")).all()) == ["-", "GALLERY"]
+    bad = client.post(f"/sightings/{item['id']}/photos", headers=auth, data={"source": "INTERNET"},
+                      files={"file": ("p.jpg", image_bytes(), "image/jpeg")})
+    assert bad.status_code == 422

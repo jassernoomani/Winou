@@ -26,3 +26,11 @@ def fuzz(ref_id: uuid.UUID, lat: float, lon: float, radius_m: float, secret: str
     dlat = distance * math.cos(angle) / EARTH_RADIUS_M
     dlon = distance * math.sin(angle) / (EARTH_RADIUS_M * math.cos(math.radians(lat)))
     return round(lat + math.degrees(dlat), 5), round(lon + math.degrees(dlon), 5)
+
+
+def distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great-circle distance (haversine)."""
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    a = (math.sin((p2 - p1) / 2) ** 2
+         + math.cos(p1) * math.cos(p2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
+    return 2 * EARTH_RADIUS_M * math.asin(math.sqrt(a))

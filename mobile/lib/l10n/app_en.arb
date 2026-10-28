@@ -1,0 +1,209 @@
+{
+  "@@locale": "en",
+  "tagline": "Find lost pets, help street animals",
+  "email": "Email",
+  "password": "Password",
+  "displayName": "Your name",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "signOut": "Sign out",
+  "noAccount": "No account yet? Create one",
+  "haveAccount": "Already have an account? Sign in",
+  "required": "Required",
+  "invalidEmail": "Enter a valid email",
+  "passwordTooShort": "At least 8 characters",
+  "errorNetwork": "Cannot reach the server. Check your connection.",
+  "errorRateLimited": "You've posted a lot recently. Try again later.",
+  "errorInvalidImage": "This photo can't be read. Use a JPEG, PNG, WebP or HEIC image.",
+  "errorImageTooLarge": "This photo is too large.",
+  "errorEmailTaken": "This email is already registered.",
+  "errorWrongCredentials": "Wrong email or password.",
+  "errorUnexpected": "Something went wrong.",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "change": "Change",
+  "choose": "Choose",
+  "apply": "Apply",
+  "speciesCat": "Cat",
+  "speciesDog": "Dog",
+  "speciesOther": "Other",
+  "conditionHealthy": "Healthy",
+  "conditionInjured": "Injured",
+  "conditionNeedsHelp": "Needs help",
+  "statusOpen": "Still lost",
+  "statusFound": "Found",
+  "statusClosed": "Closed",
+  "typeLost": "Lost pets",
+  "typeSighting": "Sighting",
+  "typeStray": "Stray",
+  "filters": "Filters",
+  "filterShow": "Show",
+  "filterSpecies": "Species",
+  "filterCondition": "Condition (sightings)",
+  "filterPeriod": "Period",
+  "periodAny": "Any time",
+  "periodDays": "{days} days",
+  "@periodDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "myActivity": "My activity",
+  "myLocation": "My location",
+  "reportLostPet": "Report a lost pet",
+  "iSawAnAnimal": "I saw an animal",
+  "lostNamed": "Lost: {name}",
+  "@lostNamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sightingOf": "{species} seen",
+  "@sightingOf": {
+    "placeholders": {
+      "species": {
+        "type": "String"
+      }
+    }
+  },
+  "strayOf": "Stray {species}",
+  "@strayOf": {
+    "placeholders": {
+      "species": {
+        "type": "String"
+      }
+    }
+  },
+  "newSighting": "New sighting",
+  "photoHint": "Get close and show the face: it helps us recognise the animal.",
+  "condition": "Condition",
+  "isStray": "It's a street animal",
+  "isStrayHelp": "Lives outside rather than lost",
+  "noteOptional": "Note (optional)",
+  "locating": "Getting your location…",
+  "locationMissing": "No location yet: choose it on the map",
+  "locationFromGps": "Your current location (±{meters} m)",
+  "@locationFromGps": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "locationPicked": "Location chosen on the map",
+  "postSighting": "Post sighting",
+  "uploading": "Uploading photos {progress}",
+  "@uploading": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "sightingThanks": "Thanks! We're checking it against lost pets nearby.",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "noAnimalTitle": "No animal found",
+  "noAnimalBody": "We couldn't find a cat or dog in this photo. A closer photo of the head works best.",
+  "keepPhoto": "Keep it",
+  "retakePhoto": "Retake",
+  "lostPhotosHint": "Add 1–5 clear photos, ideally of the face from different angles.",
+  "petName": "Pet's name",
+  "descriptionOptional": "Description (optional)",
+  "descriptionHint": "Collar, markings, temperament…",
+  "lastSeenAt": "Last seen",
+  "lastSeenWhere": "Where was it last seen?",
+  "locationPrivacyNote": "Others only see an area of about 300 m around it",
+  "publishReport": "Publish report",
+  "pickLocationTitle": "Choose the place",
+  "pickLocationHint": "Tap the map where the animal was.",
+  "confirmLocation": "Use this place",
+  "markFound": "Mark as found",
+  "closeReport": "Close report",
+  "reopenReport": "Reopen (still lost)",
+  "deleteReportQuestion": "Delete this report and its photos?",
+  "deleteSightingQuestion": "Delete this sighting and its photos?",
+  "lastSeenOn": "Last seen {date}",
+  "@lastSeenOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seenOn": "Seen {date}",
+  "@seenOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "approximateArea": "Approximate area, to protect the owner's privacy.",
+  "photoProcessing": "Checking…",
+  "photoNoAnimal": "No animal found",
+  "photoNotMatched": "Not used for matching",
+  "photoFailed": "Processing failed",
+  "tabMatches": "Matches",
+  "tabMyLostPets": "My lost pets",
+  "tabMySightings": "My sightings",
+  "noMatches": "No possible matches yet. We check every new sighting nearby.",
+  "noLostReports": "You haven't reported a lost pet.",
+  "noSightings": "You haven't posted any sightings.",
+  "possibleMatch": "Possible match",
+  "possibleMatchFor": "Could this be {name}?",
+  "@possibleMatchFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "similarity": "{percent}% similar",
+  "@similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "yourPhoto": "Your photo",
+  "sightingPhoto": "Sighting",
+  "matchExplanation": "Our model found these photos similar. Look closely at markings and features before contacting the finder.",
+  "matchNotFound": "This match no longer exists.",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "From gallery",
+  "timeNow": "Seen just now",
+  "timeFromPhoto": "Seen {date} (from the photo)",
+  "@timeFromPhoto": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "timeMissing": "When did you see it? Set the time",
+  "locationFromPhoto": "Location from the photo",
+  "locationNeeded": "Where did you see it? Choose on the map",
+  "missingPets": "Missing pets",
+  "map": "Map",
+  "nearMe": "Near me",
+  "everywhere": "Everywhere",
+  "allSpecies": "All",
+  "noMissingPets": "No missing pets reported. Good news!",
+  "noMissingPetsNearby": "No missing pets near you. Try “Everywhere”.",
+  "kmAway": "{km} km away",
+  "@kmAway": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "locationOffForNearby": "Turn on location to see pets near you."
+}

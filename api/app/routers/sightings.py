@@ -8,9 +8,9 @@ from sqlalchemy.orm import selectinload
 from app.config import settings
 from app.deps import check_rate_limit, not_found
 from app.geo import point
-from app.models import Sighting, User
+from app.models import PhotoSource, Sighting, User
 from app.records import after_update, delete_record
-from app.routers.photos import add_photo
+from app.routers.photos import SourceField, add_photo
 from app.schemas import Location, PhotoOut, SightingIn, SightingOut, SightingUpdate, photo_out
 from app.security import DB, CurrentUser, require_owner_or_admin
 
@@ -82,8 +82,8 @@ def delete_sighting(sighting_id: uuid.UUID, request: Request, user: CurrentUser,
 
 @router.post("/sightings/{sighting_id}/photos", response_model=PhotoOut, status_code=status.HTTP_201_CREATED)
 def upload_photo(sighting_id: uuid.UUID, request: Request, user: CurrentUser, db: DB,
-                 file: UploadFile = File(...)):
+                 file: UploadFile = File(...), source: PhotoSource | None = SourceField):
     """Upload one photo (JPEG, PNG, WebP or HEIC). Matching runs in the background: poll GET /photos/{id}."""
     sighting = _get(db, sighting_id)
     require_owner_or_admin(user, sighting.reporter_id)
-    return add_photo(request, db, user, sighting, file)
+    return add_photo(request, db, user, sighting, file, source)

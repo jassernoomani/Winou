@@ -12,7 +12,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 | 0 | Validate matching (research) | done, see [RESULTS](research/RESULTS.md) |
 | 1 | ML service | done |
 | 2 | Backend core | done |
-| 3 | Flutter app | – |
+| 3 | Flutter app | in progress (push notifications next) |
 | 4 | Close the loop | – |
 | 5 | Stray map layer | – |
 
@@ -22,7 +22,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 research/     Phase 0: can embeddings tell individual animals apart?
 ml-service/   FastAPI: detect, crop, embed
 api/          FastAPI backend + background matching worker
-mobile/       Flutter app
+mobile/       Flutter app (see mobile/README.md to run it on a phone)
 scripts/      Qdrant collection setup
 docs/         brief, architecture notes, API spec
 ```

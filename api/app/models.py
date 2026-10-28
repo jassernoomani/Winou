@@ -42,6 +42,12 @@ class PhotoStatus(enum.StrEnum):
     FAILED = "FAILED"          # gave up after WORKER_MAX_ATTEMPTS
 
 
+class PhotoSource(enum.StrEnum):
+    """Where the app got the photo. Internal only: kept for moderation and match weighting."""
+    CAMERA = "CAMERA"
+    GALLERY = "GALLERY"
+
+
 class MatchStatus(enum.StrEnum):
     PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
@@ -136,6 +142,7 @@ class Photo(Base):
     original_key: Mapped[str] = mapped_column(String(255))   # as uploaded, may hold GPS EXIF: never served
     public_key: Mapped[str] = mapped_column(String(255))     # re-encoded JPEG without EXIF
     crop_key: Mapped[str | None] = mapped_column(String(255))
+    source: Mapped[PhotoSource | None] = mapped_column(_enum(PhotoSource))  # null: client didn't say
     status: Mapped[PhotoStatus] = mapped_column(_enum(PhotoStatus), default=PhotoStatus.PENDING, index=True)
     detected_species: Mapped[str | None] = mapped_column(String(16))
     detection_confidence: Mapped[float | None] = mapped_column(Float)

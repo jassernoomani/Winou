@@ -7,6 +7,8 @@ __pycache__/
 
 # Secrets
 .env
+secrets/
+*service-account*.json
 
 # Research data and model weights (large, downloaded on demand)
 research/data/raw/
