@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../api/api_client.dart';
+import '../push.dart';
 
 const _tokenKey = 'access_token';
 const _storage = FlutterSecureStorage();
@@ -25,6 +26,7 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> _restore() async {
     state = AuthState(token: await _storage.read(key: _tokenKey));
+    if (state.signedIn) ref.read(pushProvider).register(); // the token may have changed since
   }
 
   Future<void> login(String email, String password) async =>
@@ -33,7 +35,9 @@ class AuthController extends Notifier<AuthState> {
   Future<void> register(String email, String password, String displayName) async =>
       _save(await ref.read(apiProvider).register(email.trim(), password, displayName.trim()));
 
-  Future<void> logout() async {
+  /// [expired]: the server already rejected the session, so it can't be told about the logout.
+  Future<void> logout({bool expired = false}) async {
+    await ref.read(pushProvider).unregister(tellServer: !expired);
     await _storage.delete(key: _tokenKey);
     state = const AuthState();
   }
@@ -41,6 +45,7 @@ class AuthController extends Notifier<AuthState> {
   Future<void> _save(String token) async {
     await _storage.write(key: _tokenKey, value: token);
     state = AuthState(token: token);
+    ref.read(pushProvider).register();
   }
 }
 
@@ -50,6 +55,6 @@ final authProvider = NotifierProvider<AuthController, AuthState>(AuthController.
 final apiProvider = Provider<WinouApi>(
   (ref) => WinouApi(
     token: () => ref.read(authProvider).token,
-    onUnauthorized: () => ref.read(authProvider.notifier).logout(), // expired or revoked token
+    onUnauthorized: () => ref.read(authProvider.notifier).logout(expired: true), // expired or revoked token
   ),
 );

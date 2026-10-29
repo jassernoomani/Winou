@@ -5,6 +5,9 @@ for navigation, `flutter_map` + OpenStreetMap, English and French.
 
 ## Run on your phone
 
+The app needs `android/app/google-services.json` (Firebase console → Project settings → your
+Android app `tn.winou.winou` → download). It is kept out of git.
+
 1. Start the backend: `docker compose up -d` from the repo root.
 2. Find the laptop's Wi-Fi address (`ipconfig` → "Wireless LAN adapter Wi-Fi" → IPv4),
    and put the phone on the same Wi-Fi.
@@ -45,6 +48,7 @@ lib/
   sightings/    camera-first sighting flow, sighting details
   reports/      lost report form and details
   me/           my activity (matches, my reports, my sightings), match details
+  push.dart     push notifications: registration, opening a match from a notification
   widgets/      shared UI: photos, upload + "retake?" flow, map pickers
   l10n/         app_en.arb, app_fr.arb (generated code: flutter gen-l10n)
 ```

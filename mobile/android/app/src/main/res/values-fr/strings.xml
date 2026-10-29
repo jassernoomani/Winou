@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="match_title">Correspondance possible</string>
+    <string name="match_body">Quelqu\'un a peut-être vu %1$s. Touchez pour comparer les photos.</string>
+</resources>

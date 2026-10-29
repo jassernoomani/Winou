@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Push notifications; the backend sends these keys, not the text -->
+    <string name="match_title">Possible match</string>
+    <string name="match_body">Someone may have seen %1$s. Tap to compare the photos.</string>
+    <color name="notification">#2E7D6B</color>
+</resources>

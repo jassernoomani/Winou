@@ -12,7 +12,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 | 0 | Validate matching (research) | done, see [RESULTS](research/RESULTS.md) |
 | 1 | ML service | done |
 | 2 | Backend core | done |
-| 3 | Flutter app | in progress (push notifications next) |
+| 3 | Flutter app | done |
 | 4 | Close the loop | – |
 | 5 | Stray map layer | – |
 
@@ -51,6 +51,11 @@ Set real `JWT_SECRET` and `LOCATION_FUZZ_SECRET` values in `.env` for anything b
 development. `JWT_SECRET` can be rotated (it logs everyone out); `LOCATION_FUZZ_SECRET` must
 never change once real reports exist, or old and new public positions together reveal the real one.
 
+**Push notifications** (Firebase Cloud Messaging): put the Firebase service account key at
+`secrets/firebase-service-account.json` (Firebase console → Project settings → Service accounts →
+Generate new private key). Compose mounts `secrets/` read-only into the worker. Without the key,
+matches are only logged. `secrets/` is git-ignored.
+
 ## API
 
 Auth is email + password; send the token as `Authorization: Bearer <token>`. In the docs
@@ -81,7 +86,10 @@ location, date or species re-runs matching with the stored vectors.
 everyone but the owner. Sighting reporters and user emails are never exposed. Creating
 reports, sightings and photos is rate-limited per user.
 
-Notifications are only logged for now; Firebase Cloud Messaging is the last step of Phase 3.
+When a match is found, the lost report's owner gets a push notification (at most
+`MATCH_MAX_NOTIFICATIONS` per photo). The app registers its Firebase installation ID through
+`PATCH /me` while signed in and clears it on logout; a phone belongs to the last account signed in
+on it, and IDs Firebase reports as unregistered are removed.
 
 Errors are `{"detail": "message"}`, or `{"detail": {"code", "message"}}` when the app reacts to
 them (`rate_limited`, `email_taken`, `too_many_photos`, `invalid_image`...). Invalid input is

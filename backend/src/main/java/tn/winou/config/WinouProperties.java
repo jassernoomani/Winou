@@ -18,7 +18,8 @@ public record WinouProperties(
         Map map,
         RateLimits rateLimits,
         Matching matching,
-        Worker worker) {
+        Worker worker,
+        Firebase firebase) {
 
     public record Jwt(String secret, Duration expiry) {}
 
@@ -59,4 +60,7 @@ public record WinouProperties(
     }
 
     public record Worker(boolean enabled, Duration poll, int maxAttempts) {}
+
+    /** credentials: path to the service account key; empty means notifications are only logged. */
+    public record Firebase(String credentials) {}
 }

@@ -121,5 +121,7 @@
   "noMissingPets": "Aucun animal perdu signalé. Bonne nouvelle !",
   "noMissingPetsNearby": "Aucun animal perdu près de vous. Essayez « Partout ».",
   "kmAway": "à {km} km",
-  "locationOffForNearby": "Activez la localisation pour voir les animaux près de vous."
+  "locationOffForNearby": "Activez la localisation pour voir les animaux près de vous.",
+  "matchNotification": "Quelqu'un a peut-être vu {name}.",
+  "view": "Voir"
 }

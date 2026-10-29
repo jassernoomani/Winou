@@ -78,6 +78,9 @@ public class AuthController {
             user.setDisplayName(body.getDisplayName());
         }
         if (body.isFcmTokenSent()) {
+            if (body.getFcmToken() != null) {
+                users.releaseFcmToken(body.getFcmToken(), user.getId());
+            }
             user.setFcmToken(body.getFcmToken());
         }
         return out(users.save(user));

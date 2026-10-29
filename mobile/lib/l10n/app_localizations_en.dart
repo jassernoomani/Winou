@@ -409,4 +409,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationOffForNearby => 'Turn on location to see pets near you.';
+
+  @override
+  String matchNotification(String name) {
+    return 'Someone may have seen $name.';
+  }
+
+  @override
+  String get view => 'View';
 }

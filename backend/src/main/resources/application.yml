@@ -86,3 +86,6 @@ winou:
     enabled: ${WINOU_WORKER_ENABLED:false}
     poll: ${WORKER_POLL_SECONDS:2}s
     max-attempts: ${WORKER_MAX_ATTEMPTS:5}
+  firebase:
+    # Service account key for push notifications; without it they are only logged
+    credentials: ${FIREBASE_CREDENTIALS:}

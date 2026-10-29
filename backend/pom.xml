@@ -25,6 +25,7 @@
         <thumbnailator.version>0.4.21</thumbnailator.version>
         <metadata-extractor.version>2.22.0</metadata-extractor.version>
         <bouncycastle.version>1.86</bouncycastle.version>
+        <firebase-admin.version>9.11.0</firebase-admin.version>
     </properties>
 
     <dependencies>
@@ -72,6 +73,13 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
+        </dependency>
+
+        <!-- Push notifications (Firebase Cloud Messaging) -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>${firebase-admin.version}</version>
         </dependency>
 
         <!-- Object storage -->

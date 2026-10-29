@@ -829,6 +829,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Turn on location to see pets near you.'**
   String get locationOffForNearby;
+
+  /// No description provided for @matchNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone may have seen {name}.'**
+  String matchNotification(String name);
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
 }
 
 class _AppLocalizationsDelegate

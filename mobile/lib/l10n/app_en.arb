@@ -205,5 +205,14 @@
       }
     }
   },
-  "locationOffForNearby": "Turn on location to see pets near you."
+  "locationOffForNearby": "Turn on location to see pets near you.",
+  "matchNotification": "Someone may have seen {name}.",
+  "@matchNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "view": "View"
 }
