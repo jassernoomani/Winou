@@ -24,7 +24,7 @@ ml-service/   FastAPI: detect, crop, embed
 backend/      Spring Boot API + background matching worker (Java 25)
 mobile/       Flutter app (see mobile/README.md to run it on a phone)
 deploy/       free demo server: Oracle Cloud + DuckDNS + Caddy (see deploy/README.md)
-scripts/      Qdrant collection setup
+scripts/      Qdrant setup, demo laptop startup (demo.ps1) and demo data (seed_demo.py), see docs/DEMO.md
 docs/         brief, architecture notes, API spec
 ```
 

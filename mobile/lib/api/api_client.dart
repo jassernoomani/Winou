@@ -30,6 +30,7 @@ class WinouApi {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          options.baseUrl = Config.apiUrl; // may have been changed in the app since
           final value = token();
           if (value != null) options.headers['Authorization'] = 'Bearer $value';
           handler.next(options);

@@ -776,4 +776,24 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get associationNotification =>
       'Votre demande d\'association a reçu une réponse';
+
+  @override
+  String get serverAddress => 'Adresse du serveur';
+
+  @override
+  String get serverHelp =>
+      'L\'ordinateur qui fait tourner Winou. Sur le partage de connexion du téléphone ou le même Wi-Fi : son adresse, par ex. 192.168.43.12. Avec un câble USB : 127.0.0.1.';
+
+  @override
+  String get testConnection => 'Tester';
+
+  @override
+  String get serverOk => 'Connecté';
+
+  @override
+  String get serverUnreachable =>
+      'Injoignable. Même réseau ? Le pare-feu de l\'ordinateur est-il ouvert ?';
+
+  @override
+  String get save => 'Enregistrer';
 }

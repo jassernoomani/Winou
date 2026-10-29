@@ -38,6 +38,13 @@ flutter run --dart-define=API_URL=http://127.0.0.1:8080
 
 `adb` is in `%LOCALAPPDATA%\Android\Sdk\platform-tools`.
 
+### Changing the server address in the app
+
+The address the app is built with (`API_URL`) can be changed without rebuilding: the gear on the
+sign-in screen, or My activity → ⋮ → Server address. Handy when the laptop's address changes
+(phone hotspot, another Wi-Fi). Release builds allow plain HTTP for that reason (see the
+manifest). For demos, see [docs/DEMO.md](../docs/DEMO.md).
+
 ## Design
 
 Colours, fonts and component styles live in `lib/theme.dart`. Blue is the brand colour; the

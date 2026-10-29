@@ -767,4 +767,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get associationNotification => 'Your association request was answered';
+
+  @override
+  String get serverAddress => 'Server address';
+
+  @override
+  String get serverHelp =>
+      'The laptop running Winou. On your phone\'s hotspot or the same Wi-Fi: its address, e.g. 192.168.43.12. With a USB cable: 127.0.0.1.';
+
+  @override
+  String get testConnection => 'Test';
+
+  @override
+  String get serverOk => 'Connected';
+
+  @override
+  String get serverUnreachable =>
+      'Can\'t reach it. Same network? Is the laptop\'s firewall open?';
+
+  @override
+  String get save => 'Save';
 }

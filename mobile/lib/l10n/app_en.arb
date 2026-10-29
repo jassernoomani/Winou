@@ -454,5 +454,11 @@
   "deleteForGood": "Delete it for good?",
   "more": "More",
   "helpNotification": "An animal needs help near you",
-  "associationNotification": "Your association request was answered"
+  "associationNotification": "Your association request was answered",
+  "serverAddress": "Server address",
+  "serverHelp": "The laptop running Winou. On your phone's hotspot or the same Wi-Fi: its address, e.g. 192.168.43.12. With a USB cable: 127.0.0.1.",
+  "testConnection": "Test",
+  "serverOk": "Connected",
+  "serverUnreachable": "Can't reach it. Same network? Is the laptop's firewall open?",
+  "save": "Save"
 }

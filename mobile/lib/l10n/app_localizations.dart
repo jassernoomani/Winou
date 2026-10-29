@@ -1399,6 +1399,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your association request was answered'**
   String get associationNotification;
+
+  /// No description provided for @serverAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Server address'**
+  String get serverAddress;
+
+  /// No description provided for @serverHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The laptop running Winou. On your phone\'s hotspot or the same Wi-Fi: its address, e.g. 192.168.43.12. With a USB cable: 127.0.0.1.'**
+  String get serverHelp;
+
+  /// No description provided for @testConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get testConnection;
+
+  /// No description provided for @serverOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get serverOk;
+
+  /// No description provided for @serverUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach it. Same network? Is the laptop\'s firewall open?'**
+  String get serverUnreachable;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
 }
 
 class _AppLocalizationsDelegate

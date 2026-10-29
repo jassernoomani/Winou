@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/server_settings.dart';
 import 'auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -68,7 +69,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: IntrinsicHeight(
                   child: Column(
                     children: [
-                      const SizedBox(height: 24),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          tooltip: l10n.serverAddress,
+                          color: Colors.white70,
+                          onPressed: () => editServerAddress(context),
+                          icon: const Icon(LucideIcons.server),
+                        ),
+                      ),
                       const FadeSlideIn(
                         scale: 0.7,
                         offset: Offset.zero,

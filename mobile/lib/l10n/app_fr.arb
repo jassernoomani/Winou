@@ -216,5 +216,11 @@
   "deleteForGood": "Le supprimer définitivement ?",
   "more": "Plus",
   "helpNotification": "Un animal a besoin d'aide près de vous",
-  "associationNotification": "Votre demande d'association a reçu une réponse"
+  "associationNotification": "Votre demande d'association a reçu une réponse",
+  "serverAddress": "Adresse du serveur",
+  "serverHelp": "L'ordinateur qui fait tourner Winou. Sur le partage de connexion du téléphone ou le même Wi-Fi : son adresse, par ex. 192.168.43.12. Avec un câble USB : 127.0.0.1.",
+  "testConnection": "Tester",
+  "serverOk": "Connecté",
+  "serverUnreachable": "Injoignable. Même réseau ? Le pare-feu de l'ordinateur est-il ouvert ?",
+  "save": "Enregistrer"
 }

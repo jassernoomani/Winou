@@ -9,6 +9,7 @@ import '../auth/auth_controller.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/server_settings.dart';
 
 /// Tabs: matches for my lost pets, my lost reports, my sightings.
 class MyActivityScreen extends ConsumerWidget {
@@ -29,6 +30,7 @@ class MyActivityScreen extends ConsumerWidget {
               tooltip: l10n.more,
               onSelected: (action) => switch (action) {
                 'logout' => ref.read(authProvider.notifier).logout(),
+                'server' => editServerAddress(context),
                 _ => context.push(action),
               },
               itemBuilder: (_) => [
@@ -41,6 +43,10 @@ class MyActivityScreen extends ConsumerWidget {
                     value: '/admin',
                     child: ListTile(leading: const Icon(LucideIcons.shieldCheck), title: Text(l10n.admin)),
                   ),
+                PopupMenuItem(
+                  value: 'server',
+                  child: ListTile(leading: const Icon(LucideIcons.server), title: Text(l10n.serverAddress)),
+                ),
                 PopupMenuItem(
                   value: 'logout',
                   child: ListTile(leading: const Icon(LucideIcons.logOut), title: Text(l10n.signOut)),

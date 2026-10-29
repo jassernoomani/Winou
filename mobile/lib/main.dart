@@ -14,10 +14,12 @@ import 'push.dart';
 import 'router.dart';
 import 'theme.dart';
 import 'widgets/common.dart';
+import 'widgets/server_settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // config from android/app/google-services.json
+  await loadServerAddress(); // the laptop's address saved in the app, if any
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(['Nunito'], await rootBundle.loadString('assets/fonts/OFL.txt'));
   });

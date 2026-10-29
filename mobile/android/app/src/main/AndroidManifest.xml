@@ -6,7 +6,10 @@
     <application
         android:label="Winou"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        <!-- Plain HTTP: demo builds talk to a laptop on the local network. Turn off once the API
+             is only reached over HTTPS (deploy/). -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
