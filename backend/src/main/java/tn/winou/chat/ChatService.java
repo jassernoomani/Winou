@@ -109,7 +109,9 @@ public class ChatService {
             conversation.markRead(user.getId(), OffsetDateTime.now());
             conversations.save(conversation);
         }
-        List<MessageOut> out = new ArrayList<>(page.stream().map(m -> out(m, user)).toList());
+        List<MessageOut> out = new ArrayList<>(page.stream()
+                .filter(m -> m.getHiddenAt() == null || m.getSenderId().equals(user.getId()))
+                .map(m -> out(m, user)).toList());
         Collections.reverse(out);
         return out;
     }
@@ -138,19 +140,23 @@ public class ChatService {
         LostReport report = reports.findById(c.getLostReportId()).orElseThrow();
         Match match = c.getMatchId() == null ? null : matches.findById(c.getMatchId()).orElse(null);
         UUID other = c.otherParticipant(viewer.getId());
-        String otherName = users.findById(other).map(User::getDisplayName).orElse("");
-        ChatMessage last = messages.findFirstByConversationIdOrderByCreatedAtDesc(c.getId());
+        User otherUser = users.findById(other).orElse(null);
+        ChatMessage last = messages.findVisible(c.getId(), viewer.getId(), Limit.of(1)).stream().findFirst().orElse(null);
         OffsetDateTime readAt = c.readAt(viewer.getId());
         long unread = readAt == null
-                ? messages.countByConversationIdAndSenderIdNot(c.getId(), viewer.getId())
-                : messages.countByConversationIdAndSenderIdNotAndCreatedAtGreaterThan(c.getId(), viewer.getId(), readAt);
+                ? messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNull(c.getId(), viewer.getId())
+                : messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNullAndCreatedAtGreaterThan(c.getId(),
+                        viewer.getId(), readAt);
         return new ConversationOut(c.getId(), report.getId(), report.getName(), report.getStatus(), c.getMatchId(),
                 match == null ? null : Views.imageUrl(match.getSightingPhotoId()),
                 c.getOwnerId().equals(viewer.getId()) ? ConversationRole.OWNER : ConversationRole.FINDER,
-                otherName, last == null ? null : out(last, viewer), unread, c.getCreatedAt());
+                otherUser == null ? "" : otherUser.getDisplayName(),
+                otherUser != null && otherUser.isAssociation() ? otherUser.getAssociationName() : null,
+                last == null ? null : out(last, viewer), unread, c.getCreatedAt());
     }
 
     private static MessageOut out(ChatMessage m, User viewer) {
-        return new MessageOut(m.getId(), m.getBody(), m.getSenderId().equals(viewer.getId()), m.getCreatedAt());
+        return new MessageOut(m.getId(), m.getBody(), m.getSenderId().equals(viewer.getId()), m.getHiddenAt() != null,
+                m.getCreatedAt());
     }
 }

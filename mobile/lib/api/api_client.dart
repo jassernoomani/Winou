@@ -181,6 +181,11 @@ class WinouApi {
 
   Future<void> deleteSighting(String id) => _call(() => _dio.delete('/sightings/$id'), (_) {});
 
+  Future<Sighting> setStrayStatus(String id, StrayStatus status) => _call(
+    () => _dio.patch('/sightings/$id/stray-status', data: {'status': status.api}),
+    (data) => Sighting.fromJson(data),
+  );
+
   // --- photos ---
 
   /// [ownerPath] is "/lost-reports/{id}" or "/sightings/{id}".
@@ -240,6 +245,69 @@ class WinouApi {
     () => _dio.post('/conversations/$conversationId/messages', data: {'body': body}),
     (data) => ChatMessage.fromJson(data),
   );
+
+  // --- associations ---
+
+  /// The user's latest request, or null if they never sent one.
+  Future<AssociationRequest?> myAssociationRequest() => _call(
+    () => _dio.get('/me/association-request'),
+    (data) => data is Map<String, dynamic> ? AssociationRequest.fromJson(data) : null,
+  );
+
+  Future<AssociationRequest> requestAssociation({
+    required String organisation,
+    required String city,
+    required String contact,
+    String? note,
+    required LatLng location,
+  }) => _call(
+    () => _dio.post(
+      '/me/association-request',
+      data: {
+        'organisation': organisation,
+        'city': city,
+        'contact': contact,
+        if (note != null && note.isNotEmpty) 'note': note,
+        'location': locationJson(location),
+      },
+    ),
+    (data) => AssociationRequest.fromJson(data),
+  );
+
+  // --- moderation ---
+
+  /// Returns true when this report hid the content.
+  Future<bool> report(ReportTarget type, String id, ReportReason reason, {String? note}) => _call(
+    () => _dio.post(
+      '/reports',
+      data: {
+        'target_type': type.api,
+        'target_id': id,
+        'reason': reason.api,
+        if (note != null && note.isNotEmpty) 'note': note,
+      },
+    ),
+    (data) => data['hidden'] as bool,
+  );
+
+  // --- admin ---
+
+  Future<List<AssociationRequest>> pendingAssociationRequests() => _call(
+    () => _dio.get('/admin/association-requests'),
+    (data) => [for (final r in data) AssociationRequest.fromJson(r)],
+  );
+
+  Future<void> decideAssociationRequest(String id, {required bool approve}) =>
+      _call(() => _dio.post('/admin/association-requests/$id/${approve ? 'approve' : 'reject'}'), (_) {});
+
+  Future<List<HiddenItem>> hiddenContent() =>
+      _call(() => _dio.get('/admin/hidden'), (data) => [for (final h in data) HiddenItem.fromJson(h)]);
+
+  Future<void> restoreHidden(ReportTarget type, String id) =>
+      _call(() => _dio.post('/admin/hidden/${type.api}/$id/restore'), (_) {});
+
+  Future<void> deleteHidden(ReportTarget type, String id) =>
+      _call(() => _dio.delete('/admin/hidden/${type.api}/$id'), (_) {});
 }
 
 ApiException _toApiException(DioException error) {

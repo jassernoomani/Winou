@@ -46,10 +46,12 @@ import org.testcontainers.utility.DockerImageName;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tn.winou.domain.AssociationRequest;
 import tn.winou.domain.ChatMessage;
 import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
+import tn.winou.domain.Sighting;
 import tn.winou.infra.Notifications;
 import tn.winou.infra.MlClient;
 import tn.winou.infra.Notifier;
@@ -69,11 +71,13 @@ import tn.winou.matching.PhotoWorker;
         "winou.qdrant.embed-dim=8",
         "winou.jwt.secret=test-secret-at-least-32-bytes-long!!",
         "winou.privacy.location-fuzz-secret=test-fuzz-secret",
+        "winou.admin.emails=" + ApiTestBase.ADMIN_EMAIL,
 })
 @AutoConfigureMockMvc
 @Import(ApiTestBase.Fakes.class)
 public abstract class ApiTestBase {
 
+    public static final String ADMIN_EMAIL = "admin@winou.test";
     public static final Map<String, Object> TUNIS = Map.of("lat", 36.8065, "lon", 10.1815);
     public static final Color RED = new Color(220, 30, 30);
     public static final Color NEAR_RED = new Color(215, 35, 30);
@@ -236,6 +240,10 @@ public abstract class ApiTestBase {
         public final List<String> found = new ArrayList<>();
         /** "conversation id: message body" */
         public final List<String> messages = new ArrayList<>();
+        /** "sighting id: association ids" */
+        public final List<String> help = new ArrayList<>();
+        /** "organisation: status" */
+        public final List<String> associations = new ArrayList<>();
 
         @Override
         public void matchFound(Match match) {
@@ -257,11 +265,23 @@ public abstract class ApiTestBase {
             messages.add(conversation.getId() + ": " + message.getBody());
         }
 
+        @Override
+        public void animalNeedsHelp(Sighting sighting, List<UUID> associationIds) {
+            help.add(sighting.getId() + ": " + associationIds);
+        }
+
+        @Override
+        public void associationDecided(AssociationRequest request) {
+            associations.add(request.getOrganisation() + ": " + request.getStatus());
+        }
+
         void clear() {
             matches.clear();
             confirmed.clear();
             found.clear();
             messages.clear();
+            help.clear();
+            associations.clear();
         }
     }
 

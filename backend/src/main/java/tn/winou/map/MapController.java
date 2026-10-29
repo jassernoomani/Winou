@@ -38,16 +38,19 @@ public class MapController {
     private final JdbcClient jdbc;
     private final Views views;
     private final int maxResults;
+    private final int strayFadeDays;
 
     public MapController(JdbcClient jdbc, Views views, WinouProperties properties) {
         this.jdbc = jdbc;
         this.views = views;
         this.maxResults = properties.map().maxResults();
+        this.strayFadeDays = properties.strays().fadeDays();
     }
 
     @GetMapping("/map")
     @Operation(summary = "Open lost reports, sightings and strays inside the box, newest first",
-            description = "Public: no login needed. Lost-report positions are approximate (moved up to LOCATION_FUZZ_M).")
+            description = "Public: no login needed. Lost-report positions are approximate (moved up to LOCATION_FUZZ_M). "
+                    + "Strays are left out once helped or gone, or when nobody saw them for STRAY_FADE_DAYS.")
     public MapOut map(
             @Parameter(description = "min_lon,min_lat,max_lon,max_lat", example = "10.05,36.75,10.30,36.90")
             @RequestParam String bbox,
@@ -86,7 +89,7 @@ public class MapController {
                        ST_Y(r.last_seen_point::geometry) AS lat, ST_X(r.last_seen_point::geometry) AS lon,
                        (SELECT p.id FROM photos p WHERE p.lost_report_id = r.id ORDER BY p.created_at LIMIT 1) AS photo_id
                 FROM lost_reports r
-                WHERE r.status = 'OPEN'""");
+                WHERE r.status = 'OPEN' AND r.hidden_at IS NULL""");
         Map<String, Object> params = where(sql, "r", "last_seen_point", "last_seen_at", f);
         return jdbc.sql(sql.toString()).params(params).query((rs, i) -> {
             UUID id = rs.getObject("id", UUID.class);
@@ -104,11 +107,14 @@ public class MapController {
                        ST_Y(s.point::geometry) AS lat, ST_X(s.point::geometry) AS lon,
                        (SELECT p.id FROM photos p WHERE p.sighting_id = s.id ORDER BY p.created_at LIMIT 1) AS photo_id
                 FROM sightings s
-                WHERE TRUE""");
+                WHERE s.hidden_at IS NULL
+                  AND (NOT s.is_stray OR s.stray_status = 'AROUND'
+                       AND COALESCE(s.stray_status_at, s.seen_at) >= now() - make_interval(days => :fadeDays))""");
         if (stray != null) {
             sql.append(stray ? " AND s.is_stray" : " AND NOT s.is_stray");
         }
         Map<String, Object> params = where(sql, "s", "point", "seen_at", f);
+        params.put("fadeDays", strayFadeDays);
         return jdbc.sql(sql.toString()).params(params).query((rs, i) -> new MapItem(
                 rs.getBoolean("is_stray") ? MapType.STRAY : MapType.SIGHTING,
                 rs.getObject("id", UUID.class),

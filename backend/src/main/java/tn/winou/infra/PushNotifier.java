@@ -7,11 +7,15 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tn.winou.domain.AssociationRequest;
 import tn.winou.domain.ChatMessage;
+import tn.winou.domain.Condition;
 import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
+import tn.winou.domain.RequestStatus;
+import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
@@ -74,6 +78,23 @@ public class PushNotifier implements Notifier {
                         "conversation-" + conversation.getId(), Map.of("type", "message",
                                 "conversation_id", conversation.getId().toString(), "sender_name", sender,
                                 "pet_name", pet)));
+    }
+
+    @Override
+    public void animalNeedsHelp(Sighting sighting, List<UUID> associationIds) {
+        String body = sighting.getCondition() == Condition.INJURED ? "help_injured_body" : "help_needs_help_body";
+        for (UUID association : associationIds) {
+            push(association, new Push("help_title", List.of(), body, List.of(), null, "help-" + sighting.getId(),
+                    Map.of("type", "help", "sighting_id", sighting.getId().toString())));
+        }
+    }
+
+    @Override
+    public void associationDecided(AssociationRequest request) {
+        boolean approved = request.getStatus() == RequestStatus.APPROVED;
+        String key = approved ? "association_approved" : "association_rejected";
+        push(request.getUserId(), new Push(key + "_title", List.of(), key + "_body", List.of(request.getOrganisation()),
+                null, "association-" + request.getId(), Map.of("type", "association")));
     }
 
     private void push(UUID userId, Push push) {

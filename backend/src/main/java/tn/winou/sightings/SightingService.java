@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.associations.AssociationService;
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
 import tn.winou.config.WinouProperties;
@@ -14,7 +15,9 @@ import tn.winou.domain.Condition;
 import tn.winou.domain.PhotoRepository;
 import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
+import tn.winou.domain.StrayStatus;
 import tn.winou.domain.User;
+import tn.winou.infra.Notifications;
 import tn.winou.matching.Records;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.SightingIn;
@@ -30,18 +33,31 @@ public class SightingService {
     private final Records records;
     private final Views views;
     private final WinouProperties properties;
+    private final AssociationService associations;
+    private final Notifications notifications;
 
     public SightingService(SightingRepository sightings, PhotoRepository photos, Records records, Views views,
-            WinouProperties properties) {
+            WinouProperties properties, AssociationService associations, Notifications notifications) {
         this.sightings = sightings;
         this.photos = photos;
         this.records = records;
         this.views = views;
         this.properties = properties;
+        this.associations = associations;
+        this.notifications = notifications;
     }
 
     public Sighting get(UUID id) {
         return sightings.findById(id).orElseThrow(() -> ApiException.notFound("Sighting"));
+    }
+
+    /** As get(), but hidden sightings exist only for their reporter and admins. */
+    public Sighting visible(UUID id, User viewer) {
+        Sighting sighting = get(id);
+        if (!Views.canSee(sighting.getReporterId(), sighting.getHiddenAt(), viewer)) {
+            throw ApiException.notFound("Sighting");
+        }
+        return sighting;
     }
 
     @Transactional
@@ -56,7 +72,9 @@ public class SightingService {
         sighting.setCondition(body.condition() != null ? body.condition() : Condition.HEALTHY);
         sighting.setNote(body.note());
         sighting.setStray(Boolean.TRUE.equals(body.isStray()));
-        return views.sighting(sightings.save(sighting), user);
+        sightings.save(sighting);
+        alertIfUrgent(sighting);
+        return views.sighting(sighting, user);
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +100,11 @@ public class SightingService {
             rematch = true;
         }
         if (body.condition() != null) {
+            boolean wasUrgent = isUrgent(sighting.getCondition());
             sighting.setCondition(body.condition());
+            if (!wasUrgent) {
+                alertIfUrgent(sighting);
+            }
         }
         if (body.note() != null) {
             sighting.setNote(body.note());
@@ -94,6 +116,37 @@ public class SightingService {
             records.rematch(sighting.getId(), sighting.getSpecies(), Records.payload(sighting));
         }
         return views.sighting(sighting, user);
+    }
+
+    /**
+     * Anyone may say what became of a stray: still around (which also keeps it on the map), helped,
+     * or not seen anymore. The last person to update it is kept, to credit associations.
+     */
+    @Transactional
+    public SightingOut setStrayStatus(UUID id, StrayStatus status, User user) {
+        Sighting sighting = visible(id, user);
+        if (!sighting.isStray()) {
+            throw ApiException.invalid("Only strays have a status");
+        }
+        sighting.setStrayStatus(status);
+        sighting.setStrayStatusAt(OffsetDateTime.now());
+        sighting.setStrayStatusBy(user.getId());
+        return views.sighting(sighting, user);
+    }
+
+    private static boolean isUrgent(Condition condition) {
+        return condition == Condition.INJURED || condition == Condition.NEEDS_HELP;
+    }
+
+    /** Injured or in need of help: associations nearby hear about it. */
+    private void alertIfUrgent(Sighting sighting) {
+        if (!isUrgent(sighting.getCondition())) {
+            return;
+        }
+        List<UUID> near = associations.near(sighting.getLocation(), sighting.getReporterId());
+        if (!near.isEmpty()) {
+            notifications.send(n -> n.animalNeedsHelp(sighting, near));
+        }
     }
 
     @Transactional

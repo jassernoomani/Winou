@@ -69,6 +69,8 @@ String? routeOf(RemoteMessage message) => switch (message.data) {
   {'type': 'match', 'match_id': final String id} => '/matches/$id',
   {'type': 'message', 'conversation_id': final String id} => '/conversations/$id',
   {'type': 'confirmed' || 'found'} => '/conversations',
+  {'type': 'help', 'sighting_id': final String id} => '/sightings/$id',
+  {'type': 'association'} => '/association',
   _ => null,
 };
 

@@ -60,6 +60,60 @@ enum PhotoSource with ApiEnum {
   final String api;
 }
 
+/// What became of a stray. Anyone can update it; "around" also keeps it on the map.
+enum StrayStatus with ApiEnum {
+  around('AROUND'),
+  helped('HELPED'),
+  gone('GONE');
+
+  const StrayStatus(this.api);
+  @override
+  final String api;
+}
+
+enum Role with ApiEnum {
+  user('USER'),
+  association('ASSOCIATION'),
+  admin('ADMIN');
+
+  const Role(this.api);
+  @override
+  final String api;
+}
+
+enum RequestStatus with ApiEnum {
+  pending('PENDING'),
+  approved('APPROVED'),
+  rejected('REJECTED');
+
+  const RequestStatus(this.api);
+  @override
+  final String api;
+}
+
+/// What can be reported with the "Report" button.
+enum ReportTarget with ApiEnum {
+  lostReport('LOST_REPORT'),
+  sighting('SIGHTING'),
+  message('MESSAGE');
+
+  const ReportTarget(this.api);
+  @override
+  final String api;
+}
+
+enum ReportReason with ApiEnum {
+  spam('SPAM'),
+  inappropriate('INAPPROPRIATE'),
+  fake('FAKE'),
+  dangerous('DANGEROUS'),
+  other('OTHER');
+
+  const ReportReason(this.api);
+  @override
+  final String api;
+}
+
 enum MapItemType with ApiEnum {
   lost('lost'),
   sighting('sighting'),
@@ -76,15 +130,26 @@ Map<String, double> locationJson(LatLng point) => {'lat': point.latitude, 'lon':
 
 DateTime _date(String value) => DateTime.parse(value).toLocal();
 
+DateTime? _optionalDate(String? value) => value == null ? null : _date(value);
+
 /// Photo URLs from the API are relative.
 String? absoluteUrl(String? path) => path == null ? null : '${Config.apiUrl}$path';
 
 class User {
-  User.fromJson(Map<String, dynamic> json) : id = json['id'], email = json['email'], displayName = json['display_name'];
+  User.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      email = json['email'],
+      displayName = json['display_name'],
+      role = _enum(Role.values, json['role']),
+      associationName = json['association_name'];
 
   final String id;
   final String email;
   final String displayName;
+  final Role role;
+  final String? associationName; // set once an admin approved their association
+
+  bool get isAdmin => role == Role.admin;
 }
 
 class Photo {
@@ -112,7 +177,8 @@ class LostReport {
       locationIsApproximate = json['location_is_approximate'],
       lastSeenAt = _date(json['last_seen_at']),
       status = _enum(ReportStatus.values, json['status']),
-      photos = [for (final p in json['photos']) Photo.fromJson(p)];
+      photos = [for (final p in json['photos']) Photo.fromJson(p)],
+      hidden = json['hidden'] ?? false;
 
   final String id;
   final String name;
@@ -123,6 +189,7 @@ class LostReport {
   final DateTime lastSeenAt;
   final ReportStatus status;
   final List<Photo> photos;
+  final bool hidden; // reported by several people: only the owner sees it
 
   bool get isMine => !locationIsApproximate;
 }
@@ -136,8 +203,12 @@ class Sighting {
       condition = _enum(Condition.values, json['condition']),
       note = json['note'],
       isStray = json['is_stray'],
+      strayStatus = _enum(StrayStatus.values, json['stray_status'] ?? 'AROUND'),
+      strayStatusAt = _optionalDate(json['stray_status_at']),
+      helpedBy = json['helped_by'],
       isMine = json['mine'],
-      photos = [for (final p in json['photos']) Photo.fromJson(p)];
+      photos = [for (final p in json['photos']) Photo.fromJson(p)],
+      hidden = json['hidden'] ?? false;
 
   final String id;
   final Species species;
@@ -146,8 +217,14 @@ class Sighting {
   final Condition condition;
   final String? note;
   final bool isStray;
+  final StrayStatus strayStatus;
+  final DateTime? strayStatusAt;
+  final String? helpedBy; // the association that helped this stray
   final bool isMine;
   final List<Photo> photos;
+  final bool hidden;
+
+  bool get needsHelp => condition != Condition.healthy;
 }
 
 class MapItem {
@@ -203,11 +280,13 @@ class ChatMessage {
     : id = json['id'],
       body = json['body'],
       mine = json['mine'],
+      hidden = json['hidden'] ?? false,
       createdAt = _date(json['created_at']);
 
   final String id;
   final String body;
   final bool mine;
+  final bool hidden; // reported: the other person no longer sees it
   final DateTime createdAt;
 }
 
@@ -222,6 +301,7 @@ class Conversation {
       sightingPhotoUrl = absoluteUrl(json['sighting_photo_url']),
       isOwner = json['my_role'] == 'owner',
       otherName = json['other_name'],
+      otherAssociation = json['other_association'],
       lastMessage = json['last_message'] == null ? null : ChatMessage.fromJson(json['last_message']),
       unread = json['unread'],
       createdAt = _date(json['created_at']);
@@ -234,9 +314,58 @@ class Conversation {
   final String? sightingPhotoUrl;
   final bool isOwner; // false: I'm the finder
   final String otherName;
+  final String? otherAssociation; // the association they speak for, if any
   final ChatMessage? lastMessage;
   final int unread;
   final DateTime createdAt;
 
   bool get caseClosed => reportStatus != ReportStatus.open;
+}
+
+/// A request to be shown as an association. user_name and user_email are for the admin.
+class AssociationRequest {
+  AssociationRequest.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      organisation = json['organisation'],
+      city = json['city'],
+      contact = json['contact'],
+      note = json['note'],
+      status = _enum(RequestStatus.values, json['status']),
+      userName = json['user_name'],
+      userEmail = json['user_email'],
+      createdAt = _date(json['created_at']);
+
+  final String id;
+  final String organisation;
+  final String city;
+  final String contact;
+  final String? note;
+  final RequestStatus status;
+  final String? userName;
+  final String? userEmail;
+  final DateTime createdAt;
+}
+
+/// Content hidden after reports, for the admin to restore or delete.
+class HiddenItem {
+  HiddenItem.fromJson(Map<String, dynamic> json)
+    : type = _enum(ReportTarget.values, json['target_type']),
+      id = json['target_id'],
+      title = json['title'],
+      text = json['text'],
+      photoUrl = absoluteUrl(json['photo_url']),
+      hiddenAt = _date(json['hidden_at']),
+      reports = json['reports'],
+      reasons = [for (final r in json['reasons']) _enum(ReportReason.values, r)],
+      notes = [for (final n in json['notes']) n as String];
+
+  final ReportTarget type;
+  final String id;
+  final String? title; // pet name, species, or the sender's name
+  final String? text;
+  final String? photoUrl;
+  final DateTime hiddenAt;
+  final int reports;
+  final List<ReportReason> reasons;
+  final List<String> notes;
 }

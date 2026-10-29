@@ -14,7 +14,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 | 2 | Backend core | done |
 | 3 | Flutter app | done |
 | 4 | Close the loop | done |
-| 5 | Stray map layer | – |
+| 5 | Stray map layer | done |
 
 ## Repository layout
 
@@ -76,6 +76,11 @@ page, use **Authorize** with your email as the username.
 | `POST /matches/{id}/conversation` | owner only: open the conversation with the finder |
 | `GET /conversations`, `GET /conversations/{id}` | your conversations, with unread counts |
 | `GET/POST /conversations/{id}/messages` | read (oldest first, `before` to scroll back) or send |
+| `PATCH /sightings/{id}/stray-status` | anyone: a stray is `AROUND` (seen again), `HELPED` or `GONE` |
+| `POST/GET /me/association-request` | ask to be shown as an association; see where it stands |
+| `POST /reports` | report a lost report, sighting or message |
+| `GET /admin/association-requests`, `POST .../{id}/approve` or `/reject` | admins: decide requests |
+| `GET /admin/hidden`, `POST /admin/hidden/{type}/{id}/restore`, `DELETE /admin/hidden/{type}/{id}` | admins: review hidden content |
 
 **Closing a case** takes two steps. Confirming a match ("that's my pet") tells the finder,
 and the search goes on: other sightings still help. Marking the lost report `FOUND` ("I got
@@ -83,6 +88,16 @@ my pet back") closes it: no more matching, it leaves the map and the list, and t
 confirmed matches get a thank-you. Rejected matches are hidden and never suggested again.
 Only the owner can start a conversation, from a match; participants see each other's display
 name, never an email. Reopening a report brings its pending matches back.
+
+**Strays, associations and moderation.** Anyone can say what became of a stray. The map shows
+strays still around and seen or updated within `STRAY_FADE_DAYS` (30); "still around" keeps one
+there. Users ask to be an association in the app; an admin (an account listed in `ADMIN_EMAILS`)
+checks the contact they gave and approves it. Associations get a badge and a push when an animal
+is reported injured or in need of help within `ASSOCIATION_ALERT_RADIUS_KM` (10) of the place in
+their request; strays they mark as helped are credited to them. Content reported by
+`HIDE_AFTER_REPORTS` (3) different people is hidden from everyone but its author until an admin
+restores or deletes it; a message, which only its recipient can see, once they report it. Hidden
+content takes no part in matching.
 
 **How matching runs.** An upload stores the original (private, never served) and an
 EXIF-free copy in MinIO, then queues the photo. The `worker` service picks it up, calls

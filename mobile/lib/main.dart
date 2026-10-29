@@ -104,6 +104,8 @@ class _WinouAppState extends ConsumerState<WinouApp> {
       'message' => l10n.messageNotification(data['sender_name'] as String? ?? ''),
       'confirmed' => l10n.confirmedNotification(name),
       'found' => l10n.foundNotification(name),
+      'help' => l10n.helpNotification,
+      'association' => l10n.associationNotification,
       _ => null,
     };
     if (text == null) return;

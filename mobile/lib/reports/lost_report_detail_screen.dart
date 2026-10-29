@@ -10,6 +10,7 @@ import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
+import '../widgets/report_sheet.dart';
 
 /// Matches the API's LOCATION_FUZZ_M: how far the public position may be from the real one.
 const _fuzzRadiusM = 300.0;
@@ -24,6 +25,12 @@ class LostReportDetailScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final api = ref.read(apiProvider);
     try {
+      if (action == 'report') {
+        if (await reportContent(context, ref, ReportTarget.lostReport, report.id) == true && context.mounted) {
+          context.pop(); // hidden: nothing left to see
+        }
+        return;
+      }
       if (action == 'delete') {
         final ok = await confirm(context, l10n.deleteReportQuestion, l10n.delete);
         if (!ok) return;
@@ -55,7 +62,7 @@ class LostReportDetailScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         leading: const _RoundBack(),
         actions: [
-          if (report case final r? when r.isMine)
+          if (report case final r?)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: CircleAvatar(
@@ -63,11 +70,16 @@ class LostReportDetailScreen extends ConsumerWidget {
                 child: PopupMenuButton<String>(
                   icon: const Icon(LucideIcons.ellipsisVertical, color: Colors.white),
                   onSelected: (action) => _act(context, ref, r, action),
+                  tooltip: l10n.more,
                   itemBuilder: (_) => [
-                    if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
-                    if (r.status != ReportStatus.closed) PopupMenuItem(value: 'closed', child: Text(l10n.closeReport)),
-                    if (r.status != ReportStatus.open) PopupMenuItem(value: 'open', child: Text(l10n.reopenReport)),
-                    PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                    if (!r.isMine) PopupMenuItem(value: 'report', child: Text(l10n.report)),
+                    if (r.isMine) ...[
+                      if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
+                      if (r.status != ReportStatus.closed)
+                        PopupMenuItem(value: 'closed', child: Text(l10n.closeReport)),
+                      if (r.status != ReportStatus.open) PopupMenuItem(value: 'open', child: Text(l10n.reopenReport)),
+                      PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                    ],
                   ],
                 ),
               ),
@@ -92,6 +104,10 @@ class LostReportDetailScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (value.hidden) ...[
+                        Note(l10n.hiddenNotice, tone: Tone.neutral, icon: LucideIcons.eyeOff),
+                        const SizedBox(height: 12),
+                      ],
                       FadeSlideIn(
                         child: Row(
                           children: [

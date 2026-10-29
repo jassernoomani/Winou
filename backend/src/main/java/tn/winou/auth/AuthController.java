@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import tn.winou.common.ApiException;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
+import tn.winou.security.Admins;
 import tn.winou.security.CurrentUser;
 import tn.winou.security.Passwords;
 import tn.winou.security.Tokens;
@@ -33,11 +34,13 @@ public class AuthController {
     private final UserRepository users;
     private final Passwords passwords;
     private final Tokens tokens;
+    private final Admins admins;
 
-    public AuthController(UserRepository users, Passwords passwords, Tokens tokens) {
+    public AuthController(UserRepository users, Passwords passwords, Tokens tokens, Admins admins) {
         this.users = users;
         this.passwords = passwords;
         this.tokens = tokens;
+        this.admins = admins;
     }
 
     @PostMapping("/auth/register")
@@ -48,6 +51,7 @@ public class AuthController {
             throw emailTaken();
         }
         User user = new User(email, passwords.hash(body.password()), body.displayName().strip());
+        user.setRole(admins.roleFor(email));
         try {
             users.saveAndFlush(user);
         } catch (DataIntegrityViolationException e) {
@@ -87,7 +91,8 @@ public class AuthController {
     }
 
     private static UserOut out(User user) {
-        return new UserOut(user.getId(), user.getEmail(), user.getDisplayName(), user.getRole(), user.getCreatedAt());
+        return new UserOut(user.getId(), user.getEmail(), user.getDisplayName(), user.getRole(),
+                user.getAssociationName(), user.getCreatedAt());
     }
 
     private static ApiException emailTaken() {

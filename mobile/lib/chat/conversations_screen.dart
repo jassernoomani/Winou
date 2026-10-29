@@ -62,7 +62,19 @@ class _ConversationTile extends ConsumerWidget {
         borderRadius: BorderRadius.circular(14),
         child: SizedBox.square(dimension: 56, child: NetworkPhoto(c.sightingPhotoUrl)),
       ),
-      title: Text('${c.otherName} · ${c.petName}', style: unread ? const TextStyle(fontWeight: FontWeight.w800) : null),
+      title: Row(
+        spacing: 4,
+        children: [
+          Flexible(
+            child: Text(
+              '${c.otherName} · ${c.petName}',
+              overflow: TextOverflow.ellipsis,
+              style: unread ? const TextStyle(fontWeight: FontWeight.w800) : null,
+            ),
+          ),
+          if (c.otherAssociation case final association?) AssociationBadge(association),
+        ],
+      ),
       subtitle: Text(
         last == null ? l10n.aboutPet(c.petName) : (last.mine ? l10n.youSaid(last.body) : last.body),
         maxLines: 1,

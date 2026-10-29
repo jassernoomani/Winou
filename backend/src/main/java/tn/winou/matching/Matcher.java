@@ -112,7 +112,7 @@ public class Matcher {
 
     /** A lost report's photo: search sightings from shortly before it was lost onwards. */
     private List<Match> matchReport(Photo photo, LostReport report, List<Double> vector) {
-        if (report.getStatus() != ReportStatus.OPEN) {
+        if (report.getStatus() != ReportStatus.OPEN || report.getHiddenAt() != null) {
             return List.of();
         }
         OffsetDateTime since = report.getLastSeenAt().minusDays(settings.sightingGraceDays());
@@ -124,7 +124,7 @@ public class Matcher {
         }
         // Not the owner's own sightings of their animal
         List<Sighting> others = sightings.findAllById(best.keySet()).stream()
-                .filter(s -> !s.getReporterId().equals(report.getOwnerId()))
+                .filter(s -> !s.getReporterId().equals(report.getOwnerId()) && s.getHiddenAt() == null)
                 .toList();
         List<Match> created = new ArrayList<>();
         for (Sighting other : others) {
@@ -136,6 +136,9 @@ public class Matcher {
 
     /** A sighting's photo: search lost reports from the last weeks, still open. */
     private List<Match> matchSighting(Photo photo, Sighting sighting, List<Double> vector) {
+        if (sighting.getHiddenAt() != null) {
+            return List.of();
+        }
         List<Hit> hits = index.search(vector, sighting.getSpecies(), "lost", sighting.getLocation(),
                 settings.radiusKm() * 1000, sighting.getSeenAt().minusDays(settings.lostWindowDays()),
                 sighting.getSeenAt().plusDays(settings.sightingGraceDays()), SEARCH_LIMIT);
@@ -144,7 +147,8 @@ public class Matcher {
             return List.of();
         }
         List<LostReport> others = reports.findAllById(best.keySet()).stream()
-                .filter(r -> r.getStatus() == ReportStatus.OPEN && !r.getOwnerId().equals(sighting.getReporterId()))
+                .filter(r -> r.getStatus() == ReportStatus.OPEN && r.getHiddenAt() == null
+                        && !r.getOwnerId().equals(sighting.getReporterId()))
                 .toList();
         List<Match> created = new ArrayList<>();
         for (LostReport other : others) {

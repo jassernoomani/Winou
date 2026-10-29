@@ -89,7 +89,7 @@ public class LostReportController {
     @GetMapping("/lost-reports/{reportId}")
     @Operation(summary = "The location is exact for the owner and moved up to LOCATION_FUZZ_M for everyone else")
     public LostReportOut get(@PathVariable UUID reportId, @CurrentUser User user) {
-        return views.report(reports.get(reportId), user);
+        return views.report(reports.visible(reportId, user), user);
     }
 
     @PatchMapping("/lost-reports/{reportId}")

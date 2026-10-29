@@ -13,6 +13,7 @@ import '../push.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/report_sheet.dart';
 
 /// Messages between a pet's owner and a finder. New messages arrive by push while the screen is
 /// open, and a slow poll covers phones with notifications turned off.
@@ -126,6 +127,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  /// Long press on the other person's message. Reported, it disappears from this side at once.
+  Future<void> _report(ChatMessage message) async {
+    if (await reportContent(context, ref, ReportTarget.message, message.id) == true && mounted) {
+      setState(() => _messages = _messages.where((m) => m.id != message.id).toList());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -137,7 +145,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(conversation.otherName),
+                  Row(
+                    spacing: 6,
+                    children: [
+                      Flexible(child: Text(conversation.otherName, overflow: TextOverflow.ellipsis)),
+                      if (conversation.otherAssociation case final association?)
+                        AssociationBadge(association, size: 18),
+                    ],
+                  ),
                   Text(l10n.aboutPet(conversation.petName), style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
@@ -189,7 +204,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       itemCount: _messages.length,
       itemBuilder: (context, i) {
         final message = _messages[_messages.length - 1 - i];
-        final bubble = _Bubble(message);
+        final bubble = _Bubble(message, onReport: message.mine ? null : () => _report(message));
         return _arrived.contains(message.id)
             ? FadeSlideIn(
                 key: ValueKey(message.id),
@@ -205,15 +220,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble(this.message);
+  const _Bubble(this.message, {this.onReport});
 
   final ChatMessage message;
+  final VoidCallback? onReport; // the other person's messages: long press to report
 
   @override
   Widget build(BuildContext context) {
     final mine = message.mine;
     final time = DateFormat.Hm(Localizations.localeOf(context).toString()).format(message.createdAt.toLocal());
-    return Align(
+    final bubble = Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
@@ -235,7 +251,11 @@ class _Bubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SelectableText(message.body, style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15)),
+              // The other person's messages answer a long press with "Report" instead of selecting text
+              if (onReport == null)
+                SelectableText(message.body, style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15))
+              else
+                Text(message.body, style: const TextStyle(fontSize: 15)),
               const SizedBox(height: 2),
               Text(
                 time,
@@ -247,6 +267,22 @@ class _Bubble extends StatelessWidget {
         ),
       ),
     );
+    if (message.hidden) {
+      return Opacity(
+        opacity: 0.55,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            bubble,
+            Padding(
+              padding: const EdgeInsets.only(right: 4, bottom: 4),
+              child: Text(context.l10n.messageHidden, style: Theme.of(context).textTheme.labelSmall),
+            ),
+          ],
+        ),
+      );
+    }
+    return onReport == null ? bubble : GestureDetector(onLongPress: onReport, child: bubble);
   }
 }
 

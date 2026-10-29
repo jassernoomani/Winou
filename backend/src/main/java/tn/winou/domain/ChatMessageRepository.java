@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> {
 
@@ -15,12 +16,17 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     List<ChatMessage> findByConversationIdAndCreatedAtLessThanOrderByCreatedAtDesc(UUID conversationId,
             OffsetDateTime before, Limit limit);
 
-    ChatMessage findFirstByConversationIdOrderByCreatedAtDesc(UUID conversationId);
+    /** The newest message the viewer can see: theirs, or the other's unless hidden. */
+    @Query("""
+            select m from ChatMessage m
+            where m.conversationId = :conversationId and (m.hiddenAt is null or m.senderId = :viewerId)
+            order by m.createdAt desc""")
+    List<ChatMessage> findVisible(UUID conversationId, UUID viewerId, Limit limit);
 
-    long countByConversationIdAndSenderIdNotAndCreatedAtGreaterThan(UUID conversationId, UUID senderId,
-            OffsetDateTime since);
+    long countByConversationIdAndSenderIdNotAndHiddenAtIsNullAndCreatedAtGreaterThan(UUID conversationId,
+            UUID senderId, OffsetDateTime since);
 
-    long countByConversationIdAndSenderIdNot(UUID conversationId, UUID senderId);
+    long countByConversationIdAndSenderIdNotAndHiddenAtIsNull(UUID conversationId, UUID senderId);
 
     long countBySenderIdAndCreatedAtGreaterThanEqual(UUID senderId, OffsetDateTime since);
 }

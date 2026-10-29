@@ -594,4 +594,177 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get typeLostOne => 'Lost pet';
+
+  @override
+  String get strayStatusTitle => 'What became of it?';
+
+  @override
+  String get strayAround => 'Still around';
+
+  @override
+  String get strayHelped => 'Helped';
+
+  @override
+  String get strayGone => 'Not seen anymore';
+
+  @override
+  String get strayAroundHelp =>
+      'Seen it again? Tap “Still around”: it keeps the animal on the map.';
+
+  @override
+  String get strayUpdated => 'Thanks for the update!';
+
+  @override
+  String helpedBy(String name) {
+    return 'Helped by $name';
+  }
+
+  @override
+  String get injuredBanner =>
+      'This animal is injured. If you\'re nearby, see if you can help.';
+
+  @override
+  String get needsHelpBanner =>
+      'This animal needs help. If you\'re nearby, see if you can help.';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get reportWhy => 'Why are you reporting it?';
+
+  @override
+  String get reasonSpam => 'Spam or advertising';
+
+  @override
+  String get reasonInappropriate => 'Inappropriate or offensive';
+
+  @override
+  String get reasonFake => 'Fake or misleading';
+
+  @override
+  String get reasonDangerous => 'Dangerous or a scam';
+
+  @override
+  String get reasonOther => 'Something else';
+
+  @override
+  String get reportNoteHint => 'Anything to add? (optional)';
+
+  @override
+  String get sendReport => 'Send report';
+
+  @override
+  String get reportThanks => 'Thanks. We\'ll look at it.';
+
+  @override
+  String get reportHiddenNow => 'Thanks. It\'s hidden while we look at it.';
+
+  @override
+  String get hiddenNotice =>
+      'People reported this, so others can\'t see it until we review it.';
+
+  @override
+  String get messageHidden => 'Hidden after a report';
+
+  @override
+  String get becomeAssociation => 'Become an association';
+
+  @override
+  String get associationIntro =>
+      'Shelters, rescuers and vets get a verified badge and alerts about injured animals near them. We check every request by hand.';
+
+  @override
+  String get organisation => 'Organisation name';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get contact => 'Phone, website or social page';
+
+  @override
+  String get contactHelp =>
+      'So we can check who you are. Never shown to others.';
+
+  @override
+  String get associationNote => 'Anything else? (optional)';
+
+  @override
+  String get alertArea => 'Where should we alert you?';
+
+  @override
+  String get alertAreaHelp => 'Injured animals within 10 km of this place';
+
+  @override
+  String get sendRequest => 'Send request';
+
+  @override
+  String requestPending(String name) {
+    return 'Your request for $name is being reviewed. We\'ll notify you.';
+  }
+
+  @override
+  String requestApproved(String name) {
+    return '$name is a verified association. You\'ll hear about injured animals near you.';
+  }
+
+  @override
+  String get requestRejected =>
+      'We couldn\'t verify your last request. You can send a new one with more details.';
+
+  @override
+  String get verifiedAssociation => 'Verified association';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get adminRequests => 'Requests';
+
+  @override
+  String get adminHidden => 'Hidden';
+
+  @override
+  String get noPendingRequests => 'No requests waiting.';
+
+  @override
+  String get noHiddenContent => 'Nothing is hidden.';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String reportsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports',
+      one: '1 report',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String messageFrom(String name) {
+    return 'Message from $name';
+  }
+
+  @override
+  String get deleteForGood => 'Delete it for good?';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get helpNotification => 'An animal needs help near you';
+
+  @override
+  String get associationNotification => 'Your association request was answered';
 }

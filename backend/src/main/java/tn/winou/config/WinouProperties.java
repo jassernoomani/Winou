@@ -1,6 +1,7 @@
 package tn.winou.config;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -19,7 +20,11 @@ public record WinouProperties(
         RateLimits rateLimits,
         Matching matching,
         Worker worker,
-        Firebase firebase) {
+        Firebase firebase,
+        Strays strays,
+        Associations associations,
+        Moderation moderation,
+        Admin admin) {
 
     public record Jwt(String secret, Duration expiry) {}
 
@@ -63,4 +68,26 @@ public record WinouProperties(
 
     /** credentials: path to the service account key; empty means notifications are only logged. */
     public record Firebase(String credentials) {}
+
+    /** Strays not seen or updated for fadeDays leave the map. */
+    public record Strays(int fadeDays) {}
+
+    /** Associations hear about injured animals within alertRadiusKm of the place in their request. */
+    public record Associations(double alertRadiusKm) {}
+
+    /** Content reported by hideAfterReports different people is hidden until an admin looks at it. */
+    public record Moderation(int hideAfterReports, int reportsPerDay) {}
+
+    /** Accounts with these emails are admins (compared lowercase). */
+    public record Admin(List<String> emails) {
+
+        public Admin {
+            emails = emails == null ? List.of()
+                    : emails.stream().map(e -> e.strip().toLowerCase()).filter(e -> !e.isEmpty()).toList();
+        }
+
+        public boolean isAdmin(String email) {
+            return emails.contains(email.toLowerCase());
+        }
+    }
 }

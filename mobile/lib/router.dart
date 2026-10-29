@@ -9,6 +9,8 @@ import 'auth/auth_screens.dart';
 import 'chat/chat_screen.dart';
 import 'chat/conversations_screen.dart';
 import 'map/map_screen.dart';
+import 'me/admin_screen.dart';
+import 'me/association_screen.dart';
 import 'me/match_detail_screen.dart';
 import 'me/my_activity_screen.dart';
 import 'reports/lost_feed_screen.dart';
@@ -45,6 +47,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (_, _) => const LostFeedScreen()),
       GoRoute(path: '/map', builder: (_, _) => const MapScreen()),
       GoRoute(path: '/me', builder: (_, _) => const MyActivityScreen()),
+      GoRoute(path: '/association', builder: (_, _) => const AssociationScreen()),
+      GoRoute(path: '/admin', builder: (_, _) => const AdminScreen()),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
       GoRoute(
         path: '/lost/:id',

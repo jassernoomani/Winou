@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "messages")
@@ -18,6 +19,9 @@ public class ChatMessage extends BaseEntity {
     private UUID senderId;
     private String body;
     private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    @Setter
+    private OffsetDateTime hiddenAt; // reported: the recipient no longer sees it
 
     public ChatMessage(UUID conversationId, UUID senderId, String body) {
         this.conversationId = conversationId;

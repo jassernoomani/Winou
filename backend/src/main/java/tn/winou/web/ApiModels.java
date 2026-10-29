@@ -18,9 +18,11 @@ import tn.winou.domain.Condition;
 import tn.winou.domain.GeoPoint;
 import tn.winou.domain.MatchStatus;
 import tn.winou.domain.PhotoStatus;
+import tn.winou.domain.RequestStatus;
 import tn.winou.domain.ReportStatus;
 import tn.winou.domain.Role;
 import tn.winou.domain.Species;
+import tn.winou.domain.StrayStatus;
 
 /** Request and response bodies. JSON names are snake_case (spring.jackson.property-naming-strategy). */
 public final class ApiModels {
@@ -54,7 +56,9 @@ public final class ApiModels {
         }
     }
 
-    public record UserOut(UUID id, String email, String displayName, Role role, OffsetDateTime createdAt) {}
+    /** association_name: set for approved associations, shown with a badge. */
+    public record UserOut(
+            UUID id, String email, String displayName, Role role, String associationName, OffsetDateTime createdAt) {}
 
     /** fcm_token may be cleared with an explicit null; the name may not. */
     @Getter
@@ -111,6 +115,7 @@ public final class ApiModels {
             OffsetDateTime lastSeenAt,
             ReportStatus status,
             List<PhotoOut> photos,
+            boolean hidden, // reported by several people: only the owner and admins see it
             OffsetDateTime createdAt) {}
 
     // --- sightings ---
@@ -140,9 +145,16 @@ public final class ApiModels {
             Condition condition,
             String note,
             boolean isStray,
+            StrayStatus strayStatus, // strays only; AROUND for other sightings
+            OffsetDateTime strayStatusAt,
+            String helpedBy, // the association that marked the stray as helped, if any
             boolean mine,
             List<PhotoOut> photos,
+            boolean hidden,
             OffsetDateTime createdAt) {}
+
+    /** AROUND also says "seen again today": it keeps the stray on the map. */
+    public record StrayStatusUpdate(@NotNull StrayStatus status) {}
 
     // --- map ---
 
@@ -204,7 +216,8 @@ public final class ApiModels {
 
     public record MessageIn(@NotBlank @Size(max = 2000) String body) {}
 
-    public record MessageOut(UUID id, String body, boolean mine, OffsetDateTime createdAt) {}
+    /** hidden: reported, so the other participant no longer sees it (sent only to its author). */
+    public record MessageOut(UUID id, String body, boolean mine, boolean hidden, OffsetDateTime createdAt) {}
 
     /** Seen by one participant: "other" is the person they talk to (display name only, never an email). */
     public record ConversationOut(
@@ -216,7 +229,62 @@ public final class ApiModels {
             String sightingPhotoUrl,
             ConversationRole myRole,
             String otherName,
+            String otherAssociation, // the other person's association, if they are one
             MessageOut lastMessage,
             long unread,
             OffsetDateTime createdAt) {}
+
+    // --- associations ---
+
+    public record AssociationRequestIn(
+            @NotBlank @Size(max = 120) String organisation,
+            @NotBlank @Size(max = 80) String city,
+            @NotBlank @Size(max = 200) String contact,
+            @Size(max = 1000) String note,
+            @NotNull @Valid Location location) {}
+
+    /** user_name and user_email are for the admin reviewing it. */
+    public record AssociationRequestOut(
+            UUID id,
+            String organisation,
+            String city,
+            String contact,
+            String note,
+            Location location,
+            RequestStatus status,
+            String userName,
+            String userEmail,
+            OffsetDateTime createdAt,
+            OffsetDateTime decidedAt) {}
+
+    // --- moderation ---
+
+    public enum ReportTarget {
+        LOST_REPORT, SIGHTING, MESSAGE
+    }
+
+    public enum ReportReason {
+        SPAM, INAPPROPRIATE, FAKE, DANGEROUS, OTHER
+    }
+
+    public record ContentReportIn(
+            @NotNull ReportTarget targetType,
+            @NotNull UUID targetId,
+            @NotNull ReportReason reason,
+            @Size(max = 500) String note) {}
+
+    /** hidden: this report was one too many, the item is now hidden. */
+    public record ContentReportOut(boolean hidden) {}
+
+    /** Hidden content for the admin: what it is, and why people reported it. */
+    public record HiddenItemOut(
+            ReportTarget targetType,
+            UUID targetId,
+            String title,
+            String text,
+            String photoUrl,
+            OffsetDateTime hiddenAt,
+            long reports,
+            List<ReportReason> reasons,
+            List<String> notes) {}
 }

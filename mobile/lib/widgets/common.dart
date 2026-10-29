@@ -305,6 +305,38 @@ IconData reportStatusIcon(ReportStatus status) => switch (status) {
   ReportStatus.closed => LucideIcons.archive,
 };
 
+String strayStatusLabel(AppLocalizations l10n, StrayStatus status) => switch (status) {
+  StrayStatus.around => l10n.strayAround,
+  StrayStatus.helped => l10n.strayHelped,
+  StrayStatus.gone => l10n.strayGone,
+};
+
+Tone strayStatusTone(StrayStatus status) => switch (status) {
+  StrayStatus.around => Tone.stray,
+  StrayStatus.helped => Tone.found,
+  StrayStatus.gone => Tone.neutral,
+};
+
+IconData strayStatusIcon(StrayStatus status) => switch (status) {
+  StrayStatus.around => LucideIcons.pawPrint,
+  StrayStatus.helped => LucideIcons.heartHandshake,
+  StrayStatus.gone => LucideIcons.eyeOff,
+};
+
+/// The verified-association tick, with the association's name as its tooltip.
+class AssociationBadge extends StatelessWidget {
+  const AssociationBadge(this.association, {super.key, this.size = 16});
+
+  final String association;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: '${context.l10n.verifiedAssociation}: $association',
+    child: Icon(LucideIcons.badgeCheck, size: size, color: context.tokens.accent),
+  );
+}
+
 /// A tinted note: a tip (info), "you recognised her" (found), a warning.
 class Note extends StatelessWidget {
   const Note(this.text, {super.key, required this.tone, required this.icon});

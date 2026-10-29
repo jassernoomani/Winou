@@ -90,3 +90,13 @@ winou:
   firebase:
     # Service account key for push notifications; without it they are only logged
     credentials: ${FIREBASE_CREDENTIALS:}
+  strays:
+    fade-days: ${STRAY_FADE_DAYS:30}
+  associations:
+    alert-radius-km: ${ASSOCIATION_ALERT_RADIUS_KM:10}
+  moderation:
+    hide-after-reports: ${HIDE_AFTER_REPORTS:3}
+    reports-per-day: ${RATE_LIMIT_REPORTS_PER_DAY:20}
+  admin:
+    # Comma-separated: these accounts review association requests and reported content in the app
+    emails: ${ADMIN_EMAILS:}

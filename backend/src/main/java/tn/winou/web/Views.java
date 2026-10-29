@@ -3,6 +3,7 @@ package tn.winou.web;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -14,8 +15,11 @@ import tn.winou.domain.GeoPoint;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Photo;
 import tn.winou.domain.PhotoRepository;
+import tn.winou.domain.Role;
 import tn.winou.domain.Sighting;
+import tn.winou.domain.StrayStatus;
 import tn.winou.domain.User;
+import tn.winou.domain.UserRepository;
 import tn.winou.web.ApiModels.Location;
 import tn.winou.web.ApiModels.LostReportOut;
 import tn.winou.web.ApiModels.PhotoOut;
@@ -26,11 +30,19 @@ import tn.winou.web.ApiModels.SightingOut;
 public class Views {
 
     private final PhotoRepository photos;
+    private final UserRepository users;
     private final WinouProperties.Privacy privacy;
 
-    public Views(PhotoRepository photos, WinouProperties properties) {
+    public Views(PhotoRepository photos, UserRepository users, WinouProperties properties) {
         this.photos = photos;
+        this.users = users;
         this.privacy = properties.privacy();
+    }
+
+    /** Hidden content is shown to its author and to admins only. */
+    public static boolean canSee(UUID authorId, java.time.OffsetDateTime hiddenAt, User viewer) {
+        return hiddenAt == null
+                || viewer != null && (viewer.getId().equals(authorId) || viewer.getRole() == Role.ADMIN);
     }
 
     public static String imageUrl(UUID photoId) {
@@ -65,7 +77,8 @@ public class Views {
             boolean exact = viewer != null && viewer.getId().equals(r.getOwnerId());
             GeoPoint shown = shownPosition(r.getId(), r.getOwnerId(), r.getLastSeen(), viewer);
             return new LostReportOut(r.getId(), r.getName(), r.getSpecies(), r.getDescription(), Location.of(shown),
-                    !exact, r.getLastSeenAt(), r.getStatus(), photoList(byReport.get(r.getId())), r.getCreatedAt());
+                    !exact, r.getLastSeenAt(), r.getStatus(), photoList(byReport.get(r.getId())),
+                    r.getHiddenAt() != null, r.getCreatedAt());
         }).toList();
     }
 
@@ -80,10 +93,17 @@ public class Views {
     public List<SightingOut> sightings(List<Sighting> sightings, User viewer) {
         Map<UUID, List<Photo>> bySighting = group(
                 photos.findBySightingIdInOrderByCreatedAt(ids(sightings, Sighting::getId)), Photo::getSightingId);
+        // Only associations are named, and only for the help they gave
+        Map<UUID, String> helpers = users.findAllById(sightings.stream()
+                        .filter(s -> s.getStrayStatus() == StrayStatus.HELPED)
+                        .map(Sighting::getStrayStatusBy).filter(Objects::nonNull).distinct().toList())
+                .stream().filter(User::isAssociation)
+                .collect(Collectors.toMap(User::getId, User::getAssociationName));
         return sightings.stream().map(s -> new SightingOut(s.getId(), s.getSpecies(), Location.of(s.getLocation()),
-                s.getSeenAt(), s.getCondition(), s.getNote(), s.isStray(),
+                s.getSeenAt(), s.getCondition(), s.getNote(), s.isStray(), s.getStrayStatus(), s.getStrayStatusAt(),
+                s.getStrayStatus() == StrayStatus.HELPED ? helpers.get(s.getStrayStatusBy()) : null,
                 viewer != null && viewer.getId().equals(s.getReporterId()),
-                photoList(bySighting.get(s.getId())), s.getCreatedAt())).toList();
+                photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt())).toList();
     }
 
     private static List<PhotoOut> photoList(List<Photo> photos) {

@@ -369,5 +369,90 @@
   "thanksTitle": "Thank you!",
   "thanksBody": "Your sighting is on the map. If it looks like a lost pet, we'll tell the owner right away.",
   "backToMissingPets": "Back to missing pets",
-  "typeLostOne": "Lost pet"
+  "typeLostOne": "Lost pet",
+  "strayStatusTitle": "What became of it?",
+  "strayAround": "Still around",
+  "strayHelped": "Helped",
+  "strayGone": "Not seen anymore",
+  "strayAroundHelp": "Seen it again? Tap “Still around”: it keeps the animal on the map.",
+  "strayUpdated": "Thanks for the update!",
+  "helpedBy": "Helped by {name}",
+  "@helpedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "injuredBanner": "This animal is injured. If you're nearby, see if you can help.",
+  "needsHelpBanner": "This animal needs help. If you're nearby, see if you can help.",
+  "report": "Report",
+  "reportWhy": "Why are you reporting it?",
+  "reasonSpam": "Spam or advertising",
+  "reasonInappropriate": "Inappropriate or offensive",
+  "reasonFake": "Fake or misleading",
+  "reasonDangerous": "Dangerous or a scam",
+  "reasonOther": "Something else",
+  "reportNoteHint": "Anything to add? (optional)",
+  "sendReport": "Send report",
+  "reportThanks": "Thanks. We'll look at it.",
+  "reportHiddenNow": "Thanks. It's hidden while we look at it.",
+  "hiddenNotice": "People reported this, so others can't see it until we review it.",
+  "messageHidden": "Hidden after a report",
+  "becomeAssociation": "Become an association",
+  "associationIntro": "Shelters, rescuers and vets get a verified badge and alerts about injured animals near them. We check every request by hand.",
+  "organisation": "Organisation name",
+  "city": "City",
+  "contact": "Phone, website or social page",
+  "contactHelp": "So we can check who you are. Never shown to others.",
+  "associationNote": "Anything else? (optional)",
+  "alertArea": "Where should we alert you?",
+  "alertAreaHelp": "Injured animals within 10 km of this place",
+  "sendRequest": "Send request",
+  "requestPending": "Your request for {name} is being reviewed. We'll notify you.",
+  "@requestPending": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestApproved": "{name} is a verified association. You'll hear about injured animals near you.",
+  "@requestApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestRejected": "We couldn't verify your last request. You can send a new one with more details.",
+  "verifiedAssociation": "Verified association",
+  "admin": "Admin",
+  "adminRequests": "Requests",
+  "adminHidden": "Hidden",
+  "noPendingRequests": "No requests waiting.",
+  "noHiddenContent": "Nothing is hidden.",
+  "approve": "Approve",
+  "reject": "Reject",
+  "restore": "Restore",
+  "reportsCount": "{count, plural, =1{1 report} other{{count} reports}}",
+  "@reportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messageFrom": "Message from {name}",
+  "@messageFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForGood": "Delete it for good?",
+  "more": "More",
+  "helpNotification": "An animal needs help near you",
+  "associationNotification": "Your association request was answered"
 }

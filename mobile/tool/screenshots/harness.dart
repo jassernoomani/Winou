@@ -202,6 +202,9 @@ Map<String, dynamic> sightingJson({
   bool stray = false,
   bool mine = false,
   Duration seen = const Duration(hours: 2),
+  String strayStatus = 'AROUND',
+  String? helpedBy,
+  bool hidden = false,
 }) => {
   'id': id,
   'species': species,
@@ -210,8 +213,12 @@ Map<String, dynamic> sightingJson({
   'condition': condition,
   'note': 'Near the bakery, friendly',
   'is_stray': stray,
+  'stray_status': strayStatus,
+  'stray_status_at': stray ? _ago(const Duration(days: 1)) : null,
+  'helped_by': helpedBy,
   'mine': mine,
   'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
+  'hidden': hidden,
 };
 
 Map<String, dynamic> matchJson({
@@ -237,12 +244,13 @@ Map<String, dynamic> matchJson({
   'created_at': _ago(seen),
 };
 
-Map<String, dynamic> messageJson(String id, String body, {required bool mine, required Duration ago}) => {
-  'id': id,
-  'body': body,
-  'mine': mine,
-  'created_at': _ago(ago),
-};
+Map<String, dynamic> messageJson(
+  String id,
+  String body, {
+  required bool mine,
+  required Duration ago,
+  bool hidden = false,
+}) => {'id': id, 'body': body, 'mine': mine, 'hidden': hidden, 'created_at': _ago(ago)};
 
 Map<String, dynamic> conversationJson({
   String id = 'c1',
@@ -252,6 +260,7 @@ Map<String, dynamic> conversationJson({
   String reportStatus = 'OPEN',
   Map<String, dynamic>? last,
   int unread = 0,
+  String? association,
 }) => {
   'id': id,
   'lost_report_id': pet.toLowerCase(),
@@ -261,9 +270,29 @@ Map<String, dynamic> conversationJson({
   'sighting_photo_url': '/files/$species.jpg',
   'my_role': 'owner',
   'other_name': other,
+  'other_association': association,
   'last_message': last,
   'unread': unread,
   'created_at': _ago(const Duration(days: 1)),
+};
+
+Map<String, dynamic> associationRequestJson({
+  String organisation = 'Refuge de Tunis',
+  String city = 'Tunis',
+  String user = 'Amira',
+  String status = 'PENDING',
+}) => {
+  'id': 'r-$organisation',
+  'organisation': organisation,
+  'city': city,
+  'contact': '+216 20 123 456 · facebook.com/refugetunis',
+  'note': 'We take in about 40 dogs a year and work with two vets in La Marsa.',
+  'location': {'lat': Config.defaultLat, 'lon': Config.defaultLon},
+  'status': status,
+  'user_name': user,
+  'user_email': '${user.toLowerCase()}@example.com',
+  'created_at': _ago(const Duration(hours: 5)),
+  'decided_at': null,
 };
 
 final sampleChat = [
@@ -296,7 +325,12 @@ class FakeApi implements WinouApi {
     List<Map<String, dynamic>>? conversations,
     List<Map<String, dynamic>>? messages,
     List<Map<String, dynamic>>? mapItems,
-  }) : lost =
+    Map<String, dynamic>? sighting,
+    this.role = 'USER',
+    this.associationName,
+    this.request,
+  }) : sightingData = sighting ?? sightingJson(species: 'dog', mine: true, seen: Duration.zero),
+       lost =
            lost ??
            [
              lostJson(),
@@ -349,6 +383,10 @@ class FakeApi implements WinouApi {
 
   final bool hang;
   final bool fail;
+  final Map<String, dynamic> sightingData;
+  final String role;
+  final String? associationName;
+  final Map<String, dynamic>? request; // the user's association request
   final List<Map<String, dynamic>> lost, mine, sightings, matches, chats, chatMessages, mapItems;
 
   static final _sampleMap = [
@@ -398,8 +436,60 @@ class FakeApi implements WinouApi {
   Future<List<Sighting>> mySightings() => _answer(() => [for (final s in sightings) Sighting.fromJson(s)]);
 
   @override
-  Future<Sighting> sighting(String id) =>
-      _answer(() => Sighting.fromJson(sightingJson(id: id, species: 'dog', mine: true, seen: Duration.zero)));
+  Future<Sighting> sighting(String id) => _answer(() => Sighting.fromJson(sightingData));
+
+  @override
+  Future<User> me() => _answer(
+    () => User.fromJson({
+      'id': 'me',
+      'email': 'sami@example.com',
+      'display_name': 'Sami',
+      'role': role,
+      'association_name': associationName,
+    }),
+  );
+
+  @override
+  Future<AssociationRequest?> myAssociationRequest() =>
+      _answer(() => request == null ? null : AssociationRequest.fromJson(request!));
+
+  @override
+  Future<List<AssociationRequest>> pendingAssociationRequests() => _answer(
+    () => [
+      AssociationRequest.fromJson(associationRequestJson()),
+      AssociationRequest.fromJson(
+        associationRequestJson(organisation: 'Les Amis des Chats', city: 'Sousse', user: 'Leila'),
+      ),
+    ],
+  );
+
+  @override
+  Future<List<HiddenItem>> hiddenContent() => _answer(
+    () => [
+      HiddenItem.fromJson({
+        'target_type': 'SIGHTING',
+        'target_id': 'h1',
+        'title': 'dog',
+        'text': 'Selling puppies, call me',
+        'photo_url': '/files/dog.jpg',
+        'hidden_at': _ago(const Duration(hours: 3)),
+        'reports': 3,
+        'reasons': ['SPAM', 'FAKE'],
+        'notes': ['This is an ad, not a sighting'],
+      }),
+      HiddenItem.fromJson({
+        'target_type': 'MESSAGE',
+        'target_id': 'h2',
+        'title': 'Karim',
+        'text': 'Send me money first and I will bring her back',
+        'photo_url': null,
+        'hidden_at': _ago(const Duration(days: 1)),
+        'reports': 1,
+        'reasons': ['DANGEROUS'],
+        'notes': [],
+      }),
+    ],
+  );
 
   @override
   Future<List<Match>> myMatches() => _answer(() => [for (final m in matches) Match.fromJson(m)]);

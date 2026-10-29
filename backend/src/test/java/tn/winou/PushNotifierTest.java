@@ -2,6 +2,8 @@ package tn.winou;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import tools.jackson.databind.JsonNode;
+import tn.winou.domain.AssociationRequest;
 import tn.winou.domain.ChatMessageRepository;
+import tn.winou.domain.RequestStatus;
 import tn.winou.domain.ConversationRepository;
 import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
@@ -160,5 +164,36 @@ class PushNotifierTest extends ApiTestBase {
 
         assertThat(jdbc.sql("SELECT display_name FROM users WHERE fcm_token = 'shared-phone'")
                 .query(String.class).list()).containsExactly("second");
+    }
+
+    @Test
+    void injuredAnimalsAndAssociationDecisionsArePushed() throws Exception {
+        String association = register("association");
+        patchJson("/me", association, Map.of("fcm_token", "association-phone"));
+        UUID associationId = UUID.fromString(getJson("/me", association).json().path("id").asString());
+        String sightingId = sighting(register("finder"), Map.of("condition", "INJURED"), null).path("id").asString();
+
+        notifier().animalNeedsHelp(sightings.findById(UUID.fromString(sightingId)).orElseThrow(), List.of(associationId));
+        AssociationRequest request = new AssociationRequest();
+        request.setUserId(associationId);
+        request.setOrganisation("Refuge de Tunis");
+        request.setStatus(RequestStatus.APPROVED);
+        notifier().associationDecided(request);
+
+        assertThat(sender.sent).extracting(sent -> sent.push().bodyKey())
+                .containsExactly("help_injured_body", "association_approved_body");
+        assertThat(sender.sent.getFirst().push().data()).containsEntry("type", "help")
+                .containsEntry("sighting_id", sightingId);
+        assertThat(sender.sent.get(1).push().bodyArgs()).containsExactly("Refuge de Tunis");
+
+        // Every key the backend sends exists in the app, in both languages
+        for (String values : List.of("values", "values-fr")) {
+            String strings = Files.readString(Path.of("../mobile/android/app/src/main/res/" + values + "/strings.xml"));
+            for (String key : List.of("help_title", "help_injured_body", "help_needs_help_body",
+                    "association_approved_title", "association_approved_body", "association_rejected_title",
+                    "association_rejected_body")) {
+                assertThat(strings).as(values + ": " + key).contains("name=\"" + key + "\"");
+            }
+        }
     }
 }

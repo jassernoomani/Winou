@@ -315,7 +315,9 @@ class ApiTest extends ApiTestBase {
         String auth = register("user");
         lostReport(auth, null);
         sighting(auth, Map.of("condition", "INJURED"), null);
-        sighting(auth, Map.of("species", "dog", "is_stray", true), null);
+        // Recent: strays not seen for STRAY_FADE_DAYS leave the map
+        sighting(auth, Map.of("species", "dog", "is_stray", true,
+                "seen_at", java.time.OffsetDateTime.now().minusDays(1).toString()), null);
         sighting(auth, Map.of("location", Map.of("lat", 34.74, "lon", 10.76)), null); // Sfax, outside the box
         JsonNode closed = lostReport(auth, null);
         patchJson("/lost-reports/" + closed.path("id").asString(), auth, Map.of("status", "CLOSED"));

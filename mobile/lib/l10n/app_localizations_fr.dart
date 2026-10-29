@@ -601,4 +601,179 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get typeLostOne => 'Animal perdu';
+
+  @override
+  String get strayStatusTitle => 'Que devient-il ?';
+
+  @override
+  String get strayAround => 'Toujours là';
+
+  @override
+  String get strayHelped => 'Aidé';
+
+  @override
+  String get strayGone => 'Plus revu';
+
+  @override
+  String get strayAroundHelp =>
+      'Vous l\'avez revu ? Touchez « Toujours là » : il reste sur la carte.';
+
+  @override
+  String get strayUpdated => 'Merci pour la mise à jour !';
+
+  @override
+  String helpedBy(String name) {
+    return 'Aidé par $name';
+  }
+
+  @override
+  String get injuredBanner =>
+      'Cet animal est blessé. Si vous êtes à proximité, voyez si vous pouvez aider.';
+
+  @override
+  String get needsHelpBanner =>
+      'Cet animal a besoin d\'aide. Si vous êtes à proximité, voyez si vous pouvez aider.';
+
+  @override
+  String get report => 'Signaler';
+
+  @override
+  String get reportWhy => 'Pourquoi le signalez-vous ?';
+
+  @override
+  String get reasonSpam => 'Spam ou publicité';
+
+  @override
+  String get reasonInappropriate => 'Inapproprié ou offensant';
+
+  @override
+  String get reasonFake => 'Faux ou trompeur';
+
+  @override
+  String get reasonDangerous => 'Dangereux ou arnaque';
+
+  @override
+  String get reasonOther => 'Autre chose';
+
+  @override
+  String get reportNoteHint => 'Quelque chose à ajouter ? (facultatif)';
+
+  @override
+  String get sendReport => 'Envoyer';
+
+  @override
+  String get reportThanks => 'Merci. Nous allons vérifier.';
+
+  @override
+  String get reportHiddenNow =>
+      'Merci. C\'est masqué le temps que nous vérifions.';
+
+  @override
+  String get hiddenNotice =>
+      'Des personnes l\'ont signalé : les autres ne le voient plus jusqu\'à notre vérification.';
+
+  @override
+  String get messageHidden => 'Masqué après un signalement';
+
+  @override
+  String get becomeAssociation => 'Devenir une association';
+
+  @override
+  String get associationIntro =>
+      'Refuges, sauveteurs et vétérinaires reçoivent un badge vérifié et des alertes pour les animaux blessés près d\'eux. Chaque demande est vérifiée à la main.';
+
+  @override
+  String get organisation => 'Nom de l\'organisation';
+
+  @override
+  String get city => 'Ville';
+
+  @override
+  String get contact => 'Téléphone, site web ou page sociale';
+
+  @override
+  String get contactHelp =>
+      'Pour vérifier qui vous êtes. Jamais montré aux autres.';
+
+  @override
+  String get associationNote => 'Autre chose ? (facultatif)';
+
+  @override
+  String get alertArea => 'Où devons-nous vous alerter ?';
+
+  @override
+  String get alertAreaHelp => 'Animaux blessés à moins de 10 km de ce lieu';
+
+  @override
+  String get sendRequest => 'Envoyer la demande';
+
+  @override
+  String requestPending(String name) {
+    return 'Votre demande pour $name est en cours de vérification. Nous vous préviendrons.';
+  }
+
+  @override
+  String requestApproved(String name) {
+    return '$name est une association vérifiée. Vous serez prévenu des animaux blessés près de vous.';
+  }
+
+  @override
+  String get requestRejected =>
+      'Nous n\'avons pas pu vérifier votre dernière demande. Vous pouvez en envoyer une nouvelle avec plus de détails.';
+
+  @override
+  String get verifiedAssociation => 'Association vérifiée';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get adminRequests => 'Demandes';
+
+  @override
+  String get adminHidden => 'Masqué';
+
+  @override
+  String get noPendingRequests => 'Aucune demande en attente.';
+
+  @override
+  String get noHiddenContent => 'Rien n\'est masqué.';
+
+  @override
+  String get approve => 'Approuver';
+
+  @override
+  String get reject => 'Refuser';
+
+  @override
+  String get restore => 'Rétablir';
+
+  @override
+  String reportsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count signalements',
+      one: '1 signalement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String messageFrom(String name) {
+    return 'Message de $name';
+  }
+
+  @override
+  String get deleteForGood => 'Le supprimer définitivement ?';
+
+  @override
+  String get more => 'Plus';
+
+  @override
+  String get helpNotification => 'Un animal a besoin d\'aide près de vous';
+
+  @override
+  String get associationNotification =>
+      'Votre demande d\'association a reçu une réponse';
 }

@@ -10,11 +10,12 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     /**
      * Matches to show the owner: not the rejected ones, and once a case is closed only the
-     * confirmed ones (the others come back if the report is reopened).
+     * confirmed ones (the others come back if the report is reopened). Hidden sightings are left out.
      */
     @Query("""
-            select m from Match m join LostReport r on r.id = m.lostReportId
+            select m from Match m join LostReport r on r.id = m.lostReportId join Sighting s on s.id = m.sightingId
             where r.ownerId = :ownerId
+              and s.hiddenAt is null
               and m.status <> tn.winou.domain.MatchStatus.REJECTED
               and (r.status = tn.winou.domain.ReportStatus.OPEN or m.status = tn.winou.domain.MatchStatus.CONFIRMED)
             order by m.score desc""")

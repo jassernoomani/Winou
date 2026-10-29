@@ -92,6 +92,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             conditions: _filters.conditions,
             since: _filters.sinceDays == null ? null : DateTime.now().subtract(Duration(days: _filters.sinceDays!)),
           );
+      int urgency(MapItem item) => item.condition == null || item.condition == Condition.healthy ? 0 : 1;
+      items.sort((a, b) => urgency(a).compareTo(urgency(b))); // stable: newest-first within each group
       if (mounted && request == _request) setState(() => _items = items);
     } catch (e) {
       if (mounted && request == _request) showError(context, e);

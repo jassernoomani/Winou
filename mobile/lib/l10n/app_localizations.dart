@@ -1099,6 +1099,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lost pet'**
   String get typeLostOne;
+
+  /// No description provided for @strayStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What became of it?'**
+  String get strayStatusTitle;
+
+  /// No description provided for @strayAround.
+  ///
+  /// In en, this message translates to:
+  /// **'Still around'**
+  String get strayAround;
+
+  /// No description provided for @strayHelped.
+  ///
+  /// In en, this message translates to:
+  /// **'Helped'**
+  String get strayHelped;
+
+  /// No description provided for @strayGone.
+  ///
+  /// In en, this message translates to:
+  /// **'Not seen anymore'**
+  String get strayGone;
+
+  /// No description provided for @strayAroundHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen it again? Tap “Still around”: it keeps the animal on the map.'**
+  String get strayAroundHelp;
+
+  /// No description provided for @strayUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for the update!'**
+  String get strayUpdated;
+
+  /// No description provided for @helpedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Helped by {name}'**
+  String helpedBy(String name);
+
+  /// No description provided for @injuredBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This animal is injured. If you\'re nearby, see if you can help.'**
+  String get injuredBanner;
+
+  /// No description provided for @needsHelpBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This animal needs help. If you\'re nearby, see if you can help.'**
+  String get needsHelpBanner;
+
+  /// No description provided for @report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get report;
+
+  /// No description provided for @reportWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting it?'**
+  String get reportWhy;
+
+  /// No description provided for @reasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or advertising'**
+  String get reasonSpam;
+
+  /// No description provided for @reasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate or offensive'**
+  String get reasonInappropriate;
+
+  /// No description provided for @reasonFake.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake or misleading'**
+  String get reasonFake;
+
+  /// No description provided for @reasonDangerous.
+  ///
+  /// In en, this message translates to:
+  /// **'Dangerous or a scam'**
+  String get reasonDangerous;
+
+  /// No description provided for @reasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get reasonOther;
+
+  /// No description provided for @reportNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to add? (optional)'**
+  String get reportNoteHint;
+
+  /// No description provided for @sendReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Send report'**
+  String get sendReport;
+
+  /// No description provided for @reportThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. We\'ll look at it.'**
+  String get reportThanks;
+
+  /// No description provided for @reportHiddenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks. It\'s hidden while we look at it.'**
+  String get reportHiddenNow;
+
+  /// No description provided for @hiddenNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'People reported this, so others can\'t see it until we review it.'**
+  String get hiddenNotice;
+
+  /// No description provided for @messageHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden after a report'**
+  String get messageHidden;
+
+  /// No description provided for @becomeAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Become an association'**
+  String get becomeAssociation;
+
+  /// No description provided for @associationIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters, rescuers and vets get a verified badge and alerts about injured animals near them. We check every request by hand.'**
+  String get associationIntro;
+
+  /// No description provided for @organisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation name'**
+  String get organisation;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone, website or social page'**
+  String get contact;
+
+  /// No description provided for @contactHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'So we can check who you are. Never shown to others.'**
+  String get contactHelp;
+
+  /// No description provided for @associationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything else? (optional)'**
+  String get associationNote;
+
+  /// No description provided for @alertArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Where should we alert you?'**
+  String get alertArea;
+
+  /// No description provided for @alertAreaHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Injured animals within 10 km of this place'**
+  String get alertAreaHelp;
+
+  /// No description provided for @sendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get sendRequest;
+
+  /// No description provided for @requestPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request for {name} is being reviewed. We\'ll notify you.'**
+  String requestPending(String name);
+
+  /// No description provided for @requestApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is a verified association. You\'ll hear about injured animals near you.'**
+  String requestApproved(String name);
+
+  /// No description provided for @requestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t verify your last request. You can send a new one with more details.'**
+  String get requestRejected;
+
+  /// No description provided for @verifiedAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified association'**
+  String get verifiedAssociation;
+
+  /// No description provided for @admin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get admin;
+
+  /// No description provided for @adminRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get adminRequests;
+
+  /// No description provided for @adminHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get adminHidden;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests waiting.'**
+  String get noPendingRequests;
+
+  /// No description provided for @noHiddenContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is hidden.'**
+  String get noHiddenContent;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// No description provided for @reportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report} other{{count} reports}}'**
+  String reportsCount(int count);
+
+  /// No description provided for @messageFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Message from {name}'**
+  String messageFrom(String name);
+
+  /// No description provided for @deleteForGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete it for good?'**
+  String get deleteForGood;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @helpNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'An animal needs help near you'**
+  String get helpNotification;
+
+  /// No description provided for @associationNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Your association request was answered'**
+  String get associationNotification;
 }
 
 class _AppLocalizationsDelegate

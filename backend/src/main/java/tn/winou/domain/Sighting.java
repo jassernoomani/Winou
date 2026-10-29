@@ -41,6 +41,13 @@ public class Sighting extends BaseEntity {
     @Column(name = "is_stray")
     private boolean stray;
 
+    @Enumerated(EnumType.STRING)
+    private StrayStatus strayStatus = StrayStatus.AROUND;
+
+    private OffsetDateTime strayStatusAt;
+    private UUID strayStatusBy;
+    private OffsetDateTime hiddenAt; // reported by enough people; shown to the reporter and admins only
+
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
     public GeoPoint getLocation() {

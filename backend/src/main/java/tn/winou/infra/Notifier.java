@@ -3,10 +3,12 @@ package tn.winou.infra;
 import java.util.List;
 import java.util.UUID;
 
+import tn.winou.domain.AssociationRequest;
 import tn.winou.domain.ChatMessage;
 import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
+import tn.winou.domain.Sighting;
 
 /** Tells users what happened to a case. Implementations never throw for a failed delivery. */
 public interface Notifier {
@@ -22,4 +24,10 @@ public interface Notifier {
 
     /** To the other participant of the conversation. */
     void newMessage(Conversation conversation, ChatMessage message);
+
+    /** To associations near an animal reported injured or in need of help. */
+    void animalNeedsHelp(Sighting sighting, List<UUID> associationIds);
+
+    /** To the user who asked to be an association: approved or not. */
+    void associationDecided(AssociationRequest request);
 }

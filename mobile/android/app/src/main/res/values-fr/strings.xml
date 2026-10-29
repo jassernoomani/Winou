@@ -7,4 +7,11 @@
     <string name="found_title">%1$s est rentré !</string>
     <string name="found_body">Merci d\'avoir aidé %1$s à rentrer chez lui.</string>
     <string name="message_title">%1$s · à propos de %2$s</string>
+    <string name="help_title">Un animal a besoin d\'aide près de vous</string>
+    <string name="help_injured_body">Un animal blessé a été signalé à proximité. Touchez pour voir où.</string>
+    <string name="help_needs_help_body">Un animal qui a besoin d\'aide a été signalé à proximité. Touchez pour voir où.</string>
+    <string name="association_approved_title">Vous êtes maintenant une association vérifiée</string>
+    <string name="association_approved_body">%1$s est approuvée. Vous serez prévenu des animaux blessés près de vous.</string>
+    <string name="association_rejected_title">Demande d\'association refusée</string>
+    <string name="association_rejected_body">Nous n\'avons pas pu vérifier %1$s. Vous pouvez envoyer une nouvelle demande avec plus de détails.</string>
 </resources>

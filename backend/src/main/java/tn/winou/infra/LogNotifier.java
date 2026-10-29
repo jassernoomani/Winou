@@ -6,10 +6,12 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tn.winou.domain.AssociationRequest;
 import tn.winou.domain.ChatMessage;
 import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
+import tn.winou.domain.Sighting;
 
 /** Logs events only: used when no Firebase key is configured. */
 public class LogNotifier implements Notifier {
@@ -35,5 +37,16 @@ public class LogNotifier implements Notifier {
     @Override
     public void newMessage(Conversation conversation, ChatMessage message) {
         log.info("conversation {}: new message {}", conversation.getId(), message.getId());
+    }
+
+    @Override
+    public void animalNeedsHelp(Sighting sighting, List<UUID> associationIds) {
+        log.info("sighting {}: {}, alerting {} association(s)", sighting.getId(), sighting.getCondition(),
+                associationIds.size());
+    }
+
+    @Override
+    public void associationDecided(AssociationRequest request) {
+        log.info("association request {}: {}", request.getId(), request.getStatus());
     }
 }

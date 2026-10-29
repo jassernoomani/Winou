@@ -23,6 +23,21 @@ final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>(
   (ref) => ref.watch(apiProvider).conversations(),
 );
 
+/// The signed-in user: role and association name.
+final meProvider = FutureProvider.autoDispose<User>((ref) => ref.watch(apiProvider).me());
+
+final myAssociationRequestProvider = FutureProvider.autoDispose<AssociationRequest?>(
+  (ref) => ref.watch(apiProvider).myAssociationRequest(),
+);
+
+final pendingAssociationRequestsProvider = FutureProvider.autoDispose<List<AssociationRequest>>(
+  (ref) => ref.watch(apiProvider).pendingAssociationRequests(),
+);
+
+final hiddenContentProvider = FutureProvider.autoDispose<List<HiddenItem>>(
+  (ref) => ref.watch(apiProvider).hiddenContent(),
+);
+
 final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(
   (ref, id) => ref.watch(apiProvider).conversation(id),
 );

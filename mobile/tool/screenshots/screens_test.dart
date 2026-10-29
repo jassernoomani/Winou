@@ -13,12 +13,15 @@ import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
 import 'package:winou/l10n/app_localizations_en.dart';
 import 'package:winou/map/map_screen.dart';
+import 'package:winou/me/admin_screen.dart';
+import 'package:winou/me/association_screen.dart';
 import 'package:winou/me/match_detail_screen.dart';
 import 'package:winou/me/my_activity_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
 import 'package:winou/sightings/sighting_create_screen.dart';
+import 'package:winou/sightings/sighting_detail_screen.dart';
 import 'package:winou/sightings/sighting_thanks_screen.dart';
 import 'package:winou/splash_screen.dart';
 
@@ -30,7 +33,7 @@ final _l10n = AppLocalizationsEn();
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.tap(finder.first, warnIfMissed: false);
-  await settle(tester, rounds: 3);
+  await settle(tester); // a new tab or sheet loads its data, then fades in
 }
 
 Finder _markers() => find.byWidgetPredicate((w) => w.runtimeType.toString() == '_MarkerIcon');
@@ -92,6 +95,65 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     null,
   ),
   ('26_chat_empty', () => const ChatScreen(id: 'c1'), () => FakeApi(messages: []), null),
+  // Phase 5: no Figma design yet, so these have no comparison
+  (
+    '30_stray_injured',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(
+      sighting: sightingJson(species: 'dog', stray: true, condition: 'INJURED'),
+    ),
+    null,
+  ),
+  (
+    '31_stray_helped',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(
+      sighting: sightingJson(species: 'dog', stray: true, strayStatus: 'HELPED', helpedBy: 'Refuge de Tunis'),
+    ),
+    null,
+  ),
+  (
+    '32_report_sheet',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(sighting: sightingJson(species: 'dog', stray: true)),
+    (tester) async {
+      await _tap(tester, find.byTooltip(_l10n.more));
+      await _tap(tester, find.text(_l10n.report));
+    },
+  ),
+  ('33_association_form', () => const AssociationScreen(), FakeApi.new, null),
+  ('34_association_pending', () => const AssociationScreen(), () => FakeApi(request: associationRequestJson()), null),
+  (
+    '35_association_approved',
+    () => const AssociationScreen(),
+    () => FakeApi(role: 'ASSOCIATION', associationName: 'Refuge de Tunis'),
+    null,
+  ),
+  ('36_admin_requests', () => const AdminScreen(), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '37_admin_hidden',
+    () => const AdminScreen(),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.text(_l10n.adminHidden)),
+  ),
+  (
+    '38_chat_association',
+    () => const ChatScreen(id: 'c1'),
+    () => FakeApi(
+      conversations: [conversationJson(association: 'Refuge de Tunis')],
+      messages: [
+        ...sampleChat,
+        messageJson('5', 'Call me on my private number', mine: true, ago: const Duration(minutes: 30), hidden: true),
+      ],
+    ),
+    null,
+  ),
+  (
+    '39_activity_menu',
+    () => const MyActivityScreen(),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.byTooltip(_l10n.more)),
+  ),
 ];
 
 void main() {

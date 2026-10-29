@@ -8,6 +8,13 @@
     <string name="found_title">%1$s is back home!</string>
     <string name="found_body">Thank you for helping %1$s find their way home.</string>
     <string name="message_title">%1$s · about %2$s</string>
+    <string name="help_title">An animal needs help near you</string>
+    <string name="help_injured_body">Someone reported an injured animal nearby. Tap to see where.</string>
+    <string name="help_needs_help_body">Someone reported an animal in need of help nearby. Tap to see where.</string>
+    <string name="association_approved_title">You are now a verified association</string>
+    <string name="association_approved_body">%1$s is approved. You will hear about injured animals near you.</string>
+    <string name="association_rejected_title">Association request declined</string>
+    <string name="association_rejected_body">We could not verify %1$s. You can send a new request with more details.</string>
     <color name="notification">#2563EB</color>
     <!-- Launch screen, the same blue as the app's animated splash -->
     <color name="splash">#2F5BEA</color>

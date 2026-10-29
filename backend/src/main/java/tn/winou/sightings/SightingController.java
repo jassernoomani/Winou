@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import tn.winou.domain.PhotoSource;
 import tn.winou.domain.Sighting;
+import tn.winou.web.ApiModels.StrayStatusUpdate;
 import tn.winou.domain.User;
 import tn.winou.photos.PhotoService;
 import tn.winou.security.CurrentUser;
@@ -61,7 +62,15 @@ public class SightingController {
 
     @GetMapping("/sightings/{sightingId}")
     public SightingOut get(@PathVariable UUID sightingId, @CurrentUser User user) {
-        return views.sighting(sightings.get(sightingId), user);
+        return views.sighting(sightings.visible(sightingId, user), user);
+    }
+
+    @PatchMapping("/sightings/{sightingId}/stray-status")
+    @Operation(summary = "Say what became of a stray: AROUND (seen again, stays on the map), HELPED or GONE",
+            description = "Anyone signed in may update it. Strays only (422 otherwise).")
+    public SightingOut strayStatus(@PathVariable UUID sightingId, @Valid @RequestBody StrayStatusUpdate body,
+            @CurrentUser User user) {
+        return sightings.setStrayStatus(sightingId, body.status(), user);
     }
 
     @PatchMapping("/sightings/{sightingId}")

@@ -17,16 +17,35 @@ class MyActivityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false; // loaded with the screen, not when the menu opens
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.myActivity),
           actions: [
-            IconButton(
-              icon: const Icon(LucideIcons.logOut),
-              tooltip: l10n.signOut,
-              onPressed: () => ref.read(authProvider.notifier).logout(),
+            PopupMenuButton<String>(
+              icon: const Icon(LucideIcons.ellipsisVertical),
+              tooltip: l10n.more,
+              onSelected: (action) => switch (action) {
+                'logout' => ref.read(authProvider.notifier).logout(),
+                _ => context.push(action),
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: '/association',
+                  child: ListTile(leading: const Icon(LucideIcons.heartHandshake), title: Text(l10n.becomeAssociation)),
+                ),
+                if (isAdmin)
+                  PopupMenuItem(
+                    value: '/admin',
+                    child: ListTile(leading: const Icon(LucideIcons.shieldCheck), title: Text(l10n.admin)),
+                  ),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: ListTile(leading: const Icon(LucideIcons.logOut), title: Text(l10n.signOut)),
+                ),
+              ],
             ),
           ],
           bottom: TabBar(
