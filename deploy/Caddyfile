@@ -1,0 +1,14 @@
+# HTTPS for the API, with a certificate from Let's Encrypt (renewed automatically).
+{$WINOU_DOMAIN} {
+	encode gzip
+
+	# The app's APK, so testers install it from a link: https://<domain>/download/winou.apk
+	handle_path /download/* {
+		root * /srv/download
+		file_server
+	}
+
+	handle {
+		reverse_proxy api:8080
+	}
+}

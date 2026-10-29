@@ -23,6 +23,7 @@ research/     Phase 0: can embeddings tell individual animals apart?
 ml-service/   FastAPI: detect, crop, embed
 backend/      Spring Boot API + background matching worker (Java 25)
 mobile/       Flutter app (see mobile/README.md to run it on a phone)
+deploy/       free demo server: Oracle Cloud + DuckDNS + Caddy (see deploy/README.md)
 scripts/      Qdrant collection setup
 docs/         brief, architecture notes, API spec
 ```

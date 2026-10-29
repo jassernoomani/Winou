@@ -1,0 +1,49 @@
+# Production overrides for the demo server (Oracle Cloud Always Free, ARM). Used on top of the
+# main file, from the repo root:
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build
+#
+# Only Caddy is reachable from outside (80/443, HTTPS from Let's Encrypt). Everything else talks
+# over the compose network.
+services:
+  postgres:
+    # Same PostGIS image as postgis/postgis, also built for ARM (the official one is x86 only)
+    image: imresamu/postgis:18-3.6
+    ports: !reset []
+
+  minio:
+    ports: !reset []
+
+  qdrant:
+    ports: !reset []
+
+  ml-service:
+    ports: !reset []
+    mem_limit: 6g
+
+  api:
+    ports: !reset []
+    mem_limit: 1536m   # the JVM takes 75% of this as heap
+
+  worker:
+    mem_limit: 1536m
+
+  caddy:
+    image: caddy:2.10
+    environment:
+      WINOU_DOMAIN: ${WINOU_DOMAIN:?set WINOU_DOMAIN in .env, e.g. winou.duckdns.org}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/download:/srv/download:ro   # the app's APK, see deploy/README.md
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
