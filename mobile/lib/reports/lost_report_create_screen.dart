@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
@@ -98,10 +99,12 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
               FieldLabel(l10n.petName),
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.pets_rounded)),
+                decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.pawPrint), counterText: ''),
                 maxLength: 80,
                 validator: (v) => (v ?? '').trim().isEmpty ? l10n.required : null,
               ),
+              const SizedBox(height: 16),
+              FieldLabel(l10n.speciesTitle),
               SegmentedButton<Species>(
                 segments: [for (final s in Species.values) ButtonSegment(value: s, label: Text(speciesLabel(l10n, s)))],
                 selected: {_species},
@@ -111,21 +114,22 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
               FieldLabel(l10n.descriptionOptional),
               TextFormField(
                 controller: _description,
-                decoration: InputDecoration(hintText: l10n.descriptionHint),
+                decoration: InputDecoration(hintText: l10n.descriptionHint, counterText: ''),
                 maxLength: 2000,
                 maxLines: 4,
                 minLines: 2,
               ),
+              const SizedBox(height: 8),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.schedule),
+                leading: const Icon(LucideIcons.clock),
                 title: Text(l10n.lastSeenAt),
                 subtitle: Text(formatDateTime(context, _lastSeenAt)),
                 trailing: TextButton(onPressed: _pickDateTime, child: Text(l10n.change)),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.place_outlined),
+                leading: const Icon(LucideIcons.mapPin),
                 title: Text(l10n.lastSeenWhere),
                 subtitle: Text(_lastSeen == null ? l10n.locationMissing : l10n.locationPrivacyNote),
                 trailing: TextButton(
@@ -145,7 +149,7 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
             onPressed: busy || _photos.isEmpty || _lastSeen == null ? null : _submit,
             icon: busy
                 ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.campaign_outlined),
+                : const Icon(LucideIcons.megaphone),
             label: Text(busy ? l10n.uploading(_progress!) : l10n.publishReport),
           ),
         ),

@@ -46,3 +46,5 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+# Screenshots (flutter test tool/screenshots --update-goldens) and comparisons with the designs
+/tool/screenshots/out/

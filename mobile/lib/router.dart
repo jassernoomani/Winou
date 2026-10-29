@@ -16,6 +16,7 @@ import 'reports/lost_report_create_screen.dart';
 import 'reports/lost_report_detail_screen.dart';
 import 'sightings/sighting_create_screen.dart';
 import 'sightings/sighting_detail_screen.dart';
+import 'sightings/sighting_thanks_screen.dart';
 import 'splash_screen.dart';
 import 'widgets/location.dart';
 
@@ -54,6 +55,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/sightings/:id',
         builder: (_, state) => SightingDetailScreen(id: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/sightings/:id/thanks',
+        builder: (_, state) => SightingThanksScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/matches/:id',

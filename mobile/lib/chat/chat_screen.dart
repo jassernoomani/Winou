@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -143,7 +144,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         actions: [
           if (conversation != null)
             IconButton(
-              icon: const Icon(Icons.pets),
+              icon: const Icon(LucideIcons.pawPrint),
               tooltip: conversation.petName,
               // The owner sees the match; the finder sees the (public) lost report
               onPressed: () => context.push(
@@ -157,10 +158,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Column(
         children: [
           if (conversation != null && conversation.caseClosed)
-            MaterialBanner(
-              leading: const Icon(Icons.home),
-              content: Text(l10n.caseClosedChat(conversation.petName)),
-              actions: const [SizedBox.shrink()],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              child: Note(l10n.caseClosedChat(conversation.petName), tone: Tone.found, icon: LucideIcons.house),
             ),
           Expanded(child: _body(context)),
           _Composer(controller: _input, sending: _sending, onSend: _send),
@@ -177,7 +177,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return Center(
         child: SingleChildScrollView(
           child: FadeSlideIn(
-            child: EmptyState(icon: Icons.waving_hand_rounded, text: '${l10n.noMessagesYet}\n\n${l10n.chatPrivacy}'),
+            child: EmptyState(icon: LucideIcons.hand, text: '${l10n.noMessagesYet}\n\n${l10n.chatPrivacy}'),
           ),
         ),
       );
@@ -290,7 +290,7 @@ class _Composer extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             DecoratedBox(
-              decoration: const BoxDecoration(shape: BoxShape.circle, gradient: Brand.gradient),
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: Brand.blue),
               child: IconButton(
                 tooltip: l10n.send,
                 onPressed: sending ? null : onSend,
@@ -299,9 +299,9 @@ class _Composer extends StatelessWidget {
                   child: sending
                       ? const SizedBox.square(
                           dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Brand.ink),
                         )
-                      : const Icon(Icons.send_rounded, color: Colors.white),
+                      : const Icon(LucideIcons.send, color: Brand.ink),
                 ),
               ),
             ),

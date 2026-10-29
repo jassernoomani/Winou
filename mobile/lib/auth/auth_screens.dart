@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../theme.dart';
 import '../widgets/animations.dart';
@@ -63,48 +64,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             builder: (context, constraints) => SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 32),
-                    const FadeSlideIn(
-                      scale: 0.7,
-                      offset: Offset.zero,
-                      child: Bob(child: AppLogo(size: 88)),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeSlideIn(index: 2, child: const Wordmark(size: 36, color: Colors.white)),
-                    FadeSlideIn(
-                      index: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                        child: Text(
-                          l10n.tagline,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70),
-                        ),
+                // The sheet fills the rest of the screen, however tall the phone
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      const FadeSlideIn(
+                        scale: 0.7,
+                        offset: Offset.zero,
+                        child: Bob(child: AppLogo(size: 72)),
                       ),
-                    ),
-                    const SizedBox(height: 28),
-                    FadeSlideIn(
-                      index: 4,
-                      offset: const Offset(0, 0.25),
-                      child: Container(
-                        width: double.infinity,
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight * 0.55),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-                        ),
-                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 420),
-                            child: _fields(context, register),
+                      const SizedBox(height: 14),
+                      FadeSlideIn(index: 2, child: const Wordmark(size: 36, color: Colors.white)),
+                      FadeSlideIn(
+                        index: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                          child: Text(
+                            l10n.tagline,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: FadeSlideIn(
+                          index: 4,
+                          offset: const Offset(0, 0.25),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                            alignment: Alignment.topCenter,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 420),
+                              child: _fields(context, register),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -122,13 +126,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(register ? l10n.createAccount : l10n.signIn, style: Theme.of(context).textTheme.titleLarge),
+            Text(register ? l10n.createAccount : l10n.signIn, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 20),
             if (register) ...[
               FieldLabel(l10n.displayName),
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.person_outline_rounded)),
+                decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.user)),
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.nickname],
                 validator: (v) => (v ?? '').trim().isEmpty ? l10n.required : null,
@@ -138,7 +142,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             FieldLabel(l10n.email),
             TextFormField(
               controller: _email,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.mail_outline_rounded)),
+              decoration: InputDecoration(prefixIcon: const Icon(LucideIcons.mail), hintText: l10n.emailHint),
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.email],
@@ -148,7 +152,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             FieldLabel(l10n.password),
             TextFormField(
               controller: _password,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.lock_outline_rounded)),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(LucideIcons.lock),
+                helperText: register ? l10n.passwordTooShort : null,
+              ),
               obscureText: true,
               autofillHints: [register ? AutofillHints.newPassword : AutofillHints.password],
               onFieldSubmitted: (_) => _submit(),

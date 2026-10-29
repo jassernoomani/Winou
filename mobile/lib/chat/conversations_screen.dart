@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -24,7 +25,7 @@ class ConversationsScreen extends ConsumerWidget {
               ? ListView(
                   children: [
                     FadeSlideIn(
-                      child: EmptyState(icon: Icons.forum_rounded, text: l10n.noConversations),
+                      child: EmptyState(icon: LucideIcons.messageCircle, text: l10n.noConversations),
                     ),
                   ],
                 )
@@ -80,7 +81,7 @@ class _ConversationTile extends ConsumerWidget {
           if (unread)
             Badge(label: Text('${c.unread}'), backgroundColor: Brand.coralDeep)
           else if (c.caseClosed)
-            const Icon(Icons.home_rounded, size: 18, color: Brand.green),
+            const Icon(LucideIcons.house, size: 18, color: Brand.green),
         ],
       ),
       onTap: () async {

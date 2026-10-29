@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -172,22 +173,23 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
     final caseOpen = m.reportStatus == ReportStatus.open;
     final chat = OutlinedButton.icon(
       onPressed: _busy ? null : () => _openConversation(m),
-      icon: const Icon(Icons.chat_bubble_outline_rounded),
+      icon: const Icon(LucideIcons.messageCircle),
       label: Text(m.conversationId == null ? l10n.messageFinder : l10n.openConversation),
     );
     return [
       if (!caseOpen)
-        Note(l10n.petBackHome(m.lostReportName), tone: Tone.found, icon: Icons.home_rounded)
+        Note(l10n.petBackHome(m.lostReportName), tone: Tone.found, icon: LucideIcons.house)
       else if (m.status == MatchStatus.confirmed)
-        Note(l10n.matchConfirmedInfo(m.lostReportName), tone: Tone.found, icon: Icons.check_circle_outline_rounded)
+        Note(l10n.matchConfirmedInfo(m.lostReportName), tone: Tone.found, icon: LucideIcons.circleCheck)
       else
-        Note(l10n.matchExplanation, tone: Tone.info, icon: Icons.lightbulb_outline_rounded),
+        Note(l10n.matchExplanation, tone: Tone.info, icon: LucideIcons.lightbulb),
       const SizedBox(height: 12),
       if (caseOpen && m.status == MatchStatus.pending) ...[
         Row(
           children: [
             Expanded(
               child: OutlinedButton(
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12)),
                 onPressed: _busy ? null : () => _setStatus(m, MatchStatus.rejected),
                 child: Text(l10n.notMyPet),
               ),
@@ -195,8 +197,9 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: FilledButton.icon(
+                style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12)),
                 onPressed: _busy ? null : () => _setStatus(m, MatchStatus.confirmed),
-                icon: const Icon(Icons.favorite_rounded),
+                icon: const Icon(LucideIcons.heart),
                 label: Text(l10n.thatsMyPet),
               ),
             ),
@@ -208,7 +211,7 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
         FilledButton.icon(
           style: FilledButton.styleFrom(backgroundColor: Brand.green, foregroundColor: Brand.ink),
           onPressed: _busy ? null : () => _petBack(m),
-          icon: const Icon(Icons.home_rounded),
+          icon: const Icon(LucideIcons.house),
           label: Text(l10n.gotPetBack(m.lostReportName)),
         ),
         const SizedBox(height: 8),

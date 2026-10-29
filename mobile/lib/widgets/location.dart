@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../config.dart';
 import 'common.dart';
@@ -10,8 +11,12 @@ const _tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const _userAgent = 'tn.winou.winou';
 const defaultCenter = LatLng(Config.defaultLat, Config.defaultLon);
 
-/// OpenStreetMap tiles (their usage policy asks for an app identifier).
-TileLayer osmTiles() => TileLayer(urlTemplate: _tileUrl, userAgentPackageName: _userAgent);
+/// OpenStreetMap tiles (their usage policy asks for an app identifier), darkened in the dark theme.
+TileLayer osmTiles(BuildContext context) => TileLayer(
+  urlTemplate: _tileUrl,
+  userAgentPackageName: _userAgent,
+  tileBuilder: Theme.of(context).brightness == Brightness.dark ? darkModeTileBuilder : null,
+);
 
 /// OpenStreetMap requires visible attribution: a small (i) button that expands to the credit.
 Widget osmAttribution() => const RichAttributionWidget(
@@ -59,7 +64,7 @@ class LocationPreview extends StatelessWidget {
             interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
           ),
           children: [
-            osmTiles(),
+            osmTiles(context),
             if (approximateRadiusM != null)
               CircleLayer(
                 circles: [
@@ -129,7 +134,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               onTap: (_, point) => setState(() => _picked = point),
             ),
             children: [
-              osmTiles(),
+              osmTiles(context),
               if (_picked != null)
                 MarkerLayer(
                   markers: [
@@ -159,7 +164,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         heroTag: null,
         onPressed: _useMyLocation,
         tooltip: l10n.myLocation,
-        child: const Icon(Icons.my_location),
+        child: const Icon(LucideIcons.locateFixed),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(

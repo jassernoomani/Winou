@@ -5,6 +5,7 @@ import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
@@ -158,12 +159,12 @@ Future<List<PickedPhoto>> addPhotos(BuildContext context, int limit) async {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.photo_camera),
+            leading: const Icon(LucideIcons.camera),
             title: Text(l10n.camera),
             onTap: () => Navigator.pop(context, PhotoSource.camera),
           ),
           ListTile(
-            leading: const Icon(Icons.photo_library),
+            leading: const Icon(LucideIcons.images),
             title: Text(l10n.gallery),
             onTap: () => Navigator.pop(context, PhotoSource.gallery),
           ),
@@ -200,7 +201,7 @@ class PhotoPickerStrip extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(color: tokens.card, shape: BoxShape.circle),
-      child: Icon(Icons.photo_camera_outlined, color: tokens.accent),
+      child: Icon(LucideIcons.camera, color: tokens.accent),
     );
     Widget dashed({required Widget child, double? width, double? height}) => CustomPaint(
       painter: _DashedOutline(color: tokens.accent, radius: 20),
@@ -260,7 +261,7 @@ class PhotoPickerStrip extends StatelessWidget {
                     right: 0,
                     child: IconButton.filledTonal(
                       visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.close_rounded, size: 16),
+                      icon: const Icon(LucideIcons.x, size: 16),
                       onPressed: () => onChanged([...photos]..remove(photo)),
                     ),
                   ),

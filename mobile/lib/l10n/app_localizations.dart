@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
+  /// **'Try again'**
   String get retry;
 
   /// No description provided for @cancel.
@@ -389,7 +389,7 @@ abstract class AppLocalizations {
   /// No description provided for @lostNamed.
   ///
   /// In en, this message translates to:
-  /// **'Lost: {name}'**
+  /// **'{name} is lost'**
   String lostNamed(String name);
 
   /// No description provided for @sightingOf.
@@ -403,12 +403,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stray {species}'**
   String strayOf(String species);
-
-  /// No description provided for @newSighting.
-  ///
-  /// In en, this message translates to:
-  /// **'New sighting'**
-  String get newSighting;
 
   /// No description provided for @photoHint.
   ///
@@ -425,13 +419,13 @@ abstract class AppLocalizations {
   /// No description provided for @isStray.
   ///
   /// In en, this message translates to:
-  /// **'It\'s a street animal'**
+  /// **'This is a street animal'**
   String get isStray;
 
   /// No description provided for @isStrayHelp.
   ///
   /// In en, this message translates to:
-  /// **'Lives outside rather than lost'**
+  /// **'It lives outside and has no owner'**
   String get isStrayHelp;
 
   /// No description provided for @noteOptional.
@@ -467,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @postSighting.
   ///
   /// In en, this message translates to:
-  /// **'Post sighting'**
+  /// **'Send sighting'**
   String get postSighting;
 
   /// No description provided for @uploading.
@@ -475,12 +469,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uploading photos {progress}'**
   String uploading(String progress);
-
-  /// No description provided for @sightingThanks.
-  ///
-  /// In en, this message translates to:
-  /// **'Thanks! We\'re checking it against lost pets nearby.'**
-  String get sightingThanks;
 
   /// No description provided for @camera.
   ///
@@ -1057,6 +1045,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Camera or gallery'**
   String get addClearPhotoHelp;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email'**
+  String get emailHint;
+
+  /// No description provided for @speciesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Species'**
+  String get speciesTitle;
+
+  /// No description provided for @adjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get adjust;
+
+  /// No description provided for @tapToAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Adjust to move it'**
+  String get tapToAdjust;
+
+  /// No description provided for @retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get retake;
+
+  /// No description provided for @thanksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you!'**
+  String get thanksTitle;
+
+  /// No description provided for @thanksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sighting is on the map. If it looks like a lost pet, we\'ll tell the owner right away.'**
+  String get thanksBody;
+
+  /// No description provided for @backToMissingPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to missing pets'**
+  String get backToMissingPets;
+
+  /// No description provided for @typeLostOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost pet'**
+  String get typeLostOne;
 }
 
 class _AppLocalizationsDelegate

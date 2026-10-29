@@ -161,7 +161,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lostNamed(String name) {
-    return 'Perdu : $name';
+    return '$name est perdu(e)';
   }
 
   @override
@@ -175,9 +175,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get newSighting => 'Nouveau signalement';
-
-  @override
   String get photoHint =>
       'Approchez-vous et montrez la tête : cela nous aide à reconnaître l\'animal.';
 
@@ -188,7 +185,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get isStray => 'C\'est un animal des rues';
 
   @override
-  String get isStrayHelp => 'Vit dehors plutôt que perdu';
+  String get isStrayHelp => 'Il vit dehors et n\'a pas de propriétaire';
 
   @override
   String get noteOptional => 'Note (facultatif)';
@@ -209,16 +206,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get locationPicked => 'Position choisie sur la carte';
 
   @override
-  String get postSighting => 'Publier le signalement';
+  String get postSighting => 'Envoyer le signalement';
 
   @override
   String uploading(String progress) {
     return 'Envoi des photos $progress';
   }
-
-  @override
-  String get sightingThanks =>
-      'Merci ! Nous le comparons aux animaux perdus à proximité.';
 
   @override
   String get camera => 'Appareil photo';
@@ -580,4 +573,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addClearPhotoHelp => 'Appareil photo ou galerie';
+
+  @override
+  String get emailHint => 'Votre e-mail';
+
+  @override
+  String get speciesTitle => 'Espèce';
+
+  @override
+  String get adjust => 'Ajuster';
+
+  @override
+  String get tapToAdjust => 'Touchez Ajuster pour le déplacer';
+
+  @override
+  String get retake => 'Reprendre';
+
+  @override
+  String get thanksTitle => 'Merci !';
+
+  @override
+  String get thanksBody =>
+      'Votre signalement est sur la carte. S\'il ressemble à un animal perdu, nous prévenons le propriétaire tout de suite.';
+
+  @override
+  String get backToMissingPets => 'Retour aux animaux perdus';
+
+  @override
+  String get typeLostOne => 'Animal perdu';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Winou's colours, from the Figma design guide ("Winou · Android design guide").
 /// Blue is the brand; the others carry meaning everywhere, map included and in both themes:
@@ -170,6 +171,7 @@ ThemeData winouTheme(Brightness brightness) {
     textTheme: text,
     extensions: [t],
     scaffoldBackgroundColor: background,
+    actionIconTheme: ActionIconThemeData(backButtonIconBuilder: (_) => const Icon(LucideIcons.arrowLeft)),
     appBarTheme: AppBarTheme(
       backgroundColor: background,
       foregroundColor: t.ink,
@@ -189,7 +191,7 @@ ThemeData winouTheme(Brightness brightness) {
     // Chips: 48 high; selected = soft blue with an accessible-blue outline and label
     chipTheme: ChipThemeData(
       shape: pill,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
       backgroundColor: t.card,
       selectedColor: t.tonal,
       checkmarkColor: t.accent,

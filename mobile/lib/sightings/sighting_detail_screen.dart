@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -37,7 +38,7 @@ class SightingDetailScreen extends ConsumerWidget {
         actions: [
           if (sighting.value?.isMine ?? false)
             IconButton(
-              icon: const Icon(Icons.delete_outline_rounded),
+              icon: const Icon(LucideIcons.trash2),
               tooltip: l10n.delete,
               onPressed: () => _delete(context, ref),
             ),
@@ -90,9 +91,9 @@ class SightingInfo extends StatelessWidget {
             StatusPill(
               sighting.isStray ? l10n.typeStray : l10n.typeSighting,
               tone: sighting.isStray ? Tone.stray : Tone.info,
-              icon: sighting.isStray ? Icons.pets_rounded : Icons.visibility_rounded,
+              icon: sighting.isStray ? LucideIcons.pawPrint : LucideIcons.eye,
             ),
-            StatusPill(conditionLabel(l10n, condition), tone: conditionTone, icon: Icons.healing_rounded),
+            StatusPill(conditionLabel(l10n, condition), tone: conditionTone, icon: LucideIcons.heartPulse),
           ],
         ),
         const SizedBox(height: 8),
@@ -101,9 +102,9 @@ class SightingInfo extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
-                InfoRow(Icons.pets_rounded, speciesLabel(l10n, sighting.species)),
-                InfoRow(Icons.schedule_rounded, l10n.seenOn(formatDateTime(context, sighting.seenAt))),
-                if (sighting.note != null) InfoRow(Icons.notes_rounded, sighting.note!),
+                InfoRow(LucideIcons.pawPrint, speciesLabel(l10n, sighting.species)),
+                InfoRow(LucideIcons.clock, l10n.seenOn(formatDateTime(context, sighting.seenAt))),
+                if (sighting.note != null) InfoRow(LucideIcons.textAlignStart, sighting.note!),
               ],
             ),
           ),

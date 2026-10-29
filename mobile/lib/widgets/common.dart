@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
@@ -72,18 +73,10 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.cloud_off_rounded, size: 48, color: Theme.of(context).colorScheme.outline),
-            const SizedBox(height: 12),
-            Text(errorMessage(context, error), textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            FilledButton.tonal(onPressed: onRetry, child: Text(context.l10n.retry)),
-          ],
-        ),
+      child: EmptyState(
+        icon: LucideIcons.cloudOff,
+        text: errorMessage(context, error),
+        action: OutlinedButton(onPressed: onRetry, child: Text(context.l10n.retry)),
       ),
     );
   }
@@ -106,7 +99,7 @@ class NetworkPhoto extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
       ),
-      child: Center(child: Icon(Icons.pets_rounded, size: 32, color: colors.primary.withValues(alpha: 0.5))),
+      child: Center(child: Icon(LucideIcons.pawPrint, size: 32, color: colors.primary.withValues(alpha: 0.5))),
     );
     if (url == null) return placeholder;
     return Image.network(
@@ -179,7 +172,7 @@ class _PhotoGalleryState extends State<PhotoGallery> {
                                         dimension: 14,
                                         child: CircularProgressIndicator(strokeWidth: 2),
                                       )
-                                    : const Icon(Icons.info_outline, size: 18),
+                                    : const Icon(LucideIcons.info, size: 18),
                                 label: Text(switch (photo.status) {
                                   'NO_ANIMAL' => l10n.photoNoAnimal,
                                   'SKIPPED' => l10n.photoNotMatched,
@@ -307,9 +300,9 @@ Tone reportStatusTone(ReportStatus status) => switch (status) {
 };
 
 IconData reportStatusIcon(ReportStatus status) => switch (status) {
-  ReportStatus.open => Icons.search_rounded,
-  ReportStatus.found => Icons.home_rounded,
-  ReportStatus.closed => Icons.archive_outlined,
+  ReportStatus.open => LucideIcons.search,
+  ReportStatus.found => LucideIcons.house,
+  ReportStatus.closed => LucideIcons.archive,
 };
 
 /// A tinted note: a tip (info), "you recognised her" (found), a warning.
@@ -341,10 +334,11 @@ class Note extends StatelessWidget {
 
 /// A friendly empty or "nothing here yet" state.
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.icon, required this.text});
+  const EmptyState({super.key, required this.icon, required this.text, this.action});
 
   final IconData icon;
   final String text;
+  final Widget? action; // e.g. "Try again"
 
   @override
   Widget build(BuildContext context) {
@@ -365,6 +359,7 @@ class EmptyState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: tokens.muted),
           ),
+          if (action case final action?) ...[const SizedBox(height: 20), action],
         ],
       ),
     );

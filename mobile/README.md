@@ -75,3 +75,13 @@ lib/
 flutter analyze
 flutter test
 ```
+
+## Comparing with the designs
+
+`tool/screenshots/` renders every designed screen in light and dark with sample data, no backend
+or phone needed, then puts each next to its design from `design/winou-screens.html`:
+
+```bash
+flutter test tool/screenshots --update-goldens   # tool/screenshots/out/*.png
+python tool/screenshots/compare.py               # tool/screenshots/out/compare/*.png (needs Edge)
+```

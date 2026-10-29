@@ -19,7 +19,7 @@
   "errorEmailTaken": "This email is already registered.",
   "errorWrongCredentials": "Wrong email or password.",
   "errorUnexpected": "Something went wrong.",
-  "retry": "Retry",
+  "retry": "Try again",
   "cancel": "Cancel",
   "delete": "Delete",
   "change": "Change",
@@ -55,7 +55,7 @@
   "myLocation": "My location",
   "reportLostPet": "Report a lost pet",
   "iSawAnAnimal": "I saw an animal",
-  "lostNamed": "Lost: {name}",
+  "lostNamed": "{name} is lost",
   "@lostNamed": {
     "placeholders": {
       "name": {
@@ -79,11 +79,10 @@
       }
     }
   },
-  "newSighting": "New sighting",
   "photoHint": "Get close and show the face: it helps us recognise the animal.",
   "condition": "Condition",
-  "isStray": "It's a street animal",
-  "isStrayHelp": "Lives outside rather than lost",
+  "isStray": "This is a street animal",
+  "isStrayHelp": "It lives outside and has no owner",
   "noteOptional": "Note (optional)",
   "locating": "Getting your location…",
   "locationMissing": "No location yet: choose it on the map",
@@ -96,7 +95,7 @@
     }
   },
   "locationPicked": "Location chosen on the map",
-  "postSighting": "Post sighting",
+  "postSighting": "Send sighting",
   "uploading": "Uploading photos {progress}",
   "@uploading": {
     "placeholders": {
@@ -105,7 +104,6 @@
       }
     }
   },
-  "sightingThanks": "Thanks! We're checking it against lost pets nearby.",
   "camera": "Camera",
   "gallery": "Gallery",
   "noAnimalTitle": "No animal found",
@@ -362,5 +360,14 @@
   "possibleVisualMatch": "Possible visual match",
   "notConfirmedIdentity": "A resemblance, not a confirmed identity.",
   "addClearPhoto": "Add a clear photo",
-  "addClearPhotoHelp": "Camera or gallery"
+  "addClearPhotoHelp": "Camera or gallery",
+  "emailHint": "Your email",
+  "speciesTitle": "Species",
+  "adjust": "Adjust",
+  "tapToAdjust": "Tap Adjust to move it",
+  "retake": "Retake",
+  "thanksTitle": "Thank you!",
+  "thanksBody": "Your sighting is on the map. If it looks like a lost pet, we'll tell the owner right away.",
+  "backToMissingPets": "Back to missing pets",
+  "typeLostOne": "Lost pet"
 }

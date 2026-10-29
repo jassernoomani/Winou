@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
+import '../l10n/app_localizations.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
@@ -125,8 +127,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
             : null,
         actions: [
-          IconButton(icon: const Icon(Icons.tune_rounded), tooltip: l10n.filters, onPressed: _editFilters),
-          IconButton(icon: const Icon(Icons.person_rounded), tooltip: l10n.myActivity, onPressed: () => _open('/me')),
+          IconButton(icon: const Icon(LucideIcons.slidersHorizontal), tooltip: l10n.filters, onPressed: _editFilters),
+          IconButton(icon: const Icon(LucideIcons.user), tooltip: l10n.myActivity, onPressed: () => _open('/me')),
         ],
       ),
       body: FlutterMap(
@@ -141,7 +143,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           onPositionChanged: (_, _) => _scheduleLoad(),
         ),
         children: [
-          osmTiles(),
+          osmTiles(context),
           MarkerLayer(
             markers: [
               for (final item in _items)
@@ -171,23 +173,31 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton.small(
-            heroTag: 'me',
-            tooltip: l10n.myLocation,
-            onPressed: _centerOnMe,
-            child: const Icon(Icons.my_location_rounded),
+          // The guide's "my location" button: a white circle with a soft shadow
+          DecoratedBox(
+            decoration: const BoxDecoration(shape: BoxShape.circle, boxShadow: cardShadow),
+            child: IconButton(
+              tooltip: l10n.myLocation,
+              onPressed: _centerOnMe,
+              style: IconButton.styleFrom(
+                backgroundColor: context.tokens.card,
+                foregroundColor: context.tokens.accent,
+                fixedSize: const Size.square(48),
+              ),
+              icon: const Icon(LucideIcons.locateFixed),
+            ),
           ),
           const SizedBox(height: 12),
           GradientFab(
             gradient: Brand.lostGradient,
-            icon: Icons.campaign_rounded,
+            icon: LucideIcons.megaphone,
             label: l10n.reportLostPet,
             onPressed: () => _open('/lost/new'),
           ),
           const SizedBox(height: 12),
           GradientFab(
             gradient: Brand.sightingGradient,
-            icon: Icons.photo_camera_rounded,
+            icon: LucideIcons.camera,
             label: l10n.iSawAnAnimal,
             onPressed: () => _open('/sightings/new'),
           ),
@@ -202,23 +212,38 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       context: context,
       builder: (sheet) => SafeArea(
         child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: const EdgeInsets.fromLTRB(20, 0, 16, 16),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: SizedBox.square(dimension: 64, child: NetworkPhoto(item.photoUrl)),
+            child: SizedBox.square(dimension: 72, child: NetworkPhoto(item.photoUrl)),
           ),
-          title: Text(switch (item.type) {
-            MapItemType.lost => l10n.lostNamed(item.name ?? ''),
-            MapItemType.sighting => l10n.sightingOf(speciesLabel(l10n, item.species)),
-            MapItemType.stray => l10n.strayOf(speciesLabel(l10n, item.species)),
-          }),
+          // The type as on the map legend, then what it is
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 2,
+            children: [
+              Row(
+                spacing: 6,
+                children: [
+                  _Dot(markerStyle(item.type).$1),
+                  Text(_typeLabel(l10n, item.type), style: Theme.of(context).textTheme.labelMedium),
+                ],
+              ),
+              Text(switch (item.type) {
+                MapItemType.lost => l10n.lostNamed(item.name ?? ''),
+                MapItemType.sighting => l10n.sightingOf(speciesLabel(l10n, item.species)),
+                MapItemType.stray => l10n.strayOf(speciesLabel(l10n, item.species)),
+              }),
+            ],
+          ),
           subtitle: Text(
             [
-              formatDateTime(context, item.date),
+              l10n.seenAgo(timeAgo(l10n, item.date)),
               if (item.condition != null && item.condition != Condition.healthy) conditionLabel(l10n, item.condition!),
             ].join(' · '),
           ),
-          trailing: const Icon(Icons.chevron_right_rounded),
+          trailing: const Icon(LucideIcons.chevronRight),
           onTap: () {
             Navigator.pop(sheet);
             _open(item.type == MapItemType.lost ? '/lost/${item.id}' : '/sightings/${item.id}');
@@ -239,7 +264,7 @@ class _MarkerIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final injured = item.condition == Condition.injured;
-    final (color, icon) = injured ? (Brand.red, Icons.add_rounded) : markerStyle(item.type);
+    final (color, icon) = injured ? (Brand.red, LucideIcons.plus) : markerStyle(item.type);
     final dot = Container(
       width: 34,
       height: 34,
@@ -259,11 +284,32 @@ class _MarkerIcon extends StatelessWidget {
   }
 }
 
+String _typeLabel(AppLocalizations l10n, MapItemType type, {bool plural = false}) => switch (type) {
+  MapItemType.lost => plural ? l10n.typeLost : l10n.typeLostOne,
+  MapItemType.sighting => l10n.typeSighting,
+  MapItemType.stray => l10n.typeStray,
+};
+
+/// A type's colour as a small dot, like the markers.
+class _Dot extends StatelessWidget {
+  const _Dot(this.color, {this.size = 8});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  );
+}
+
 /// Marker colour and glyph per type, the same as everywhere in the app.
 (Color, IconData) markerStyle(MapItemType type) => switch (type) {
-  MapItemType.lost => (Brand.coral, Icons.search_rounded),
-  MapItemType.sighting => (Brand.blue, Icons.visibility_rounded),
-  MapItemType.stray => (Brand.amber, Icons.pets_rounded),
+  MapItemType.lost => (Brand.coral, LucideIcons.search),
+  MapItemType.sighting => (Brand.blue, LucideIcons.eye),
+  MapItemType.stray => (Brand.amber, LucideIcons.pawPrint),
 };
 
 class _FilterSheet extends StatefulWidget {
@@ -297,18 +343,11 @@ class _FilterSheetState extends State<_FilterSheet> {
             Wrap(
               spacing: 8,
               children: [
-                for (final (type, label) in [
-                  (MapItemType.lost, l10n.typeLost),
-                  (MapItemType.sighting, l10n.typeSighting),
-                  (MapItemType.stray, l10n.typeStray),
-                ])
+                for (final type in MapItemType.values)
                   FilterChip(
-                    avatar: CircleAvatar(
-                      backgroundColor: markerStyle(type).$1,
-                      child: Icon(markerStyle(type).$2, size: 12, color: Brand.ink),
-                    ),
+                    avatar: Center(child: _Dot(markerStyle(type).$1, size: 10)),
                     showCheckmark: false, // the coloured dot doubles as the map legend
-                    label: Text(label),
+                    label: Text(_typeLabel(l10n, type, plural: true)),
                     selected: _f.types.contains(type),
                     onSelected: (on) => setState(() => _f = _f.copyWith(types: _toggle(_f.types, type, on))),
                   ),

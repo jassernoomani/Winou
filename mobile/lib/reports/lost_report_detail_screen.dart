@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -60,7 +61,7 @@ class LostReportDetailScreen extends ConsumerWidget {
               child: CircleAvatar(
                 backgroundColor: Colors.black38,
                 child: PopupMenuButton<String>(
-                  iconColor: Colors.white,
+                  icon: const Icon(LucideIcons.ellipsisVertical, color: Colors.white),
                   onSelected: (action) => _act(context, ref, r, action),
                   itemBuilder: (_) => [
                     if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
@@ -111,12 +112,9 @@ class LostReportDetailScreen extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             child: Column(
                               children: [
-                                InfoRow(Icons.pets_rounded, speciesLabel(l10n, value.species)),
-                                InfoRow(
-                                  Icons.schedule_rounded,
-                                  l10n.lastSeenOn(formatDateTime(context, value.lastSeenAt)),
-                                ),
-                                if (value.description != null) InfoRow(Icons.notes_rounded, value.description!),
+                                InfoRow(LucideIcons.pawPrint, speciesLabel(l10n, value.species)),
+                                InfoRow(LucideIcons.clock, l10n.lastSeenOn(formatDateTime(context, value.lastSeenAt))),
+                                if (value.description != null) InfoRow(LucideIcons.textAlignStart, value.description!),
                               ],
                             ),
                           ),
@@ -131,7 +129,7 @@ class LostReportDetailScreen extends ConsumerWidget {
                             child: FilledButton.icon(
                               style: FilledButton.styleFrom(backgroundColor: Brand.green, foregroundColor: Brand.ink),
                               onPressed: () => _act(context, ref, value, 'found'),
-                              icon: const Icon(Icons.home_rounded),
+                              icon: const Icon(LucideIcons.house),
                               label: Text(l10n.gotPetBack(value.name)),
                             ),
                           ),

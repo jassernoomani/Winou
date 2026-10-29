@@ -69,7 +69,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorUnexpected => 'Something went wrong.';
 
   @override
-  String get retry => 'Retry';
+  String get retry => 'Try again';
 
   @override
   String get cancel => 'Cancel';
@@ -159,7 +159,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String lostNamed(String name) {
-    return 'Lost: $name';
+    return '$name is lost';
   }
 
   @override
@@ -173,9 +173,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get newSighting => 'New sighting';
-
-  @override
   String get photoHint =>
       'Get close and show the face: it helps us recognise the animal.';
 
@@ -183,10 +180,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get condition => 'Condition';
 
   @override
-  String get isStray => 'It\'s a street animal';
+  String get isStray => 'This is a street animal';
 
   @override
-  String get isStrayHelp => 'Lives outside rather than lost';
+  String get isStrayHelp => 'It lives outside and has no owner';
 
   @override
   String get noteOptional => 'Note (optional)';
@@ -206,16 +203,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationPicked => 'Location chosen on the map';
 
   @override
-  String get postSighting => 'Post sighting';
+  String get postSighting => 'Send sighting';
 
   @override
   String uploading(String progress) {
     return 'Uploading photos $progress';
   }
-
-  @override
-  String get sightingThanks =>
-      'Thanks! We\'re checking it against lost pets nearby.';
 
   @override
   String get camera => 'Camera';
@@ -573,4 +566,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addClearPhotoHelp => 'Camera or gallery';
+
+  @override
+  String get emailHint => 'Your email';
+
+  @override
+  String get speciesTitle => 'Species';
+
+  @override
+  String get adjust => 'Adjust';
+
+  @override
+  String get tapToAdjust => 'Tap Adjust to move it';
+
+  @override
+  String get retake => 'Retake';
+
+  @override
+  String get thanksTitle => 'Thank you!';
+
+  @override
+  String get thanksBody =>
+      'Your sighting is on the map. If it looks like a lost pet, we\'ll tell the owner right away.';
+
+  @override
+  String get backToMissingPets => 'Back to missing pets';
+
+  @override
+  String get typeLostOne => 'Lost pet';
 }

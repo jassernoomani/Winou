@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -23,7 +24,7 @@ class MyActivityScreen extends ConsumerWidget {
           title: Text(l10n.myActivity),
           actions: [
             IconButton(
-              icon: const Icon(Icons.logout_rounded),
+              icon: const Icon(LucideIcons.logOut),
               tooltip: l10n.signOut,
               onPressed: () => ref.read(authProvider.notifier).logout(),
             ),
@@ -41,7 +42,7 @@ class MyActivityScreen extends ConsumerWidget {
             _AsyncList<Match>(
               provider: myMatchesProvider,
               empty: l10n.noMatches,
-              emptyIcon: Icons.image_search_rounded,
+              emptyIcon: LucideIcons.search,
               itemBuilder: (context, m) => ListTile(
                 leading: _Thumb(m.sightingPhotoUrl),
                 title: Text(l10n.possibleMatchFor(m.lostReportName)),
@@ -56,22 +57,22 @@ class MyActivityScreen extends ConsumerWidget {
                           icon: reportStatusIcon(m.reportStatus),
                         )
                       else if (m.status == MatchStatus.confirmed)
-                        StatusPill(l10n.matchStatusConfirmed, tone: Tone.found, icon: Icons.check_rounded)
+                        StatusPill(l10n.matchStatusConfirmed, tone: Tone.found, icon: LucideIcons.check)
                       else
-                        StatusPill('${(m.score * 100).round()}%', tone: Tone.info, icon: Icons.auto_awesome),
+                        StatusPill('${(m.score * 100).round()}%', tone: Tone.info, icon: LucideIcons.eye),
                       const SizedBox(width: 8),
                       Flexible(child: Text(timeAgo(l10n, m.sighting.seenAt), overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 ),
-                trailing: const Icon(Icons.chevron_right_rounded),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () => context.push('/matches/${m.id}', extra: m),
               ),
             ),
             _AsyncList<LostReport>(
               provider: myLostReportsProvider,
               empty: l10n.noLostReports,
-              emptyIcon: Icons.campaign_rounded,
+              emptyIcon: LucideIcons.megaphone,
               itemBuilder: (context, r) => ListTile(
                 leading: _Thumb(r.photos.firstOrNull?.url),
                 title: Text(r.name),
@@ -89,14 +90,14 @@ class MyActivityScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                trailing: const Icon(Icons.chevron_right_rounded),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () => _openAndRefresh(context, ref, '/lost/${r.id}', myLostReportsProvider),
               ),
             ),
             _AsyncList<Sighting>(
               provider: mySightingsProvider,
               empty: l10n.noSightings,
-              emptyIcon: Icons.photo_camera_rounded,
+              emptyIcon: LucideIcons.camera,
               itemBuilder: (context, s) => ListTile(
                 leading: _Thumb(s.photos.firstOrNull?.url),
                 title: Text(
@@ -105,7 +106,7 @@ class MyActivityScreen extends ConsumerWidget {
                       : l10n.sightingOf(speciesLabel(l10n, s.species)),
                 ),
                 subtitle: Text(timeAgo(l10n, s.seenAt)),
-                trailing: const Icon(Icons.chevron_right_rounded),
+                trailing: const Icon(LucideIcons.chevronRight),
                 onTap: () => _openAndRefresh(context, ref, '/sightings/${s.id}', mySightingsProvider),
               ),
             ),

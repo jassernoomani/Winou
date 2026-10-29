@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -116,7 +117,6 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
           slivers: [
             SliverToBoxAdapter(child: _header(context, unread)),
             SliverToBoxAdapter(child: _filters(context)),
-            if (_loading && _reports.isEmpty) const SliverToBoxAdapter(child: LinearProgressIndicator(minHeight: 2)),
             ..._list(context),
           ],
         ),
@@ -130,7 +130,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
             offset: const Offset(0.3, 0),
             child: GradientFab(
               gradient: Brand.lostGradient,
-              icon: Icons.campaign_rounded,
+              icon: LucideIcons.megaphone,
               label: l10n.reportLostPet,
               onPressed: () => _open('/lost/new'),
             ),
@@ -141,7 +141,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
             offset: const Offset(0.3, 0),
             child: GradientFab(
               gradient: Brand.sightingGradient,
-              icon: Icons.photo_camera_rounded,
+              icon: LucideIcons.camera,
               label: l10n.iSawAnAnimal,
               onPressed: () => _open('/sightings/new'),
             ),
@@ -180,11 +180,11 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               const AppLogo(size: 36),
               const SizedBox(width: 10),
               const Expanded(child: Wordmark(size: 26, color: Colors.white)),
-              action(Icons.map_rounded, l10n.map, '/map'),
+              action(LucideIcons.map, l10n.map, '/map'),
               const SizedBox(width: 6),
-              action(Icons.chat_bubble_rounded, l10n.messages, '/conversations', badge: unread),
+              action(LucideIcons.messageCircle, l10n.messages, '/conversations', badge: unread),
               const SizedBox(width: 6),
-              action(Icons.person_rounded, l10n.myActivity, '/me'),
+              action(LucideIcons.user, l10n.myActivity, '/me'),
             ],
           ),
           const SizedBox(height: 20),
@@ -193,7 +193,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             child: Text(
-              _loading && _reports.isEmpty
+              (_loading || _error != null) && _reports.isEmpty
                   ? ' '
                   : _hasMore
                   ? l10n.missingCountMore(_reports.length)
@@ -216,13 +216,13 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
         spacing: 8,
         children: [
           ChoiceChip(
-            avatar: const Icon(Icons.near_me_rounded, size: 18),
+            avatar: const Icon(LucideIcons.navigation, size: 18),
             label: Text(l10n.nearMe),
             selected: _nearMe,
             onSelected: (_) => _setNearMe(true),
           ),
           ChoiceChip(
-            avatar: const Icon(Icons.public_rounded, size: 18),
+            avatar: const Icon(LucideIcons.globe, size: 18),
             label: Text(l10n.everywhere),
             selected: !_nearMe,
             onSelected: (_) => _setNearMe(false),
@@ -258,9 +258,16 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
       ];
     }
     if (_reports.isEmpty) {
-      if (_loading) return [];
-      if (_nearMe && _position == null) return [message(Icons.location_off_rounded, l10n.locationOffForNearby)];
-      return [message(Icons.favorite_rounded, _nearMe ? l10n.noMissingPetsNearby : l10n.noMissingPets)];
+      if (_loading) {
+        return [
+          const SliverPadding(
+            padding: EdgeInsets.fromLTRB(20, 4, 20, 0),
+            sliver: SliverToBoxAdapter(child: Column(children: [_SkeletonCard(), _SkeletonCard()])),
+          ),
+        ];
+      }
+      if (_nearMe && _position == null) return [message(LucideIcons.mapPinOff, l10n.locationOffForNearby)];
+      return [message(LucideIcons.heart, _nearMe ? l10n.noMissingPetsNearby : l10n.noMissingPets)];
     }
     return [
       SliverPadding(
@@ -284,6 +291,56 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
         ),
       ),
     ];
+  }
+}
+
+/// A pet card's outline while the list loads, gently pulsing.
+class _SkeletonCard extends StatefulWidget {
+  const _SkeletonCard();
+
+  @override
+  State<_SkeletonCard> createState() => _SkeletonCardState();
+}
+
+class _SkeletonCardState extends State<_SkeletonCard> with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
+    ..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    Widget bar(double widthFactor) => FractionallySizedBox(
+      widthFactor: widthFactor,
+      alignment: Alignment.centerLeft,
+      child: Container(
+        height: 10,
+        decoration: BoxDecoration(color: tokens.tonal, borderRadius: BorderRadius.circular(5)),
+      ),
+    );
+    return FadeTransition(
+      opacity: Tween(begin: 1.0, end: 0.55).animate(_controller),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(color: tokens.card, borderRadius: BorderRadius.circular(24)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(height: 120, color: tokens.tonal),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(spacing: 10, children: [bar(0.6), bar(0.4), bar(0.85)]),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -356,13 +413,13 @@ class _ReportCard extends StatelessWidget {
                         ],
                       ),
                       meta(
-                        Icons.place_outlined,
+                        LucideIcons.mapPin,
                         [
                           speciesLabel(l10n, report.species),
                           if (km != null) l10n.kmAway(km < 1 ? '< 1' : km.toStringAsFixed(km < 10 ? 1 : 0)),
                         ].join(' · '),
                       ),
-                      meta(Icons.schedule_rounded, l10n.seenAgo(timeAgo(l10n, report.lastSeenAt))),
+                      meta(LucideIcons.clock, l10n.seenAgo(timeAgo(l10n, report.lastSeenAt))),
                       if (report.description case final description? when description.trim().isNotEmpty)
                         Text(
                           description.trim(),

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
@@ -54,9 +57,10 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
     // Cancelled: stay, so the user can choose from the gallery instead
   }
 
-  Future<void> _fromGallery() async {
-    final picked = await pickFromGallery(_maxPhotos);
-    if (picked.isNotEmpty && mounted) setState(() => _photos = picked);
+  /// More photos next to the first (up to [_maxPhotos]), from the camera or the gallery.
+  Future<void> _addMore() async {
+    final added = await addPhotos(context, _maxPhotos - _photos.length);
+    if (added.isNotEmpty && mounted) setState(() => _photos = [..._photos, ...added].take(_maxPhotos).toList());
   }
 
   Iterable<PickedPhoto> get _galleryPhotos => _photos.where((p) => p.fromGallery);
@@ -110,7 +114,6 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   }
 
   Future<void> _submit() async {
-    final l10n = context.l10n;
     final api = ref.read(apiProvider);
     setState(() => _progress = '');
     try {
@@ -130,9 +133,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
         _photos,
         onProgress: (p) => setState(() => _progress = p),
       );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.sightingThanks)));
-      context.pop('/sightings/${sighting.id}'); // the map opens it next
+      if (mounted) context.pop('/sightings/${sighting.id}/thanks'); // the caller opens it next
     } catch (e) {
       if (mounted) {
         showError(context, e);
@@ -145,51 +146,43 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final busy = _progress != null;
+    final location = _location;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.newSighting)),
+      appBar: AppBar(title: Text(l10n.iSawAnAnimal)),
       body: AbsorbPointer(
         absorbing: busy,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
           children: [
-            Card(
-              color: Theme.of(context).colorScheme.secondaryContainer,
-              child: ListTile(leading: const Icon(Icons.center_focus_strong), title: Text(l10n.photoHint)),
-            ),
-            const SizedBox(height: 12),
-            if (_photos.isEmpty)
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.tonalIcon(
-                      onPressed: _firstPhoto,
-                      icon: const Icon(Icons.photo_camera),
-                      label: Text(l10n.takePhoto),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.tonalIcon(
-                      onPressed: _fromGallery,
-                      icon: const Icon(Icons.photo_library),
-                      label: Text(l10n.chooseFromGallery),
-                    ),
-                  ),
-                ],
-              )
-            else
+            if (_photos.length == 1) ...[
+              _BigPhoto(_photos.single, onRetake: _firstPhoto),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: _addMore,
+                  icon: const Icon(LucideIcons.plus, size: 18),
+                  label: Text(l10n.addClearPhoto),
+                ),
+              ),
+            ] else ...[
+              if (_photos.isEmpty) ...[
+                Text(l10n.photoHint, style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 8),
+              ],
               PhotoPickerStrip(photos: _photos, max: _maxPhotos, onChanged: (p) => setState(() => _photos = p)),
-            const SizedBox(height: 20),
+            ],
+            const SizedBox(height: 12),
+            FieldLabel(l10n.speciesTitle),
             SegmentedButton<Species>(
               segments: [for (final s in Species.values) ButtonSegment(value: s, label: Text(speciesLabel(l10n, s)))],
               selected: {_species},
               onSelectionChanged: (s) => setState(() => _species = s.first),
             ),
             const SizedBox(height: 16),
-            Text(l10n.condition, style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
+            FieldLabel(l10n.condition),
             Wrap(
               spacing: 8,
+              runSpacing: 8,
               children: [
                 for (final c in Condition.values)
                   ChoiceChip(
@@ -199,9 +192,10 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
                   ),
               ],
             ),
+            const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(l10n.isStray),
+              title: Text(l10n.isStray, style: Theme.of(context).textTheme.titleMedium),
               subtitle: Text(l10n.isStrayHelp),
               value: _isStray,
               onChanged: (v) => setState(() => _isStray = v),
@@ -209,40 +203,92 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
             FieldLabel(l10n.noteOptional),
             TextField(
               controller: _note,
-              decoration: const InputDecoration(prefixIcon: Icon(Icons.notes_rounded)),
+              decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.textAlignStart), counterText: ''),
               maxLength: 1000,
               maxLines: 3,
               minLines: 1,
             ),
             const SizedBox(height: 8),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.schedule),
-              title: Text(_timeLabel(context)),
-              trailing: TextButton(onPressed: _pickTime, child: Text(l10n.change)),
+            _Row(icon: LucideIcons.clock, title: _timeLabel(context), action: l10n.change, onPressed: _pickTime),
+            _Row(
+              icon: LucideIcons.mapPin,
+              title: _locationLabel(context),
+              subtitle: location == null ? null : l10n.tapToAdjust,
+              action: location == null ? l10n.choose : l10n.adjust,
+              onPressed: _pickLocation,
             ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.place_outlined),
-              title: Text(_locationLabel(context)),
-              trailing: TextButton(onPressed: _pickLocation, child: Text(l10n.change)),
-            ),
-            if (_location != null) LocationPreview(_location!, height: 140),
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: FilledButton.icon(
-            onPressed: busy || _photos.isEmpty || _location == null || _seenAt == null ? null : _submit,
+            onPressed: busy || _photos.isEmpty || location == null || _seenAt == null ? null : _submit,
             icon: busy
                 ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.send),
+                : const Icon(LucideIcons.send),
             label: Text(busy ? l10n.uploading(_progress!) : l10n.postSighting),
           ),
         ),
       ),
     );
   }
+}
+
+/// The photo just taken, large, with a "Retake" button on it.
+class _BigPhoto extends StatelessWidget {
+  const _BigPhoto(this.photo, {required this.onRetake});
+
+  final PickedPhoto photo;
+  final VoidCallback onRetake;
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(24),
+    child: AspectRatio(
+      aspectRatio: 16 / 10,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.file(File(photo.file.path), fit: BoxFit.cover),
+          Positioned(
+            right: 12,
+            bottom: 12,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.black54,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(0, 40),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+              onPressed: onRetake,
+              icon: const Icon(LucideIcons.camera, size: 18),
+              label: Text(context.l10n.retake),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// "Seen just now · Change", "Location from the photo · Adjust".
+class _Row extends StatelessWidget {
+  const _Row({required this.icon, required this.title, this.subtitle, required this.action, required this.onPressed});
+
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final String action;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    contentPadding: EdgeInsets.zero,
+    leading: Icon(icon),
+    title: Text(title),
+    subtitle: subtitle == null ? null : Text(subtitle!),
+    trailing: TextButton(onPressed: onPressed, child: Text(action)),
+  );
 }

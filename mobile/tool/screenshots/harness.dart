@@ -1,0 +1,490 @@
+// Renders app screens without a backend, phone or plugins, to compare them with the Figma designs
+// (design/winou-screens.html). See screens_test.dart for how to run it.
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:winou/api/api_client.dart';
+import 'package:winou/api/models.dart';
+import 'package:winou/auth/auth_controller.dart';
+import 'package:winou/config.dart';
+import 'package:winou/l10n/app_localizations.dart';
+import 'package:winou/theme.dart';
+
+/// The real fonts (Nunito, Material and Lucide icons) instead of the test font's boxes.
+Future<void> loadFonts() async {
+  final manifest = json.decode(await rootBundle.loadString('FontManifest.json')) as List;
+  for (final family in manifest) {
+    final loader = FontLoader(family['family']);
+    for (final font in family['fonts']) {
+      loader.addFont(rootBundle.load(font['asset']));
+    }
+    await loader.load();
+  }
+}
+
+/// Photos and map tiles come from local files: any URL with "cat" or "dog" in it is that photo,
+/// anything else is a plain street-map tile.
+class FakeHttp extends HttpOverrides {
+  final _cat = File('../design/img/cat.png').readAsBytesSync();
+  final _dog = File('../design/img/dog.png').readAsBytesSync();
+  final _tile = File('tool/screenshots/tile.png').readAsBytesSync();
+
+  List<int> bytesFor(Uri url) => url.path.contains('cat')
+      ? _cat
+      : url.path.contains('dog')
+      ? _dog
+      : _tile;
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) => _Client(this);
+}
+
+class _Client implements HttpClient {
+  _Client(this._http);
+
+  final FakeHttp _http;
+
+  @override
+  Future<HttpClientRequest> getUrl(Uri url) async => _Request(_http.bytesFor(url));
+
+  @override
+  Future<HttpClientRequest> openUrl(String method, Uri url) async => _Request(_http.bytesFor(url));
+
+  @override
+  void close({bool force = false}) {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => invocation.isSetter ? null : super.noSuchMethod(invocation);
+}
+
+class _Request implements HttpClientRequest {
+  _Request(this._bytes);
+
+  final List<int> _bytes;
+
+  @override
+  final HttpHeaders headers = _Headers();
+
+  @override
+  Future addStream(Stream<List<int>> stream) => stream.drain();
+
+  @override
+  Future<HttpClientResponse> close() async => _Response(_bytes);
+
+  @override
+  Future<HttpClientResponse> get done => close();
+
+  @override
+  void abort([Object? exception, StackTrace? stackTrace]) {} // tiles scrolled away
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => invocation.isSetter ? null : super.noSuchMethod(invocation);
+}
+
+class _Response extends Stream<List<int>> implements HttpClientResponse {
+  _Response(this._bytes);
+
+  final List<int> _bytes;
+
+  @override
+  int get statusCode => 200;
+
+  @override
+  String get reasonPhrase => 'OK';
+
+  @override
+  int get contentLength => _bytes.length;
+
+  @override
+  HttpClientResponseCompressionState get compressionState => HttpClientResponseCompressionState.notCompressed;
+
+  @override
+  HttpHeaders get headers => _Headers();
+
+  @override
+  bool get isRedirect => false;
+
+  @override
+  bool get persistentConnection => false;
+
+  @override
+  List<RedirectInfo> get redirects => const [];
+
+  @override
+  StreamSubscription<List<int>> listen(
+    void Function(List<int>)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => Stream.value(_bytes).listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _Headers implements HttpHeaders {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null; // headers are ignored
+}
+
+/// Plugins answer as on a phone: location is on (Tunis), the camera returns the dog photo.
+void mockPlugins() {
+  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  final cache = Directory.systemTemp.createTempSync('winou-screens').path; // the map's tile cache
+  messenger.setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (_) async => cache);
+  messenger.setMockMethodCallHandler(
+    const MethodChannel('flutter.baseflow.com/geolocator'),
+    (call) async => switch (call.method) {
+      'isLocationServiceEnabled' => true,
+      'checkPermission' || 'requestPermission' => 2, // while in use
+      'getCurrentPosition' => {
+        'latitude': Config.defaultLat,
+        'longitude': Config.defaultLon,
+        'accuracy': 12.0,
+        'altitude': 0.0,
+        'altitude_accuracy': 0.0,
+        'heading': 0.0,
+        'heading_accuracy': 0.0,
+        'speed': 0.0,
+        'speed_accuracy': 0.0,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'is_mocked': false,
+      },
+      _ => null,
+    },
+  );
+  messenger.setMockMethodCallHandler(
+    const MethodChannel('plugins.flutter.io/image_picker'),
+    (call) async => File('../design/img/dog.png').absolute.path,
+  );
+}
+
+// --- Sample data, as the API returns it ---
+
+String _ago(Duration d) => DateTime.now().subtract(d).toUtc().toIso8601String();
+
+Map<String, dynamic> _photo(String animal) => {
+  'id': 'p-$animal',
+  'status': 'READY',
+  'url': '/files/$animal.jpg',
+  'crop_url': null,
+};
+
+Map<String, dynamic> lostJson({
+  String id = 'luna',
+  String name = 'Luna',
+  String species = 'cat',
+  String status = 'OPEN',
+  bool mine = false,
+  String? description = 'Shy grey tabby, green eyes, small notch in the left ear.',
+  Duration seen = const Duration(hours: 2),
+}) => {
+  'id': id,
+  'name': name,
+  'species': species,
+  'description': description,
+  'last_seen': {'lat': Config.defaultLat + 0.004, 'lon': Config.defaultLon - 0.006},
+  'location_is_approximate': !mine,
+  'last_seen_at': _ago(seen),
+  'status': status,
+  'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
+};
+
+Map<String, dynamic> sightingJson({
+  String id = 's1',
+  String species = 'cat',
+  String condition = 'HEALTHY',
+  bool stray = false,
+  bool mine = false,
+  Duration seen = const Duration(hours: 2),
+}) => {
+  'id': id,
+  'species': species,
+  'location': {'lat': Config.defaultLat + 0.002, 'lon': Config.defaultLon + 0.003},
+  'seen_at': _ago(seen),
+  'condition': condition,
+  'note': 'Near the bakery, friendly',
+  'is_stray': stray,
+  'mine': mine,
+  'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
+};
+
+Map<String, dynamic> matchJson({
+  String id = 'm1',
+  String name = 'Luna',
+  double score = 0.84,
+  String status = 'PENDING',
+  String reportStatus = 'OPEN',
+  String species = 'cat',
+  String? conversation,
+  Duration seen = const Duration(hours: 2),
+}) => {
+  'id': id,
+  'lost_report_id': name.toLowerCase(),
+  'lost_report_name': name,
+  'score': score,
+  'status': status,
+  'sighting': sightingJson(species: species, seen: seen),
+  'lost_photo_url': '/files/$species-lost.jpg',
+  'sighting_photo_url': '/files/$species.jpg',
+  'report_status': reportStatus,
+  'conversation_id': conversation,
+  'created_at': _ago(seen),
+};
+
+Map<String, dynamic> messageJson(String id, String body, {required bool mine, required Duration ago}) => {
+  'id': id,
+  'body': body,
+  'mine': mine,
+  'created_at': _ago(ago),
+};
+
+Map<String, dynamic> conversationJson({
+  String id = 'c1',
+  String other = 'Sami',
+  String pet = 'Luna',
+  String species = 'cat',
+  String reportStatus = 'OPEN',
+  Map<String, dynamic>? last,
+  int unread = 0,
+}) => {
+  'id': id,
+  'lost_report_id': pet.toLowerCase(),
+  'pet_name': pet,
+  'report_status': reportStatus,
+  'match_id': 'm1',
+  'sighting_photo_url': '/files/$species.jpg',
+  'my_role': 'owner',
+  'other_name': other,
+  'last_message': last,
+  'unread': unread,
+  'created_at': _ago(const Duration(days: 1)),
+};
+
+final sampleChat = [
+  messageJson(
+    '1',
+    'Hi! Is she still there? She has a notch in her left ear.',
+    mine: true,
+    ago: const Duration(minutes: 40),
+  ),
+  messageJson(
+    '2',
+    "Yes, she's sleeping under the blue car next to the bakery. I can see the notch.",
+    mine: false,
+    ago: const Duration(minutes: 38),
+  ),
+  messageJson('3', "That's her! I'm 10 minutes away.", mine: true, ago: const Duration(minutes: 37)),
+  messageJson('4', "I'll stay here and keep an eye on her.", mine: false, ago: const Duration(minutes: 36)),
+];
+
+/// The API with canned answers. [hang] never answers (loading states), [fail] answers with a
+/// network error. Lists default to the sample data; pass [] for empty states.
+class FakeApi implements WinouApi {
+  FakeApi({
+    this.hang = false,
+    this.fail = false,
+    List<Map<String, dynamic>>? lost,
+    List<Map<String, dynamic>>? mine,
+    List<Map<String, dynamic>>? sightings,
+    List<Map<String, dynamic>>? matches,
+    List<Map<String, dynamic>>? conversations,
+    List<Map<String, dynamic>>? messages,
+    List<Map<String, dynamic>>? mapItems,
+  }) : lost =
+           lost ??
+           [
+             lostJson(),
+             lostJson(
+               id: 'rocky',
+               name: 'Rocky',
+               species: 'dog',
+               description: 'Sandy terrier mix, red collar, very friendly.',
+               seen: const Duration(days: 1),
+             ),
+           ],
+       mine = mine ?? [lostJson(mine: true)],
+       sightings = sightings ?? [sightingJson(mine: true)],
+       matches =
+           matches ??
+           [
+             matchJson(),
+             matchJson(id: 'm2', status: 'CONFIRMED', seen: const Duration(days: 1)),
+             matchJson(id: 'm3', name: 'Rocky', species: 'dog', score: 0.71, seen: const Duration(days: 3)),
+           ],
+       chats =
+           conversations ??
+           [
+             conversationJson(
+               last: messageJson(
+                 '9',
+                 "She's under the blue car near the bakery",
+                 mine: false,
+                 ago: const Duration(minutes: 2),
+               ),
+               unread: 2,
+             ),
+             conversationJson(
+               id: 'c2',
+               other: 'Amira',
+               pet: 'Rocky',
+               species: 'dog',
+               last: messageJson('8', 'Thank you so much!', mine: true, ago: const Duration(days: 1)),
+             ),
+             conversationJson(
+               id: 'c3',
+               other: 'Youssef',
+               pet: 'Mimi',
+               reportStatus: 'FOUND',
+               last: messageJson('7', 'Mimi is home, thanks again', mine: false, ago: const Duration(days: 9)),
+             ),
+           ],
+       chatMessages = messages ?? sampleChat,
+       mapItems = mapItems ?? _sampleMap;
+
+  final bool hang;
+  final bool fail;
+  final List<Map<String, dynamic>> lost, mine, sightings, matches, chats, chatMessages, mapItems;
+
+  static final _sampleMap = [
+    for (final (type, dLat, dLon, condition) in [
+      ('lost', 0.006, 0.004, null),
+      ('lost', 0.003, -0.006, null),
+      ('sighting', 0.0, 0.002, 'HEALTHY'),
+      ('sighting', -0.008, -0.004, 'HEALTHY'),
+      ('stray', -0.003, -0.009, 'HEALTHY'),
+      ('stray', -0.004, 0.003, 'INJURED'),
+    ])
+      {
+        'type': type,
+        'id': '$type$dLat',
+        'species': 'cat',
+        'location': {'lat': Config.defaultLat + dLat, 'lon': Config.defaultLon + dLon},
+        'date': _ago(const Duration(hours: 2)),
+        'name': type == 'lost' ? 'Luna' : null,
+        'condition': condition,
+        'photo_url': '/files/cat.jpg',
+      },
+  ];
+
+  Future<T> _answer<T>(T Function() value) {
+    if (hang) return Completer<T>().future;
+    if (fail) return Future.error(ApiException('Cannot reach the server.', code: 'network'));
+    return Future.value(value());
+  }
+
+  @override
+  Future<List<LostReport>> lostReports({
+    dynamic near,
+    double radiusKm = 25,
+    Species? species,
+    int limit = 20,
+    int offset = 0,
+  }) => _answer(() => offset > 0 ? [] : [for (final r in lost) LostReport.fromJson(r)]);
+
+  @override
+  Future<LostReport> lostReport(String id) =>
+      _answer(() => LostReport.fromJson([...mine, ...lost].firstWhere((r) => r['id'] == id)));
+
+  @override
+  Future<List<LostReport>> myLostReports() => _answer(() => [for (final r in mine) LostReport.fromJson(r)]);
+
+  @override
+  Future<List<Sighting>> mySightings() => _answer(() => [for (final s in sightings) Sighting.fromJson(s)]);
+
+  @override
+  Future<Sighting> sighting(String id) =>
+      _answer(() => Sighting.fromJson(sightingJson(id: id, species: 'dog', mine: true, seen: Duration.zero)));
+
+  @override
+  Future<List<Match>> myMatches() => _answer(() => [for (final m in matches) Match.fromJson(m)]);
+
+  @override
+  Future<List<Conversation>> conversations() => _answer(() => [for (final c in chats) Conversation.fromJson(c)]);
+
+  @override
+  Future<Conversation> conversation(String id) =>
+      _answer(() => Conversation.fromJson(chats.firstWhere((c) => c['id'] == id)));
+
+  @override
+  Future<List<ChatMessage>> messages(String conversationId, {DateTime? before}) =>
+      _answer(() => before != null ? [] : [for (final m in chatMessages) ChatMessage.fromJson(m)]);
+
+  @override
+  Future<List<MapItem>> map({
+    required double west,
+    required double south,
+    required double east,
+    required double north,
+    required Set<MapItemType> types,
+    Set<Species> species = const {},
+    Set<Condition> conditions = const {},
+    DateTime? since,
+  }) => _answer(() => [for (final i in mapItems) MapItem.fromJson(i)]);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Phone size from the designs: 360 x 800, with a status bar.
+void phoneSize(WidgetTester tester) {
+  tester.view
+    ..physicalSize = const Size(720, 1600)
+    ..devicePixelRatio = 2
+    ..padding = const FakeViewPadding(top: 48);
+  addTearDown(tester.view.reset);
+}
+
+final screenshotKey = GlobalKey();
+
+/// The app's theme around [screen], pushed on top of a blank page so it has a back button.
+Widget app(Widget screen, {required Brightness brightness, required FakeApi api, Locale locale = const Locale('en')}) =>
+    ProviderScope(
+      overrides: [apiProvider.overrideWithValue(api)],
+      child: RepaintBoundary(
+        key: screenshotKey,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: winouTheme(brightness),
+          locale: locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: _PushOnStart(screen),
+        ),
+      ),
+    );
+
+class _PushOnStart extends StatefulWidget {
+  const _PushOnStart(this.screen);
+
+  final Widget screen;
+
+  @override
+  State<_PushOnStart> createState() => _PushOnStartState();
+}
+
+class _PushOnStartState extends State<_PushOnStart> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => Navigator.of(context).push(PageRouteBuilder(pageBuilder: (_, _, _) => widget.screen)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => const Scaffold();
+}
+
+/// Lets real work finish (image decoding, API futures) and animations run to their end.
+Future<void> settle(WidgetTester tester, {int rounds = 6}) async {
+  for (var i = 0; i < rounds; i++) {
+    await tester.runAsync(() => Future.delayed(const Duration(milliseconds: 60)));
+    await tester.pump(const Duration(milliseconds: 400));
+  }
+}
