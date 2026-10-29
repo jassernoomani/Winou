@@ -1,15 +1,15 @@
 # Winou local stack.
 name: winou
 
-x-api: &api
-  build: ./api
-  image: winou-api   # shared by api and worker
+x-backend: &backend
+  build: ./backend
+  image: winou-backend   # Spring Boot; one image for the api and the worker
   env_file:
     - path: .env
       required: false
   environment:
     # Service addresses inside the compose network (override localhost values from .env)
-    DATABASE_URL: postgresql+psycopg://winou:${POSTGRES_PASSWORD:-winou}@postgres:5432/winou
+    DB_URL: jdbc:postgresql://postgres:5432/winou
     QDRANT_URL: http://qdrant:6333
     ML_SERVICE_URL: http://ml-service:8000
     S3_ENDPOINT: minio:9000
@@ -77,14 +77,20 @@ services:
     restart: unless-stopped
 
   api:
-    <<: *api
+    <<: *backend
     ports:
       - "8080:8080"   # OpenAPI docs at http://localhost:8080/docs
 
-  # Processes uploaded photos: ML embedding, Qdrant indexing and matching.
+  # Processes uploaded photos: ML embedding, Qdrant indexing and matching. Same image, no web server.
   worker:
-    <<: *api
-    command: ["python", "-m", "app.worker"]
+    <<: *backend
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/winou
+      QDRANT_URL: http://qdrant:6333
+      ML_SERVICE_URL: http://ml-service:8000
+      S3_ENDPOINT: minio:9000
+      WINOU_WORKER_ENABLED: "true"
+      SPRING_MAIN_WEB_APPLICATION_TYPE: none
     healthcheck:
       disable: true
 

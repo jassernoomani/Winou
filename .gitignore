@@ -18,6 +18,9 @@ research/outputs/embeddings/
 research/outputs/crops/
 *.pt
 
+# Java build output
+target/
+
 # OS / editors
 .DS_Store
 Thumbs.db
@@ -26,3 +29,6 @@ Thumbs.db
 
 # Contact sheets contain dataset images that may not be redistributed
 research/outputs/*failures*.png
+
+# Firebase app config (kept local)
+google-services.json

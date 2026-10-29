@@ -10,7 +10,8 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get tagline => 'Retrouver les animaux perdus, aider les animaux des rues';
+  String get tagline =>
+      'Retrouver les animaux perdus, aider les animaux des rues';
 
   @override
   String get email => 'E-mail';
@@ -46,13 +47,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordTooShort => 'Au moins 8 caractères';
 
   @override
-  String get errorNetwork => 'Impossible de joindre le serveur. Vérifiez votre connexion.';
+  String get errorNetwork =>
+      'Impossible de joindre le serveur. Vérifiez votre connexion.';
 
   @override
-  String get errorRateLimited => 'Vous avez beaucoup publié récemment. Réessayez plus tard.';
+  String get errorRateLimited =>
+      'Vous avez beaucoup publié récemment. Réessayez plus tard.';
 
   @override
-  String get errorInvalidImage => 'Cette photo est illisible. Utilisez une image JPEG, PNG, WebP ou HEIC.';
+  String get errorInvalidImage =>
+      'Cette photo est illisible. Utilisez une image JPEG, PNG, WebP ou HEIC.';
 
   @override
   String get errorImageTooLarge => 'Cette photo est trop grande.';
@@ -174,7 +178,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newSighting => 'Nouveau signalement';
 
   @override
-  String get photoHint => 'Approchez-vous et montrez la tête : cela nous aide à reconnaître l\'animal.';
+  String get photoHint =>
+      'Approchez-vous et montrez la tête : cela nous aide à reconnaître l\'animal.';
 
   @override
   String get condition => 'État';
@@ -192,7 +197,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get locating => 'Localisation en cours…';
 
   @override
-  String get locationMissing => 'Pas encore de position : choisissez-la sur la carte';
+  String get locationMissing =>
+      'Pas encore de position : choisissez-la sur la carte';
 
   @override
   String locationFromGps(int meters) {
@@ -211,7 +217,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get sightingThanks => 'Merci ! Nous le comparons aux animaux perdus à proximité.';
+  String get sightingThanks =>
+      'Merci ! Nous le comparons aux animaux perdus à proximité.';
 
   @override
   String get camera => 'Appareil photo';
@@ -233,7 +240,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retakePhoto => 'Reprendre';
 
   @override
-  String get lostPhotosHint => 'Ajoutez 1 à 5 photos nettes, idéalement de la tête sous différents angles.';
+  String get lostPhotosHint =>
+      'Ajoutez 1 à 5 photos nettes, idéalement de la tête sous différents angles.';
 
   @override
   String get petName => 'Nom de l\'animal';
@@ -251,7 +259,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get lastSeenWhere => 'Où a-t-il été vu pour la dernière fois ?';
 
   @override
-  String get locationPrivacyNote => 'Les autres ne voient qu\'une zone d\'environ 300 m autour';
+  String get locationPrivacyNote =>
+      'Les autres ne voient qu\'une zone d\'environ 300 m autour';
 
   @override
   String get publishReport => 'Publier l\'avis';
@@ -260,7 +269,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pickLocationTitle => 'Choisir le lieu';
 
   @override
-  String get pickLocationHint => 'Touchez la carte à l\'endroit où se trouvait l\'animal.';
+  String get pickLocationHint =>
+      'Touchez la carte à l\'endroit où se trouvait l\'animal.';
 
   @override
   String get confirmLocation => 'Utiliser ce lieu';
@@ -278,7 +288,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteReportQuestion => 'Supprimer cet avis et ses photos ?';
 
   @override
-  String get deleteSightingQuestion => 'Supprimer ce signalement et ses photos ?';
+  String get deleteSightingQuestion =>
+      'Supprimer ce signalement et ses photos ?';
 
   @override
   String lastSeenOn(String date) {
@@ -291,7 +302,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get approximateArea => 'Zone approximative, pour protéger la vie privée du propriétaire.';
+  String get approximateArea =>
+      'Zone approximative, pour protéger la vie privée du propriétaire.';
 
   @override
   String get photoProcessing => 'Analyse…';
@@ -392,7 +404,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noMissingPets => 'Aucun animal perdu signalé. Bonne nouvelle !';
 
   @override
-  String get noMissingPetsNearby => 'Aucun animal perdu près de vous. Essayez « Partout ».';
+  String get noMissingPetsNearby =>
+      'Aucun animal perdu près de vous. Essayez « Partout ».';
 
   @override
   String kmAway(String km) {
@@ -400,5 +413,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get locationOffForNearby => 'Activez la localisation pour voir les animaux près de vous.';
+  String get locationOffForNearby =>
+      'Activez la localisation pour voir les animaux près de vous.';
 }

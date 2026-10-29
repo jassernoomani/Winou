@@ -1,0 +1,88 @@
+# Every setting can be overridden with an environment variable (see .env.example).
+spring:
+  application:
+    name: winou
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/winou}
+    username: ${DB_USER:winou}
+    password: ${POSTGRES_PASSWORD:winou}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none  # the schema is owned by Flyway
+    properties:
+      hibernate:
+        timezone.default_storage: NORMALIZE_UTC
+  flyway:
+    # Adopts a database created by the Python API (Alembic): baseline at 0, then V1/V2 are idempotent
+    baseline-on-migrate: true
+    baseline-version: 0
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    deserialization:
+      fail-on-unknown-properties: false
+  servlet:
+    multipart:
+      max-file-size: 25MB     # backstop; the real limit is winou.uploads.max-mb, with a clear error
+      max-request-size: 26MB
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+
+springdoc:
+  swagger-ui:
+    path: /docs
+  api-docs:
+    path: /openapi.json
+
+winou:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-insecure-secret-at-least-32-bytes}
+    expiry: ${JWT_EXPIRE_MINUTES:10080}m
+  ml:
+    url: ${ML_SERVICE_URL:http://localhost:8000}
+    timeout: 120s
+  qdrant:
+    url: ${QDRANT_URL:http://localhost:6333}
+    api-key: ${QDRANT_API_KEY:}
+    collection: ${QDRANT_COLLECTION:pet_photos}
+    embed-dim: ${EMBED_DIM:1536}
+  s3:
+    endpoint: ${S3_ENDPOINT:localhost:9000}
+    secure: ${S3_SECURE:false}
+    access-key: ${S3_ACCESS_KEY:winou}
+    secret-key: ${S3_SECRET_KEY:winou-dev-secret}
+    bucket: ${S3_BUCKET:winou-photos}
+  uploads:
+    max-mb: ${MAX_UPLOAD_MB:10}
+    max-image-pixels: ${MAX_IMAGE_PIXELS:40000000}
+    public-image-max-side: ${PUBLIC_IMAGE_MAX_SIDE:2048}
+  privacy:
+    location-fuzz-m: ${LOCATION_FUZZ_M:300}
+    # Separate from JWT_SECRET and never rotated: a new value moves every public position,
+    # and comparing old and new positions narrows down the real one.
+    location-fuzz-secret: ${LOCATION_FUZZ_SECRET:dev-only-insecure-fuzz-secret}
+  map:
+    max-results: ${MAP_MAX_RESULTS:500}
+  rate-limits:
+    lost-reports-per-day: ${RATE_LIMIT_LOST_REPORTS_PER_DAY:5}
+    sightings-per-hour: ${RATE_LIMIT_SIGHTINGS_PER_HOUR:20}
+    photos-per-hour: ${RATE_LIMIT_PHOTOS_PER_HOUR:60}
+  matching:
+    threshold-dog: ${MATCH_THRESHOLD_DOG:0.60}
+    threshold-cat: ${MATCH_THRESHOLD_CAT:0.70}
+    radius-km: ${MATCH_RADIUS_KM:10}
+    lost-window-days: ${MATCH_LOST_WINDOW_DAYS:60}
+    sighting-grace-days: ${MATCH_SIGHTING_GRACE_DAYS:2}
+    max-notifications: ${MATCH_MAX_NOTIFICATIONS:3}
+  worker:
+    # The same jar runs the API and, with WINOU_WORKER_ENABLED=true, the photo worker
+    enabled: ${WINOU_WORKER_ENABLED:false}
+    poll: ${WORKER_POLL_SECONDS:2}s
+    max-attempts: ${WORKER_MAX_ATTEMPTS:5}

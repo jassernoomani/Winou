@@ -7,11 +7,11 @@ from collections.abc import Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Query, Request, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 from app.config import Settings, settings
-from app.images import ImageError, decode_upload, to_jpeg_base64
+from app.images import ImageError, decode_upload, to_jpeg, to_jpeg_base64
 from app.pipeline import Pipeline
 
 
@@ -91,6 +91,11 @@ def create_app(load_pipeline: Callable[[Settings], Pipeline] = Pipeline) -> Fast
             vector=vector.tolist(),
             crop_jpeg_base64=to_jpeg_base64(crop, settings.crop_max_side) if return_crop else None,
         )
+
+    @app.post("/convert", response_class=Response, responses={200: {"content": {"image/jpeg": {}}}})
+    def convert(file: UploadFile = File(...), max_side: int = Query(2048, ge=64, le=8192)):
+        """Any supported image (notably HEIC, which Java cannot decode) as an upright JPEG without metadata."""
+        return Response(to_jpeg(read_image(file), max_side, quality=88), media_type="image/jpeg")
 
     return app
 

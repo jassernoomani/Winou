@@ -141,3 +141,17 @@ def test_rejects_too_many_pixels(monkeypatch):
         response = client.post("/embed", files=upload(image_bytes(size=(100, 50))))
     assert response.status_code == 413
     assert response.json()["detail"]["code"] == "image_too_large"
+
+
+def test_convert_returns_upright_jpeg_without_exif():
+    exif = Image.Exif()
+    exif[0x0112] = 6  # Orientation: rotate 90° clockwise
+    exif[0x8825] = {2: (36.0, 48.0, 23.4)}  # GPSInfo
+    client, _ = make_client()
+    with client:
+        response = client.post("/convert", params={"max_side": 64},
+                               files=upload(image_bytes(size=(200, 100), exif=exif.tobytes())))
+    assert response.status_code == 200 and response.headers["content-type"] == "image/jpeg"
+    image = Image.open(io.BytesIO(response.content))
+    assert image.format == "JPEG" and image.size == (32, 64)  # rotated, then shrunk
+    assert not image.getexif()

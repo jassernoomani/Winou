@@ -41,9 +41,13 @@ def decode_upload(data: bytes, max_bytes: int, max_pixels: int) -> Image.Image:
         raise ImageError(415, "invalid_image", "The file is not a readable image.")
 
 
-def to_jpeg_base64(image: Image.Image, max_side: int, quality: int = 90) -> str:
+def to_jpeg(image: Image.Image, max_side: int, quality: int = 90) -> bytes:
     image = image.copy()
     image.thumbnail((max_side, max_side))  # only ever shrinks, keeps aspect ratio
     buffer = io.BytesIO()
     image.save(buffer, format="JPEG", quality=quality)  # no EXIF is written
-    return base64.b64encode(buffer.getvalue()).decode("ascii")
+    return buffer.getvalue()
+
+
+def to_jpeg_base64(image: Image.Image, max_side: int, quality: int = 90) -> str:
+    return base64.b64encode(to_jpeg(image, max_side, quality)).decode("ascii")

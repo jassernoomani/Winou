@@ -49,10 +49,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorNetwork => 'Cannot reach the server. Check your connection.';
 
   @override
-  String get errorRateLimited => 'You\'ve posted a lot recently. Try again later.';
+  String get errorRateLimited =>
+      'You\'ve posted a lot recently. Try again later.';
 
   @override
-  String get errorInvalidImage => 'This photo can\'t be read. Use a JPEG, PNG, WebP or HEIC image.';
+  String get errorInvalidImage =>
+      'This photo can\'t be read. Use a JPEG, PNG, WebP or HEIC image.';
 
   @override
   String get errorImageTooLarge => 'This photo is too large.';
@@ -174,7 +176,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newSighting => 'New sighting';
 
   @override
-  String get photoHint => 'Get close and show the face: it helps us recognise the animal.';
+  String get photoHint =>
+      'Get close and show the face: it helps us recognise the animal.';
 
   @override
   String get condition => 'Condition';
@@ -211,7 +214,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get sightingThanks => 'Thanks! We\'re checking it against lost pets nearby.';
+  String get sightingThanks =>
+      'Thanks! We\'re checking it against lost pets nearby.';
 
   @override
   String get camera => 'Camera';
@@ -223,7 +227,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAnimalTitle => 'No animal found';
 
   @override
-  String get noAnimalBody => 'We couldn\'t find a cat or dog in this photo. A closer photo of the head works best.';
+  String get noAnimalBody =>
+      'We couldn\'t find a cat or dog in this photo. A closer photo of the head works best.';
 
   @override
   String get keepPhoto => 'Keep it';
@@ -232,7 +237,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retakePhoto => 'Retake';
 
   @override
-  String get lostPhotosHint => 'Add 1–5 clear photos, ideally of the face from different angles.';
+  String get lostPhotosHint =>
+      'Add 1–5 clear photos, ideally of the face from different angles.';
 
   @override
   String get petName => 'Pet\'s name';
@@ -250,7 +256,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastSeenWhere => 'Where was it last seen?';
 
   @override
-  String get locationPrivacyNote => 'Others only see an area of about 300 m around it';
+  String get locationPrivacyNote =>
+      'Others only see an area of about 300 m around it';
 
   @override
   String get publishReport => 'Publish report';
@@ -290,7 +297,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get approximateArea => 'Approximate area, to protect the owner\'s privacy.';
+  String get approximateArea =>
+      'Approximate area, to protect the owner\'s privacy.';
 
   @override
   String get photoProcessing => 'Checking…';
@@ -314,7 +322,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMySightings => 'My sightings';
 
   @override
-  String get noMatches => 'No possible matches yet. We check every new sighting nearby.';
+  String get noMatches =>
+      'No possible matches yet. We check every new sighting nearby.';
 
   @override
   String get noLostReports => 'You haven\'t reported a lost pet.';
@@ -390,7 +399,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMissingPets => 'No missing pets reported. Good news!';
 
   @override
-  String get noMissingPetsNearby => 'No missing pets near you. Try “Everywhere”.';
+  String get noMissingPetsNearby =>
+      'No missing pets near you. Try “Everywhere”.';
 
   @override
   String kmAway(String km) {

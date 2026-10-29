@@ -24,7 +24,7 @@ class WinouApi {
           baseUrl: Config.apiUrl,
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 60),
-          listFormat: ListFormat.multi, // type=lost&type=stray, as FastAPI expects
+          listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
         ),
       ) {
     _dio.interceptors.add(
@@ -221,7 +221,7 @@ ApiException _toApiException(DioException error) {
   return switch (detail) {
     {'message': String message, 'code': String code} => ApiException(message, code: code, status: response.statusCode),
     String message => ApiException(message, status: response.statusCode),
-    // FastAPI validation errors: a list of {loc, msg}
+    // Validation errors: a list of {loc, msg}
     [{'msg': String message}, ...] => ApiException(message, code: 'validation', status: response.statusCode),
     _ => ApiException('Server error (${response.statusCode}).', status: response.statusCode),
   };

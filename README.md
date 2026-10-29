@@ -21,7 +21,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 ```
 research/     Phase 0: can embeddings tell individual animals apart?
 ml-service/   FastAPI: detect, crop, embed
-api/          FastAPI backend + background matching worker
+backend/      Spring Boot API + background matching worker (Java 25)
 mobile/       Flutter app (see mobile/README.md to run it on a phone)
 scripts/      Qdrant collection setup
 docs/         brief, architecture notes, API spec
@@ -34,8 +34,9 @@ cp .env.example .env
 docker compose up --build -d                  # first build downloads ~2 GB (PyTorch + model weights)
 ```
 
-The API applies database migrations on start and creates the Qdrant collection and the
-storage bucket if missing. `python scripts/setup_qdrant.py --smoke` still works to test a
+The backend applies database migrations (Flyway) on start and creates the Qdrant collection
+and the storage bucket if missing. The `api` and `worker` services run the same Spring Boot
+image; the worker has `WINOU_WORKER_ENABLED=true` and no web server. `python scripts/setup_qdrant.py --smoke` still works to test a
 matching query directly against Qdrant.
 
 | Service | URL |
@@ -80,21 +81,25 @@ location, date or species re-runs matching with the stored vectors.
 everyone but the owner. Sighting reporters and user emails are never exposed. Creating
 reports, sightings and photos is rate-limited per user.
 
-Notifications are only logged for now; Firebase Cloud Messaging comes with the app in
-Phase 3.
+Notifications are only logged for now; Firebase Cloud Messaging is the last step of Phase 3.
 
-Without Docker:
+Errors are `{"detail": "message"}`, or `{"detail": {"code", "message"}}` when the app reacts to
+them (`rate_limited`, `email_taken`, `too_many_photos`, `invalid_image`...). Invalid input is
+422 with `{"detail": [{"loc", "msg"}]}`.
+
+Without Docker (Java 25; the Maven wrapper downloads Maven):
 
 ```bash
 docker compose up -d postgres minio qdrant ml-service
-cd api
-python -m venv .venv && .venv/Scripts/activate
-pip install -r requirements-dev.txt
-alembic upgrade head
-uvicorn app.main:app --port 8080     # and in another shell: python -m app.worker
+cd backend
+./mvnw spring-boot:run                                   # the API on :8080
+WINOU_WORKER_ENABLED=true ./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081   # the worker
 
-pytest                               # needs the postgres container; creates a winou_test database
+./mvnw test      # needs Docker: starts throwaway PostGIS and Qdrant containers (Testcontainers)
 ```
+
+In IntelliJ IDEA, open `backend/` as a Maven project and run `WinouApplication`. Set the
+project SDK to Java 25 (IntelliJ can download it).
 
 ## ML service
 
@@ -103,6 +108,7 @@ pytest                               # needs the postgres container; creates a w
 | `GET /health` | model name, device, vector size |
 | `POST /detect` | finds the main cat/dog: `{species, confidence, box}` |
 | `POST /embed` | detect → crop → DINOv2 embedding (1536-d, L2-normalized). `?return_crop=true` adds the crop as base64 JPEG (EXIF-free, max 1024 px) |
+| `POST /convert` | any supported image as an upright, EXIF-free JPEG (`?max_side=`). The backend uses it for HEIC, which Java cannot decode |
 
 Accepts JPEG, PNG, WebP and HEIC (iPhone) up to 10 MB; EXIF rotation is applied.
 On CPU (Docker default) an `/embed` call takes about 0.5–1.5 s.
