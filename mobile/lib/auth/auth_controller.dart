@@ -25,7 +25,9 @@ class AuthController extends Notifier<AuthState> {
   }
 
   Future<void> _restore() async {
-    state = AuthState(token: await _storage.read(key: _tokenKey));
+    // The splash stays long enough for its animation to play, not just flash
+    final (token, _) = await (_storage.read(key: _tokenKey), Future.delayed(const Duration(milliseconds: 1200))).wait;
+    state = AuthState(token: token);
     if (state.signedIn) ref.read(pushProvider).register(); // the token may have changed since
   }
 

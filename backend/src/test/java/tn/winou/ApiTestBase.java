@@ -46,7 +46,11 @@ import org.testcontainers.utility.DockerImageName;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tn.winou.domain.ChatMessage;
+import tn.winou.domain.Conversation;
+import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
+import tn.winou.infra.Notifications;
 import tn.winou.infra.MlClient;
 import tn.winou.infra.Notifier;
 import tn.winou.infra.Storage;
@@ -118,7 +122,7 @@ public abstract class ApiTestBase {
         storage.objects.clear();
         ml.calls.set(0);
         ml.down = false;
-        notifier.matches.clear();
+        notifier.clear();
     }
 
     // --- fakes ---
@@ -142,6 +146,13 @@ public abstract class ApiTestBase {
         @Primary
         RecordingNotifier recordingNotifier() {
             return new RecordingNotifier();
+        }
+
+        /** Notifications are sent on the request thread in tests (after commit, as in production). */
+        @Bean
+        @Primary
+        Notifications syncNotifications(RecordingNotifier notifier) {
+            return new Notifications(notifier, Runnable::run);
         }
     }
 
@@ -220,10 +231,37 @@ public abstract class ApiTestBase {
     public static class RecordingNotifier implements Notifier {
 
         public final List<String> matches = new ArrayList<>();
+        public final List<String> confirmed = new ArrayList<>();
+        /** "pet name: finder ids" */
+        public final List<String> found = new ArrayList<>();
+        /** "conversation id: message body" */
+        public final List<String> messages = new ArrayList<>();
 
         @Override
         public void matchFound(Match match) {
             matches.add(match.getId().toString());
+        }
+
+        @Override
+        public void matchConfirmed(Match match) {
+            confirmed.add(match.getId().toString());
+        }
+
+        @Override
+        public void petFound(LostReport report, List<UUID> finderIds) {
+            found.add(report.getName() + ": " + finderIds);
+        }
+
+        @Override
+        public void newMessage(Conversation conversation, ChatMessage message) {
+            messages.add(conversation.getId() + ": " + message.getBody());
+        }
+
+        void clear() {
+            matches.clear();
+            confirmed.clear();
+            found.clear();
+            messages.clear();
         }
     }
 

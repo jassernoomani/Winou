@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'api/models.dart';
 import 'auth/auth_controller.dart';
 import 'auth/auth_screens.dart';
+import 'chat/chat_screen.dart';
+import 'chat/conversations_screen.dart';
 import 'map/map_screen.dart';
 import 'me/match_detail_screen.dart';
 import 'me/my_activity_screen.dart';
@@ -14,6 +16,7 @@ import 'reports/lost_report_create_screen.dart';
 import 'reports/lost_report_detail_screen.dart';
 import 'sightings/sighting_create_screen.dart';
 import 'sightings/sighting_detail_screen.dart';
+import 'splash_screen.dart';
 import 'widgets/location.dart';
 
 const _publicPaths = {'/login', '/register'};
@@ -35,10 +38,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (_, _) => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      ),
+      GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const LoginScreen(register: true)),
       GoRoute(path: '/', builder: (_, _) => const LostFeedScreen()),
@@ -47,7 +47,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
       GoRoute(
         path: '/lost/:id',
-        builder: (_, state) => LostReportDetailScreen(id: state.pathParameters['id']!),
+        builder: (_, state) =>
+            LostReportDetailScreen(id: state.pathParameters['id']!, initial: state.extra as LostReport?),
       ),
       GoRoute(path: '/sightings/new', builder: (_, _) => const SightingCreateScreen()),
       GoRoute(
@@ -57,6 +58,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/matches/:id',
         builder: (_, state) => MatchDetailScreen(id: state.pathParameters['id']!, match: state.extra as Match?),
+      ),
+      GoRoute(path: '/conversations', builder: (_, _) => const ConversationsScreen()),
+      GoRoute(
+        path: '/conversations/:id',
+        builder: (_, state) => ChatScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/pick-location',

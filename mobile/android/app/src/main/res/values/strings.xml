@@ -3,5 +3,12 @@
     <!-- Push notifications; the backend sends these keys, not the text -->
     <string name="match_title">Possible match</string>
     <string name="match_body">Someone may have seen %1$s. Tap to compare the photos.</string>
-    <color name="notification">#2E7D6B</color>
+    <string name="confirmed_title">You may have found a lost pet</string>
+    <string name="confirmed_body">The owner of %1$s recognised the animal you saw. They may write to you.</string>
+    <string name="found_title">%1$s is back home!</string>
+    <string name="found_body">Thank you for helping %1$s find their way home.</string>
+    <string name="message_title">%1$s · about %2$s</string>
+    <color name="notification">#2563EB</color>
+    <!-- Launch screen, the same blue as the app's animated splash -->
+    <color name="splash">#2F5BEA</color>
 </resources>

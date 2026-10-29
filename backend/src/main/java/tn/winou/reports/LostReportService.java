@@ -20,9 +20,15 @@ import tn.winou.config.WinouProperties;
 import tn.winou.domain.GeoPoint;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.LostReportRepository;
+import tn.winou.domain.Match;
+import tn.winou.domain.MatchRepository;
+import tn.winou.domain.MatchStatus;
 import tn.winou.domain.PhotoRepository;
+import tn.winou.domain.ReportStatus;
+import tn.winou.domain.SightingRepository;
 import tn.winou.domain.Species;
 import tn.winou.domain.User;
+import tn.winou.infra.Notifications;
 import tn.winou.matching.Records;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.LostReportIn;
@@ -39,9 +45,16 @@ public class LostReportService {
     private final Records records;
     private final Views views;
     private final WinouProperties properties;
+    private final MatchRepository matches;
+    private final SightingRepository sightings;
+    private final Notifications notifications;
 
     public LostReportService(LostReportRepository reports, PhotoRepository photos, JdbcClient jdbc, Records records,
-            Views views, WinouProperties properties) {
+            Views views, WinouProperties properties, MatchRepository matches, SightingRepository sightings,
+            Notifications notifications) {
+        this.matches = matches;
+        this.sightings = sightings;
+        this.notifications = notifications;
         this.reports = reports;
         this.photos = photos;
         this.jdbc = jdbc;
@@ -146,6 +159,9 @@ public class LostReportService {
             rematch = true;
         }
         if (body.status() != null) {
+            if (body.status() == ReportStatus.FOUND && report.getStatus() != ReportStatus.FOUND) {
+                thankFinders(report);
+            }
             report.setStatus(body.status());
             rematch = true; // reopened reports are matched again
         }
@@ -153,6 +169,17 @@ public class LostReportService {
             records.rematch(report.getId(), report.getSpecies(), Records.payload(report));
         }
         return views.report(report, user);
+    }
+
+    /** The pet is back: tell the people whose sighting the owner confirmed. */
+    private void thankFinders(LostReport report) {
+        List<UUID> sightingIds = matches.findByLostReportIdAndStatus(report.getId(), MatchStatus.CONFIRMED).stream()
+                .map(Match::getSightingId).toList();
+        List<UUID> finders = sightings.findAllById(sightingIds).stream()
+                .map(s -> s.getReporterId()).distinct().toList();
+        if (!finders.isEmpty()) {
+            notifications.send(n -> n.petFound(report, finders));
+        }
     }
 
     @Transactional

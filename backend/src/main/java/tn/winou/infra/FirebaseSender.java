@@ -10,10 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MessagingErrorCode;
 
-/**
- * Firebase Cloud Messaging. The text is not sent: the app's Android string resources
- * (match_title, match_body) hold it, so the phone shows it in its own language.
- */
+/** Firebase Cloud Messaging, Android notifications. */
 public class FirebaseSender implements PushSender {
 
     private static final Logger log = LoggerFactory.getLogger(FirebaseSender.class);
@@ -25,21 +22,22 @@ public class FirebaseSender implements PushSender {
     }
 
     @Override
-    public Result send(String deviceToken, MatchPush push) {
+    public Result send(String deviceToken, Push push) {
+        AndroidNotification.Builder notification = AndroidNotification.builder()
+                .setTitleLocalizationKey(push.titleKey())
+                .addAllTitleLocalizationArgs(push.titleArgs())
+                .setTag(push.tag());
+        if (push.bodyKey() != null) {
+            notification.setBodyLocalizationKey(push.bodyKey()).addAllBodyLocalizationArgs(push.bodyArgs());
+        } else {
+            notification.setBody(push.body());
+        }
         Message message = Message.builder()
                 .setFid(deviceToken) // the app registers with its installation ID (direct send)
-                .putData("type", "match")
-                .putData("match_id", push.matchId())
-                .putData("lost_report_id", push.lostReportId())
-                .putData("pet_name", push.petName())
+                .putAllData(push.data())
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
-                        .setNotification(AndroidNotification.builder()
-                                .setTitleLocalizationKey("match_title")
-                                .setBodyLocalizationKey("match_body")
-                                .addBodyLocalizationArg(push.petName())
-                                .setTag("match-" + push.matchId())
-                                .build())
+                        .setNotification(notification.build())
                         .build())
                 .build();
         try {
@@ -50,7 +48,7 @@ public class FirebaseSender implements PushSender {
             if (code == MessagingErrorCode.UNREGISTERED || code == MessagingErrorCode.SENDER_ID_MISMATCH) {
                 return Result.TOKEN_GONE;
             }
-            log.warn("push for match {} failed: {} {}", push.matchId(), code, e.getMessage());
+            log.warn("push {} failed: {} {}", push.tag(), code, e.getMessage());
             return Result.FAILED;
         }
     }

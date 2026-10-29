@@ -18,3 +18,11 @@ final myLostReportsProvider = FutureProvider.autoDispose<List<LostReport>>(
 final mySightingsProvider = FutureProvider.autoDispose<List<Sighting>>((ref) => ref.watch(apiProvider).mySightings());
 
 final myMatchesProvider = FutureProvider.autoDispose<List<Match>>((ref) => ref.watch(apiProvider).myMatches());
+
+final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>(
+  (ref) => ref.watch(apiProvider).conversations(),
+);
+
+final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(
+  (ref, id) => ref.watch(apiProvider).conversation(id),
+);

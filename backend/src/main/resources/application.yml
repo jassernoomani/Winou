@@ -74,6 +74,7 @@ winou:
     lost-reports-per-day: ${RATE_LIMIT_LOST_REPORTS_PER_DAY:5}
     sightings-per-hour: ${RATE_LIMIT_SIGHTINGS_PER_HOUR:20}
     photos-per-hour: ${RATE_LIMIT_PHOTOS_PER_HOUR:60}
+    messages-per-hour: ${RATE_LIMIT_MESSAGES_PER_HOUR:60}
   matching:
     threshold-dog: ${MATCH_THRESHOLD_DOG:0.60}
     threshold-cat: ${MATCH_THRESHOLD_CAT:0.70}

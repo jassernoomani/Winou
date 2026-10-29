@@ -178,5 +178,45 @@ public final class ApiModels {
             SightingOut sighting,
             String lostPhotoUrl,
             String sightingPhotoUrl,
+            ReportStatus reportStatus,
+            UUID conversationId, // null until the owner starts one
+            OffsetDateTime createdAt) {}
+
+    /** PENDING undoes a rejection. */
+    public record MatchUpdate(@NotNull MatchStatus status) {}
+
+    // --- conversations ---
+
+    public enum ConversationRole implements ApiEnum {
+        OWNER("owner"), FINDER("finder");
+
+        private final String api;
+
+        ConversationRole(String api) {
+            this.api = api;
+        }
+
+        @Override
+        public String api() {
+            return api;
+        }
+    }
+
+    public record MessageIn(@NotBlank @Size(max = 2000) String body) {}
+
+    public record MessageOut(UUID id, String body, boolean mine, OffsetDateTime createdAt) {}
+
+    /** Seen by one participant: "other" is the person they talk to (display name only, never an email). */
+    public record ConversationOut(
+            UUID id,
+            UUID lostReportId,
+            String petName,
+            ReportStatus reportStatus, // not OPEN: the case is closed
+            UUID matchId,
+            String sightingPhotoUrl,
+            ConversationRole myRole,
+            String otherName,
+            MessageOut lastMessage,
+            long unread,
             OffsetDateTime createdAt) {}
 }

@@ -417,4 +417,160 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get view => 'View';
+
+  @override
+  String get thatsMyPet => 'That\'s my pet';
+
+  @override
+  String get notMyPet => 'Not my pet';
+
+  @override
+  String get matchHidden => 'Hidden. This sighting won\'t be suggested again.';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String matchConfirmedInfo(String name) {
+    return 'You recognised $name. The person who saw it has been told.';
+  }
+
+  @override
+  String get messageFinder => 'Message the finder';
+
+  @override
+  String get openConversation => 'Open the conversation';
+
+  @override
+  String gotPetBack(String name) {
+    return 'I got $name back';
+  }
+
+  @override
+  String gotPetBackQuestion(String name) {
+    return 'Is $name back home? This closes the case: no more matches, and the report leaves the map. You can reopen it later.';
+  }
+
+  @override
+  String get closeCase => 'Close the case';
+
+  @override
+  String petBackHome(String name) {
+    return '$name is back home. The case is closed.';
+  }
+
+  @override
+  String get matchStatusConfirmed => 'Confirmed';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get noConversations =>
+      'No messages yet. When you write to someone who saw your pet, or an owner recognises an animal you saw, the conversation appears here.';
+
+  @override
+  String aboutPet(String name) {
+    return 'About $name';
+  }
+
+  @override
+  String youSaid(String text) {
+    return 'You: $text';
+  }
+
+  @override
+  String get writeMessage => 'Write a message';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get noMessagesYet =>
+      'No messages yet. Say hello and explain how you can help.';
+
+  @override
+  String get chatPrivacy =>
+      'Only your display name is shown. Never share your address before you\'re sure.';
+
+  @override
+  String caseClosedChat(String name) {
+    return '$name is back home. This case is closed, but you can still write.';
+  }
+
+  @override
+  String messageNotification(String name) {
+    return 'New message from $name';
+  }
+
+  @override
+  String confirmedNotification(String name) {
+    return 'The owner of $name recognised the animal you saw.';
+  }
+
+  @override
+  String foundNotification(String name) {
+    return '$name is back home. Thank you for helping!';
+  }
+
+  @override
+  String get helpBringThemHome => 'Help bring them home';
+
+  @override
+  String missingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pets are missing',
+      one: '1 pet is missing',
+      zero: 'No pet missing here',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n min ago';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n h ago';
+  }
+
+  @override
+  String daysAgo(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n days ago',
+      one: 'yesterday',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seenAgo(String when) {
+    return 'Seen $when';
+  }
+
+  @override
+  String missingCountMore(int count) {
+    return '$count+ pets are missing';
+  }
+
+  @override
+  String get possibleVisualMatch => 'Possible visual match';
+
+  @override
+  String get notConfirmedIdentity => 'A resemblance, not a confirmed identity.';
+
+  @override
+  String get addClearPhoto => 'Add a clear photo';
+
+  @override
+  String get addClearPhotoHelp => 'Camera or gallery';
 }

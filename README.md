@@ -13,7 +13,7 @@ Target region: Tunis. See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the
 | 1 | ML service | done |
 | 2 | Backend core | done |
 | 3 | Flutter app | done |
-| 4 | Close the loop | – |
+| 4 | Close the loop | done |
 | 5 | Stray map layer | – |
 
 ## Repository layout
@@ -53,8 +53,8 @@ never change once real reports exist, or old and new public positions together r
 
 **Push notifications** (Firebase Cloud Messaging): put the Firebase service account key at
 `secrets/firebase-service-account.json` (Firebase console → Project settings → Service accounts →
-Generate new private key). Compose mounts `secrets/` read-only into the worker. Without the key,
-matches are only logged. `secrets/` is git-ignored.
+Generate new private key). Compose mounts `secrets/` read-only into the api and worker. Without the key,
+notifications are only logged. `secrets/` is git-ignored.
 
 ## API
 
@@ -72,6 +72,17 @@ page, use **Authorize** with your email as the username.
 | `GET /photos/{id}/image`, `/crop` | EXIF-free JPEG, cropped animal (public, cacheable) |
 | `GET /map?bbox=min_lon,min_lat,max_lon,max_lat` | public map; filters `type`, `species`, `condition`, `since`, `until` |
 | `GET /me/matches` | possible sightings of your lost pets, best first |
+| `PATCH /matches/{id}` | `CONFIRMED` ("that's my pet", tells the finder), `REJECTED`, or `PENDING` (undo) |
+| `POST /matches/{id}/conversation` | owner only: open the conversation with the finder |
+| `GET /conversations`, `GET /conversations/{id}` | your conversations, with unread counts |
+| `GET/POST /conversations/{id}/messages` | read (oldest first, `before` to scroll back) or send |
+
+**Closing a case** takes two steps. Confirming a match ("that's my pet") tells the finder,
+and the search goes on: other sightings still help. Marking the lost report `FOUND` ("I got
+my pet back") closes it: no more matching, it leaves the map and the list, and the finders of
+confirmed matches get a thank-you. Rejected matches are hidden and never suggested again.
+Only the owner can start a conversation, from a match; participants see each other's display
+name, never an email. Reopening a report brings its pending matches back.
 
 **How matching runs.** An upload stores the original (private, never served) and an
 EXIF-free copy in MinIO, then queues the photo. The `worker` service picks it up, calls

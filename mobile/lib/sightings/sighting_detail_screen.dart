@@ -6,6 +6,8 @@ import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../reports/lost_report_detail_screen.dart' show confirm;
+import '../theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 
@@ -35,7 +37,7 @@ class SightingDetailScreen extends ConsumerWidget {
         actions: [
           if (sighting.value?.isMine ?? false)
             IconButton(
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline_rounded),
               tooltip: l10n.delete,
               onPressed: () => _delete(context, ref),
             ),
@@ -45,9 +47,14 @@ class SightingDetailScreen extends ConsumerWidget {
         AsyncData(:final value) => RefreshIndicator(
           onRefresh: () => ref.refresh(sightingProvider(id).future),
           child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
             children: [
-              PhotoGallery(value.photos, showStatus: value.isMine),
-              Padding(padding: const EdgeInsets.all(16), child: SightingInfo(value)),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: PhotoGallery(value.photos, showStatus: value.isMine),
+              ),
+              const SizedBox(height: 16),
+              FadeSlideIn(child: SightingInfo(value)),
             ],
           ),
         ),
@@ -67,15 +74,42 @@ class SightingInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final condition = sighting.condition;
+    final conditionTone = switch (condition) {
+      Condition.healthy => Tone.found,
+      Condition.injured => Tone.injured,
+      Condition.needsHelp => Tone.stray,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InfoRow(Icons.pets, speciesLabel(l10n, sighting.species)),
-        InfoRow(Icons.schedule, l10n.seenOn(formatDateTime(context, sighting.seenAt))),
-        InfoRow(Icons.healing_outlined, conditionLabel(l10n, sighting.condition)),
-        if (sighting.note != null) InfoRow(Icons.notes, sighting.note!),
-        const SizedBox(height: 16),
-        LocationPreview(sighting.location),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            StatusPill(
+              sighting.isStray ? l10n.typeStray : l10n.typeSighting,
+              tone: sighting.isStray ? Tone.stray : Tone.info,
+              icon: sighting.isStray ? Icons.pets_rounded : Icons.visibility_rounded,
+            ),
+            StatusPill(conditionLabel(l10n, condition), tone: conditionTone, icon: Icons.healing_rounded),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              children: [
+                InfoRow(Icons.pets_rounded, speciesLabel(l10n, sighting.species)),
+                InfoRow(Icons.schedule_rounded, l10n.seenOn(formatDateTime(context, sighting.seenAt))),
+                if (sighting.note != null) InfoRow(Icons.notes_rounded, sighting.note!),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ClipRRect(borderRadius: BorderRadius.circular(20), child: LocationPreview(sighting.location)),
       ],
     );
   }

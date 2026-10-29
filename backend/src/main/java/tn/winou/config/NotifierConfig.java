@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +18,11 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import tn.winou.domain.LostReportRepository;
+import tn.winou.domain.SightingRepository;
 import tn.winou.domain.UserRepository;
 import tn.winou.infra.FirebaseSender;
 import tn.winou.infra.LogNotifier;
+import tn.winou.infra.Notifications;
 import tn.winou.infra.Notifier;
 import tn.winou.infra.PushNotifier;
 
@@ -30,15 +33,16 @@ public class NotifierConfig {
     private static final Logger log = LoggerFactory.getLogger(NotifierConfig.class);
 
     @Bean
-    Notifier notifier(WinouProperties properties, LostReportRepository reports, UserRepository users) throws IOException {
+    Notifier notifier(WinouProperties properties, LostReportRepository reports, SightingRepository sightings,
+            UserRepository users) throws IOException {
         String keyFile = properties.firebase().credentials();
         if (keyFile == null || keyFile.isBlank()) {
-            log.info("FIREBASE_CREDENTIALS is not set: matches are logged, not pushed");
+            log.info("FIREBASE_CREDENTIALS is not set: notifications are logged, not pushed");
             return new LogNotifier();
         }
         Path key = Path.of(keyFile);
         if (!Files.isRegularFile(key)) {
-            log.warn("Firebase key {} not found: matches are logged, not pushed", key);
+            log.warn("Firebase key {} not found: notifications are logged, not pushed", key);
             return new LogNotifier();
         }
         try (InputStream in = Files.newInputStream(key)) {
@@ -47,7 +51,13 @@ public class NotifierConfig {
             FirebaseApp app = FirebaseApp.initializeApp(options, "winou");
             log.info("push notifications enabled (Firebase project {})",
                     credentials instanceof ServiceAccountCredentials account ? account.getProjectId() : "?");
-            return new PushNotifier(new FirebaseSender(FirebaseMessaging.getInstance(app)), reports, users);
+            return new PushNotifier(new FirebaseSender(FirebaseMessaging.getInstance(app)), reports, sightings,
+                    users);
         }
+    }
+
+    @Bean
+    Notifications notifications(Notifier notifier) {
+        return new Notifications(notifier, Executors.newVirtualThreadPerTaskExecutor());
     }
 }

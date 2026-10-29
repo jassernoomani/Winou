@@ -214,5 +214,153 @@
       }
     }
   },
-  "view": "View"
+  "view": "View",
+  "thatsMyPet": "That's my pet",
+  "notMyPet": "Not my pet",
+  "matchHidden": "Hidden. This sighting won't be suggested again.",
+  "undo": "Undo",
+  "matchConfirmedInfo": "You recognised {name}. The person who saw it has been told.",
+  "@matchConfirmedInfo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "messageFinder": "Message the finder",
+  "openConversation": "Open the conversation",
+  "gotPetBack": "I got {name} back",
+  "@gotPetBack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gotPetBackQuestion": "Is {name} back home? This closes the case: no more matches, and the report leaves the map. You can reopen it later.",
+  "@gotPetBackQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "closeCase": "Close the case",
+  "petBackHome": "{name} is back home. The case is closed.",
+  "@petBackHome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "matchStatusConfirmed": "Confirmed",
+  "messages": "Messages",
+  "noConversations": "No messages yet. When you write to someone who saw your pet, or an owner recognises an animal you saw, the conversation appears here.",
+  "aboutPet": "About {name}",
+  "@aboutPet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "youSaid": "You: {text}",
+  "@youSaid": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "writeMessage": "Write a message",
+  "send": "Send",
+  "noMessagesYet": "No messages yet. Say hello and explain how you can help.",
+  "chatPrivacy": "Only your display name is shown. Never share your address before you're sure.",
+  "caseClosedChat": "{name} is back home. This case is closed, but you can still write.",
+  "@caseClosedChat": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotification": "New message from {name}",
+  "@messageNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmedNotification": "The owner of {name} recognised the animal you saw.",
+  "@confirmedNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "foundNotification": "{name} is back home. Thank you for helping!",
+  "@foundNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "helpBringThemHome": "Help bring them home",
+  "missingCount": "{count, plural, =0{No pet missing here} =1{1 pet is missing} other{{count} pets are missing}}",
+  "@missingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "justNow": "just now",
+  "minutesAgo": "{n} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{n} h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{n, plural, =1{yesterday} other{{n} days ago}}",
+  "@daysAgo": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "seenAgo": "Seen {when}",
+  "@seenAgo": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "missingCountMore": "{count}+ pets are missing",
+  "@missingCountMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "possibleVisualMatch": "Possible visual match",
+  "notConfirmedIdentity": "A resemblance, not a confirmed identity.",
+  "addClearPhoto": "Add a clear photo",
+  "addClearPhotoHelp": "Camera or gallery"
 }

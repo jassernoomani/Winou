@@ -2,4 +2,9 @@
 <resources>
     <string name="match_title">Correspondance possible</string>
     <string name="match_body">Quelqu\'un a peut-être vu %1$s. Touchez pour comparer les photos.</string>
+    <string name="confirmed_title">Vous avez peut-être retrouvé un animal perdu</string>
+    <string name="confirmed_body">Le propriétaire de %1$s a reconnu l\'animal que vous avez vu. Il pourra vous écrire.</string>
+    <string name="found_title">%1$s est rentré !</string>
+    <string name="found_body">Merci d\'avoir aidé %1$s à rentrer chez lui.</string>
+    <string name="message_title">%1$s · à propos de %2$s</string>
 </resources>

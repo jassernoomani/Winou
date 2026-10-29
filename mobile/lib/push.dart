@@ -64,6 +64,16 @@ class PushNotifications {
 
 final pushProvider = Provider<PushNotifications>(PushNotifications.new);
 
-/// The match a notification points to, or null for other messages.
-String? matchIdOf(RemoteMessage message) =>
-    message.data['type'] == 'match' ? message.data['match_id'] as String? : null;
+/// The screen a notification opens.
+String? routeOf(RemoteMessage message) => switch (message.data) {
+  {'type': 'match', 'match_id': final String id} => '/matches/$id',
+  {'type': 'message', 'conversation_id': final String id} => '/conversations/$id',
+  {'type': 'confirmed' || 'found'} => '/conversations',
+  _ => null,
+};
+
+/// Conversations on screen: their messages arrive there instead of as a banner.
+final openConversations = <String>[];
+
+/// Conversation ids of messages received while the app is open.
+final incomingMessages = StreamController<String>.broadcast();

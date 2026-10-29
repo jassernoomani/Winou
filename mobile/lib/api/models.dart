@@ -40,6 +40,16 @@ enum ReportStatus with ApiEnum {
   final String api;
 }
 
+enum MatchStatus with ApiEnum {
+  pending('PENDING'),
+  confirmed('CONFIRMED'),
+  rejected('REJECTED');
+
+  const MatchStatus(this.api);
+  @override
+  final String api;
+}
+
 /// Where a photo came from. Sent with uploads; the API keeps it for moderation only.
 enum PhotoSource with ApiEnum {
   camera('CAMERA'),
@@ -167,19 +177,66 @@ class Match {
       lostReportId = json['lost_report_id'],
       lostReportName = json['lost_report_name'],
       score = (json['score'] as num).toDouble(),
-      status = json['status'],
+      status = _enum(MatchStatus.values, json['status']),
       sighting = Sighting.fromJson(json['sighting']),
       lostPhotoUrl = absoluteUrl(json['lost_photo_url']),
       sightingPhotoUrl = absoluteUrl(json['sighting_photo_url']),
+      reportStatus = _enum(ReportStatus.values, json['report_status']),
+      conversationId = json['conversation_id'],
       createdAt = _date(json['created_at']);
 
   final String id;
   final String lostReportId;
   final String lostReportName;
   final double score;
-  final String status;
+  final MatchStatus status;
   final Sighting sighting;
   final String? lostPhotoUrl;
   final String? sightingPhotoUrl;
+  final ReportStatus reportStatus;
+  final String? conversationId; // null until the owner starts one
   final DateTime createdAt;
+}
+
+class ChatMessage {
+  ChatMessage.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      body = json['body'],
+      mine = json['mine'],
+      createdAt = _date(json['created_at']);
+
+  final String id;
+  final String body;
+  final bool mine;
+  final DateTime createdAt;
+}
+
+/// A conversation as one participant sees it: [otherName] is the person they talk to.
+class Conversation {
+  Conversation.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      lostReportId = json['lost_report_id'],
+      petName = json['pet_name'],
+      reportStatus = _enum(ReportStatus.values, json['report_status']),
+      matchId = json['match_id'],
+      sightingPhotoUrl = absoluteUrl(json['sighting_photo_url']),
+      isOwner = json['my_role'] == 'owner',
+      otherName = json['other_name'],
+      lastMessage = json['last_message'] == null ? null : ChatMessage.fromJson(json['last_message']),
+      unread = json['unread'],
+      createdAt = _date(json['created_at']);
+
+  final String id;
+  final String lostReportId;
+  final String petName;
+  final ReportStatus reportStatus;
+  final String? matchId;
+  final String? sightingPhotoUrl;
+  final bool isOwner; // false: I'm the finder
+  final String otherName;
+  final ChatMessage? lastMessage;
+  final int unread;
+  final DateTime createdAt;
+
+  bool get caseClosed => reportStatus != ReportStatus.open;
 }

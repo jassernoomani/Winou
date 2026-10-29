@@ -95,9 +95,10 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
               const SizedBox(height: 8),
               PhotoPickerStrip(photos: _photos, max: _maxPhotos, onChanged: (p) => setState(() => _photos = p)),
               const SizedBox(height: 20),
+              FieldLabel(l10n.petName),
               TextFormField(
                 controller: _name,
-                decoration: InputDecoration(labelText: l10n.petName, border: const OutlineInputBorder()),
+                decoration: const InputDecoration(prefixIcon: Icon(Icons.pets_rounded)),
                 maxLength: 80,
                 validator: (v) => (v ?? '').trim().isEmpty ? l10n.required : null,
               ),
@@ -107,13 +108,10 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
                 onSelectionChanged: (s) => setState(() => _species = s.first),
               ),
               const SizedBox(height: 16),
+              FieldLabel(l10n.descriptionOptional),
               TextFormField(
                 controller: _description,
-                decoration: InputDecoration(
-                  labelText: l10n.descriptionOptional,
-                  hintText: l10n.descriptionHint,
-                  border: const OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(hintText: l10n.descriptionHint),
                 maxLength: 2000,
                 maxLines: 4,
                 minLines: 2,

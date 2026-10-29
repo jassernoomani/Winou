@@ -210,6 +210,36 @@ class WinouApi {
 
   Future<List<Match>> myMatches() =>
       _call(() => _dio.get('/me/matches'), (data) => [for (final m in data) Match.fromJson(m)]);
+
+  /// Confirm ("that's my pet"), reject, or undo a rejection with [MatchStatus.pending].
+  Future<Match> setMatchStatus(String id, MatchStatus status) =>
+      _call(() => _dio.patch('/matches/$id', data: {'status': status.api}), (data) => Match.fromJson(data));
+
+  // --- messages ---
+
+  /// The conversation with the match's finder, created on first use (owner only).
+  Future<Conversation> startConversation(String matchId) =>
+      _call(() => _dio.post('/matches/$matchId/conversation'), (data) => Conversation.fromJson(data));
+
+  Future<List<Conversation>> conversations() =>
+      _call(() => _dio.get('/conversations'), (data) => [for (final c in data) Conversation.fromJson(c)]);
+
+  Future<Conversation> conversation(String id) =>
+      _call(() => _dio.get('/conversations/$id'), (data) => Conversation.fromJson(data));
+
+  /// Oldest first. The newest page also marks the conversation read.
+  Future<List<ChatMessage>> messages(String conversationId, {DateTime? before}) => _call(
+    () => _dio.get(
+      '/conversations/$conversationId/messages',
+      queryParameters: {if (before != null) 'before': before.toUtc().toIso8601String()},
+    ),
+    (data) => [for (final m in data) ChatMessage.fromJson(m)],
+  );
+
+  Future<ChatMessage> sendMessage(String conversationId, String body) => _call(
+    () => _dio.post('/conversations/$conversationId/messages', data: {'body': body}),
+    (data) => ChatMessage.fromJson(data),
+  );
 }
 
 ApiException _toApiException(DioException error) {

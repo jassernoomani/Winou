@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
@@ -177,7 +178,8 @@ Future<List<PickedPhoto>> addPhotos(BuildContext context, int limit) async {
   };
 }
 
-/// A row of selected photos with remove buttons and an "add" tile.
+/// The selected photos with remove buttons, and the guide's "add a photo" control: soft blue, a
+/// dashed outline and a camera in a white circle. Full width until there is a photo, then a tile.
 class PhotoPickerStrip extends StatelessWidget {
   const PhotoPickerStrip({super.key, required this.photos, required this.max, required this.onChanged});
 
@@ -185,8 +187,60 @@ class PhotoPickerStrip extends StatelessWidget {
   final int max;
   final ValueChanged<List<PickedPhoto>> onChanged;
 
+  Future<void> _add(BuildContext context) async {
+    final added = await addPhotos(context, max - photos.length);
+    if (added.isNotEmpty) onChanged([...photos, ...added].take(max).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tokens = context.tokens;
+    final camera = Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(color: tokens.card, shape: BoxShape.circle),
+      child: Icon(Icons.photo_camera_outlined, color: tokens.accent),
+    );
+    Widget dashed({required Widget child, double? width, double? height}) => CustomPaint(
+      painter: _DashedOutline(color: tokens.accent, radius: 20),
+      child: Material(
+        color: tokens.tonal,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => _add(context),
+          child: SizedBox(width: width, height: height, child: child),
+        ),
+      ),
+    );
+
+    if (photos.isEmpty) {
+      return dashed(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            spacing: 12,
+            children: [
+              camera,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      l10n.addClearPhoto,
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: tokens.accent),
+                    ),
+                    Text(l10n.addClearPhotoHelp, style: TextStyle(fontSize: 12, color: tokens.muted)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return SizedBox(
       height: 96,
       child: ListView(
@@ -198,7 +252,7 @@ class PhotoPickerStrip extends StatelessWidget {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(16),
                     child: Image.file(File(photo.file.path), width: 96, height: 96, fit: BoxFit.cover),
                   ),
                   Positioned(
@@ -206,34 +260,44 @@ class PhotoPickerStrip extends StatelessWidget {
                     right: 0,
                     child: IconButton.filledTonal(
                       visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.close, size: 16),
+                      icon: const Icon(Icons.close_rounded, size: 16),
                       onPressed: () => onChanged([...photos]..remove(photo)),
                     ),
                   ),
                 ],
               ),
             ),
-          if (photos.length < max)
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () async {
-                final added = await addPhotos(context, max - photos.length);
-                if (added.isNotEmpty) onChanged([...photos, ...added].take(max).toList());
-              },
-              child: Ink(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Theme.of(context).colorScheme.outline),
-                ),
-                child: const Icon(Icons.add_a_photo_outlined),
-              ),
-            ),
+          if (photos.length < max) dashed(width: 96, height: 96, child: Center(child: camera)),
         ],
       ),
     );
   }
+}
+
+class _DashedOutline extends CustomPainter {
+  _DashedOutline({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    final outline =
+        ui.Path() // latlong2 has its own Path
+          ..addRRect(RRect.fromRectAndRadius((Offset.zero & size).deflate(0.5), Radius.circular(radius)));
+    for (final metric in outline.computeMetrics()) {
+      for (double d = 0; d < metric.length; d += 9) {
+        canvas.drawPath(metric.extractPath(d, d + 5), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedOutline old) => old.color != color || old.radius != radius;
 }
 
 /// Date then time picker; returns null if cancelled. Never later than now.

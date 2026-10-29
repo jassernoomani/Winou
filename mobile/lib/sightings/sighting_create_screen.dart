@@ -206,9 +206,10 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
               value: _isStray,
               onChanged: (v) => setState(() => _isStray = v),
             ),
+            FieldLabel(l10n.noteOptional),
             TextField(
               controller: _note,
-              decoration: InputDecoration(labelText: l10n.noteOptional, border: const OutlineInputBorder()),
+              decoration: const InputDecoration(prefixIcon: Icon(Icons.notes_rounded)),
               maxLength: 1000,
               maxLines: 3,
               minLines: 1,

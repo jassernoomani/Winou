@@ -38,6 +38,21 @@ flutter run --dart-define=API_URL=http://127.0.0.1:8080
 
 `adb` is in `%LOCALAPPDATA%\Android\Sdk\platform-tools`.
 
+## Design
+
+Colours, fonts and component styles live in `lib/theme.dart`. Blue is the brand colour; the
+others carry meaning everywhere, map markers included: coral = lost, blue = sighting,
+amber = stray, green = found or confirmed, red = injured. The font is Nunito (SIL Open Font
+License, bundled in `assets/fonts`). Reusable animations (staggered fade-in, the similarity ring,
+the pulse on injured animals) are in `lib/widgets/animations.dart`.
+
+The app icon is drawn by `tool/make_icon.py` (needs Pillow):
+
+```bash
+python tool/make_icon.py assets/icon
+dart run flutter_launcher_icons
+```
+
 ## Structure
 
 ```
@@ -48,7 +63,8 @@ lib/
   sightings/    camera-first sighting flow, sighting details
   reports/      lost report form and details
   me/           my activity (matches, my reports, my sightings), match details
-  push.dart     push notifications: registration, opening a match from a notification
+  chat/         messages between owner and finder
+  push.dart     push notifications: registration, opening the right screen from a notification
   widgets/      shared UI: photos, upload + "retake?" flow, map pickers
   l10n/         app_en.arb, app_fr.arb (generated code: flutter gen-l10n)
 ```

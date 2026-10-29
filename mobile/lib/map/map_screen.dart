@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
+import '../theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 
@@ -123,8 +125,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
             : null,
         actions: [
-          IconButton(icon: const Icon(Icons.tune), tooltip: l10n.filters, onPressed: _editFilters),
-          IconButton(icon: const Icon(Icons.person_outline), tooltip: l10n.myActivity, onPressed: () => _open('/me')),
+          IconButton(icon: const Icon(Icons.tune_rounded), tooltip: l10n.filters, onPressed: _editFilters),
+          IconButton(icon: const Icon(Icons.person_rounded), tooltip: l10n.myActivity, onPressed: () => _open('/me')),
         ],
       ),
       body: FlutterMap(
@@ -144,10 +146,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             markers: [
               for (final item in _items)
                 Marker(
+                  key: ValueKey('${item.type.api}-${item.id}'),
                   point: item.location,
-                  width: 40,
-                  height: 40,
-                  child: GestureDetector(onTap: () => _preview(item), child: _MarkerIcon(item)),
+                  width: 60,
+                  height: 60,
+                  child: GestureDetector(
+                    onTap: () => _preview(item),
+                    // Markers pop in as the area loads
+                    child: FadeSlideIn(
+                      key: ValueKey(item.id),
+                      offset: const Offset(0, 0.3),
+                      scale: 0.4,
+                      duration: const Duration(milliseconds: 350),
+                      child: _MarkerIcon(item),
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -162,23 +175,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             heroTag: 'me',
             tooltip: l10n.myLocation,
             onPressed: _centerOnMe,
-            child: const Icon(Icons.my_location),
+            child: const Icon(Icons.my_location_rounded),
           ),
           const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'lost',
+          GradientFab(
+            gradient: Brand.lostGradient,
+            icon: Icons.campaign_rounded,
+            label: l10n.reportLostPet,
             onPressed: () => _open('/lost/new'),
-            icon: const Icon(Icons.campaign_outlined),
-            label: Text(l10n.reportLostPet),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
           ),
           const SizedBox(height: 12),
-          FloatingActionButton.extended(
-            heroTag: 'sighting',
+          GradientFab(
+            gradient: Brand.sightingGradient,
+            icon: Icons.photo_camera_rounded,
+            label: l10n.iSawAnAnimal,
             onPressed: () => _open('/sightings/new'),
-            icon: const Icon(Icons.photo_camera),
-            label: Text(l10n.iSawAnAnimal),
           ),
         ],
       ),
@@ -193,7 +204,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         child: ListTile(
           contentPadding: const EdgeInsets.all(16),
           leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(16),
             child: SizedBox.square(dimension: 64, child: NetworkPhoto(item.photoUrl)),
           ),
           title: Text(switch (item.type) {
@@ -207,7 +218,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               if (item.condition != null && item.condition != Condition.healthy) conditionLabel(l10n, item.condition!),
             ].join(' · '),
           ),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () {
             Navigator.pop(sheet);
             _open(item.type == MapItemType.lost ? '/lost/${item.id}' : '/sightings/${item.id}');
@@ -218,6 +229,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 }
 
+/// The guide's map marker: a 34px circle in the type's colour, 1.5px ink outline, 18px ink glyph,
+/// inside a 60px tap area. Injured animals get the red marker with a plus and pulsing rings.
 class _MarkerIcon extends StatelessWidget {
   const _MarkerIcon(this.item);
 
@@ -225,23 +238,33 @@ class _MarkerIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (color, icon) = switch (item.type) {
-      MapItemType.lost => (Colors.red.shade700, Icons.campaign),
-      MapItemType.sighting => (Colors.blue.shade700, Icons.visibility),
-      MapItemType.stray => (Colors.orange.shade800, Icons.pets),
-    };
-    final urgent = item.condition == Condition.injured || item.condition == Condition.needsHelp;
-    return DecoratedBox(
+    final injured = item.condition == Condition.injured;
+    final (color, icon) = injured ? (Brand.red, Icons.add_rounded) : markerStyle(item.type);
+    final dot = Container(
+      width: 34,
+      height: 34,
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: urgent ? Colors.yellowAccent : Colors.white, width: urgent ? 4 : 2),
-        boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black26)],
+        border: Border.all(color: Brand.ink, width: 1.5),
+        boxShadow: const [BoxShadow(blurRadius: 6, color: Color(0x33101D36), offset: Offset(0, 2))],
       ),
-      child: Icon(icon, color: Colors.white, size: 20),
+      child: Icon(icon, color: Brand.ink, size: 18),
+    );
+    // Injured or in need of help: red rings pulse around the marker
+    final urgent = injured || item.condition == Condition.needsHelp;
+    return Center(
+      child: urgent ? Pulse(color: Brand.red, size: 60, child: dot) : dot,
     );
   }
 }
+
+/// Marker colour and glyph per type, the same as everywhere in the app.
+(Color, IconData) markerStyle(MapItemType type) => switch (type) {
+  MapItemType.lost => (Brand.coral, Icons.search_rounded),
+  MapItemType.sighting => (Brand.blue, Icons.visibility_rounded),
+  MapItemType.stray => (Brand.amber, Icons.pets_rounded),
+};
 
 class _FilterSheet extends StatefulWidget {
   const _FilterSheet({required this.initial});
@@ -280,6 +303,11 @@ class _FilterSheetState extends State<_FilterSheet> {
                   (MapItemType.stray, l10n.typeStray),
                 ])
                   FilterChip(
+                    avatar: CircleAvatar(
+                      backgroundColor: markerStyle(type).$1,
+                      child: Icon(markerStyle(type).$2, size: 12, color: Brand.ink),
+                    ),
+                    showCheckmark: false, // the coloured dot doubles as the map legend
                     label: Text(label),
                     selected: _f.types.contains(type),
                     onSelected: (on) => setState(() => _f = _f.copyWith(types: _toggle(_f.types, type, on))),

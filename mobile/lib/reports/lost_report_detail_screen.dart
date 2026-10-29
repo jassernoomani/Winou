@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
+import '../theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 
@@ -12,9 +14,10 @@ import '../widgets/location.dart';
 const _fuzzRadiusM = 300.0;
 
 class LostReportDetailScreen extends ConsumerWidget {
-  const LostReportDetailScreen({super.key, required this.id});
+  const LostReportDetailScreen({super.key, required this.id, this.initial});
 
   final String id;
+  final LostReport? initial; // from the list, shown while the fresh copy loads
 
   Future<void> _act(BuildContext context, WidgetRef ref, LostReport report, String action) async {
     final l10n = context.l10n;
@@ -27,8 +30,13 @@ class LostReportDetailScreen extends ConsumerWidget {
         if (context.mounted) context.pop();
         return;
       }
+      if (action == 'found' && !await confirm(context, l10n.gotPetBackQuestion(report.name), l10n.closeCase)) {
+        return;
+      }
       await api.setReportStatus(report.id, ReportStatus.values.byName(action));
-      ref.invalidate(lostReportProvider(id));
+      ref
+        ..invalidate(lostReportProvider(id))
+        ..invalidate(myMatchesProvider);
     } catch (e) {
       if (context.mounted) showError(context, e);
     }
@@ -37,64 +45,140 @@ class LostReportDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final report = ref.watch(lostReportProvider(id));
+    final async = ref.watch(lostReportProvider(id));
+    final report = async.value ?? initial; // the list's copy shows at once, then the fresh one
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(report.value?.name ?? ''),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        leading: const _RoundBack(),
         actions: [
-          if (report.value case final r? when r.isMine)
-            PopupMenuButton<String>(
-              onSelected: (action) => _act(context, ref, r, action),
-              itemBuilder: (_) => [
-                if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
-                if (r.status != ReportStatus.closed) PopupMenuItem(value: 'closed', child: Text(l10n.closeReport)),
-                if (r.status != ReportStatus.open) PopupMenuItem(value: 'open', child: Text(l10n.reopenReport)),
-                PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
-              ],
+          if (report case final r? when r.isMine)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: CircleAvatar(
+                backgroundColor: Colors.black38,
+                child: PopupMenuButton<String>(
+                  iconColor: Colors.white,
+                  onSelected: (action) => _act(context, ref, r, action),
+                  itemBuilder: (_) => [
+                    if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
+                    if (r.status != ReportStatus.closed) PopupMenuItem(value: 'closed', child: Text(l10n.closeReport)),
+                    if (r.status != ReportStatus.open) PopupMenuItem(value: 'open', child: Text(l10n.reopenReport)),
+                    PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                  ],
+                ),
+              ),
             ),
         ],
       ),
-      body: switch (report) {
-        AsyncData(:final value) => RefreshIndicator(
+      body: switch ((report, async)) {
+        (final LostReport value, _) => RefreshIndicator(
           onRefresh: () => ref.refresh(lostReportProvider(id).future),
           child: ListView(
+            padding: EdgeInsets.zero,
             children: [
-              PhotoGallery(value.photos, showStatus: value.isMine),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: Text(value.name, style: Theme.of(context).textTheme.headlineSmall)),
-                        Chip(label: Text(statusLabel(l10n, value.status))),
-                      ],
-                    ),
-                    InfoRow(Icons.pets, speciesLabel(l10n, value.species)),
-                    InfoRow(Icons.schedule, l10n.lastSeenOn(formatDateTime(context, value.lastSeenAt))),
-                    if (value.description != null) ...[const SizedBox(height: 8), Text(value.description!)],
-                    const SizedBox(height: 16),
-                    LocationPreview(
-                      value.lastSeen,
-                      approximateRadiusM: value.locationIsApproximate ? _fuzzRadiusM : null,
-                    ),
-                    if (value.locationIsApproximate)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(l10n.approximateArea, style: Theme.of(context).textTheme.bodySmall),
+              PhotoGallery(value.photos, showStatus: value.isMine, heroTag: 'lost-photo-${value.id}'),
+              Transform.translate(
+                offset: const Offset(0, -24), // the sheet overlaps the photo
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FadeSlideIn(
+                        child: Row(
+                          children: [
+                            Expanded(child: Text(value.name, style: Theme.of(context).textTheme.headlineMedium)),
+                            StatusPill(
+                              statusLabel(l10n, value.status),
+                              tone: reportStatusTone(value.status),
+                              icon: reportStatusIcon(value.status),
+                            ),
+                          ],
+                        ),
                       ),
-                  ],
+                      const SizedBox(height: 12),
+                      FadeSlideIn(
+                        index: 1,
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Column(
+                              children: [
+                                InfoRow(Icons.pets_rounded, speciesLabel(l10n, value.species)),
+                                InfoRow(
+                                  Icons.schedule_rounded,
+                                  l10n.lastSeenOn(formatDateTime(context, value.lastSeenAt)),
+                                ),
+                                if (value.description != null) InfoRow(Icons.notes_rounded, value.description!),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (value.isMine && value.status == ReportStatus.open) ...[
+                        const SizedBox(height: 12),
+                        FadeSlideIn(
+                          index: 2,
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              style: FilledButton.styleFrom(backgroundColor: Brand.green, foregroundColor: Brand.ink),
+                              onPressed: () => _act(context, ref, value, 'found'),
+                              icon: const Icon(Icons.home_rounded),
+                              label: Text(l10n.gotPetBack(value.name)),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      FadeSlideIn(
+                        index: 3,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: LocationPreview(
+                            value.lastSeen,
+                            approximateRadiusM: value.locationIsApproximate ? _fuzzRadiusM : null,
+                          ),
+                        ),
+                      ),
+                      if (value.locationIsApproximate)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(l10n.approximateArea, style: Theme.of(context).textTheme.bodySmall),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(lostReportProvider(id))),
+        (_, AsyncError(:final error)) => ErrorView(error: error, onRetry: () => ref.invalidate(lostReportProvider(id))),
         _ => const Center(child: CircularProgressIndicator()),
       },
     );
   }
+}
+
+/// A back button that stays readable on top of a photo.
+class _RoundBack extends StatelessWidget {
+  const _RoundBack();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(8),
+    child: CircleAvatar(
+      backgroundColor: Colors.black38,
+      child: BackButton(color: Colors.white, onPressed: () => Navigator.maybePop(context)),
+    ),
+  );
 }
 
 Future<bool> confirm(BuildContext context, String question, String action) async =>

@@ -841,6 +841,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View'**
   String get view;
+
+  /// No description provided for @thatsMyPet.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s my pet'**
+  String get thatsMyPet;
+
+  /// No description provided for @notMyPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not my pet'**
+  String get notMyPet;
+
+  /// No description provided for @matchHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden. This sighting won\'t be suggested again.'**
+  String get matchHidden;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @matchConfirmedInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'You recognised {name}. The person who saw it has been told.'**
+  String matchConfirmedInfo(String name);
+
+  /// No description provided for @messageFinder.
+  ///
+  /// In en, this message translates to:
+  /// **'Message the finder'**
+  String get messageFinder;
+
+  /// No description provided for @openConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the conversation'**
+  String get openConversation;
+
+  /// No description provided for @gotPetBack.
+  ///
+  /// In en, this message translates to:
+  /// **'I got {name} back'**
+  String gotPetBack(String name);
+
+  /// No description provided for @gotPetBackQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Is {name} back home? This closes the case: no more matches, and the report leaves the map. You can reopen it later.'**
+  String gotPetBackQuestion(String name);
+
+  /// No description provided for @closeCase.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the case'**
+  String get closeCase;
+
+  /// No description provided for @petBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is back home. The case is closed.'**
+  String petBackHome(String name);
+
+  /// No description provided for @matchStatusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get matchStatusConfirmed;
+
+  /// No description provided for @messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @noConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. When you write to someone who saw your pet, or an owner recognises an animal you saw, the conversation appears here.'**
+  String get noConversations;
+
+  /// No description provided for @aboutPet.
+  ///
+  /// In en, this message translates to:
+  /// **'About {name}'**
+  String aboutPet(String name);
+
+  /// No description provided for @youSaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You: {text}'**
+  String youSaid(String text);
+
+  /// No description provided for @writeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message'**
+  String get writeMessage;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Say hello and explain how you can help.'**
+  String get noMessagesYet;
+
+  /// No description provided for @chatPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your display name is shown. Never share your address before you\'re sure.'**
+  String get chatPrivacy;
+
+  /// No description provided for @caseClosedChat.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is back home. This case is closed, but you can still write.'**
+  String caseClosedChat(String name);
+
+  /// No description provided for @messageNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'New message from {name}'**
+  String messageNotification(String name);
+
+  /// No description provided for @confirmedNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner of {name} recognised the animal you saw.'**
+  String confirmedNotification(String name);
+
+  /// No description provided for @foundNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is back home. Thank you for helping!'**
+  String foundNotification(String name);
+
+  /// No description provided for @helpBringThemHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Help bring them home'**
+  String get helpBringThemHome;
+
+  /// No description provided for @missingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No pet missing here} =1{1 pet is missing} other{{count} pets are missing}}'**
+  String missingCount(int count);
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} min ago'**
+  String minutesAgo(int n);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} h ago'**
+  String hoursAgo(int n);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{yesterday} other{{n} days ago}}'**
+  String daysAgo(int n);
+
+  /// No description provided for @seenAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen {when}'**
+  String seenAgo(String when);
+
+  /// No description provided for @missingCountMore.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ pets are missing'**
+  String missingCountMore(int count);
+
+  /// No description provided for @possibleVisualMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible visual match'**
+  String get possibleVisualMatch;
+
+  /// No description provided for @notConfirmedIdentity.
+  ///
+  /// In en, this message translates to:
+  /// **'A resemblance, not a confirmed identity.'**
+  String get notConfirmedIdentity;
+
+  /// No description provided for @addClearPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a clear photo'**
+  String get addClearPhoto;
+
+  /// No description provided for @addClearPhotoHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera or gallery'**
+  String get addClearPhotoHelp;
 }
 
 class _AppLocalizationsDelegate

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
+import '../theme.dart';
+import '../widgets/animations.dart';
 import '../widgets/common.dart';
 
 /// Tabs: matches for my lost pets, my lost reports, my sightings.
@@ -21,7 +23,7 @@ class MyActivityScreen extends ConsumerWidget {
           title: Text(l10n.myActivity),
           actions: [
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout_rounded),
               tooltip: l10n.signOut,
               onPressed: () => ref.read(authProvider.notifier).logout(),
             ),
@@ -39,30 +41,62 @@ class MyActivityScreen extends ConsumerWidget {
             _AsyncList<Match>(
               provider: myMatchesProvider,
               empty: l10n.noMatches,
+              emptyIcon: Icons.image_search_rounded,
               itemBuilder: (context, m) => ListTile(
                 leading: _Thumb(m.sightingPhotoUrl),
                 title: Text(l10n.possibleMatchFor(m.lostReportName)),
-                subtitle: Text(
-                  '${l10n.similarity((m.score * 100).round())} · ${formatDateTime(context, m.sighting.seenAt)}',
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      if (m.reportStatus != ReportStatus.open)
+                        StatusPill(
+                          statusLabel(l10n, m.reportStatus),
+                          tone: reportStatusTone(m.reportStatus),
+                          icon: reportStatusIcon(m.reportStatus),
+                        )
+                      else if (m.status == MatchStatus.confirmed)
+                        StatusPill(l10n.matchStatusConfirmed, tone: Tone.found, icon: Icons.check_rounded)
+                      else
+                        StatusPill('${(m.score * 100).round()}%', tone: Tone.info, icon: Icons.auto_awesome),
+                      const SizedBox(width: 8),
+                      Flexible(child: Text(timeAgo(l10n, m.sighting.seenAt), overflow: TextOverflow.ellipsis)),
+                    ],
+                  ),
                 ),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => context.push('/matches/${m.id}', extra: m),
               ),
             ),
             _AsyncList<LostReport>(
               provider: myLostReportsProvider,
               empty: l10n.noLostReports,
+              emptyIcon: Icons.campaign_rounded,
               itemBuilder: (context, r) => ListTile(
                 leading: _Thumb(r.photos.firstOrNull?.url),
                 title: Text(r.name),
-                subtitle: Text('${statusLabel(l10n, r.status)} · ${formatDateTime(context, r.lastSeenAt)}'),
-                trailing: const Icon(Icons.chevron_right),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      StatusPill(
+                        statusLabel(l10n, r.status),
+                        tone: reportStatusTone(r.status),
+                        icon: reportStatusIcon(r.status),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(child: Text(timeAgo(l10n, r.lastSeenAt), overflow: TextOverflow.ellipsis)),
+                    ],
+                  ),
+                ),
+                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => _openAndRefresh(context, ref, '/lost/${r.id}', myLostReportsProvider),
               ),
             ),
             _AsyncList<Sighting>(
               provider: mySightingsProvider,
               empty: l10n.noSightings,
+              emptyIcon: Icons.photo_camera_rounded,
               itemBuilder: (context, s) => ListTile(
                 leading: _Thumb(s.photos.firstOrNull?.url),
                 title: Text(
@@ -70,8 +104,8 @@ class MyActivityScreen extends ConsumerWidget {
                       ? l10n.strayOf(speciesLabel(l10n, s.species))
                       : l10n.sightingOf(speciesLabel(l10n, s.species)),
                 ),
-                subtitle: Text(formatDateTime(context, s.seenAt)),
-                trailing: const Icon(Icons.chevron_right),
+                subtitle: Text(timeAgo(l10n, s.seenAt)),
+                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => _openAndRefresh(context, ref, '/sightings/${s.id}', mySightingsProvider),
               ),
             ),
@@ -99,16 +133,17 @@ class _Thumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(14),
     child: SizedBox.square(dimension: 56, child: NetworkPhoto(url)),
   );
 }
 
 class _AsyncList<T> extends ConsumerWidget {
-  const _AsyncList({required this.provider, required this.empty, required this.itemBuilder});
+  const _AsyncList({required this.provider, required this.empty, required this.emptyIcon, required this.itemBuilder});
 
   final FutureProvider<List<T>> provider;
   final String empty;
+  final IconData emptyIcon;
   final Widget Function(BuildContext, T) itemBuilder;
 
   @override
@@ -119,16 +154,18 @@ class _AsyncList<T> extends ConsumerWidget {
         child: value.isEmpty
             ? ListView(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Text(empty, textAlign: TextAlign.center),
+                  FadeSlideIn(
+                    child: EmptyState(icon: emptyIcon, text: empty),
                   ),
                 ],
               )
-            : ListView.separated(
+            : ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
                 itemCount: value.length,
-                separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, i) => itemBuilder(context, value[i]),
+                itemBuilder: (context, i) => FadeSlideIn(
+                  index: i,
+                  child: Card(clipBehavior: Clip.antiAlias, child: itemBuilder(context, value[i])),
+                ),
               ),
       ),
       AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(provider)),
