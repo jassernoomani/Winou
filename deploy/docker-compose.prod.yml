@@ -7,8 +7,9 @@
 # over the compose network.
 services:
   postgres:
-    # Same PostGIS image as postgis/postgis, also built for ARM (the official one is x86 only)
-    image: imresamu/postgis:18-3.6
+    # Same PostGIS image as postgis/postgis, also built for ARM (the official one is x86 only).
+    # A PC that already has data from the official image keeps it: POSTGIS_IMAGE=postgis/postgis:18-3.6
+    image: ${POSTGIS_IMAGE:-imresamu/postgis:18-3.6}
     ports: !reset []
 
   minio:
@@ -22,7 +23,9 @@ services:
     mem_limit: 6g
 
   api:
-    ports: !reset []
+    # This machine only (scripts, USB demos); the internet goes through Caddy
+    ports: !override
+      - "127.0.0.1:8080:8080"
     mem_limit: 1536m   # the JVM takes 75% of this as heap
 
   worker:

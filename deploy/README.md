@@ -12,6 +12,34 @@ phone ──HTTPS──> Caddy ──> api ──> postgres, minio, qdrant
 
 Takes about an hour the first time, most of it waiting for the first build.
 
+## Or: host it at home (Windows PC)
+
+Like a game server: the stack runs on your PC, the router forwards ports 80 and 443 to it, and
+Caddy gets the HTTPS certificate. The PC has to stay on and awake.
+
+1. **DuckDNS** (step 1 below), then save the token, git-ignored, and keep the name pointing here:
+
+   ```powershell
+   Set-Content -NoNewline secrets\duckdns-token.txt <token>
+   powershell -ExecutionPolicy Bypass -File deploy\windows\install-duckdns-task.ps1 <subdomain>
+   ```
+
+2. **Router**: forward TCP **80** and **443** to the PC's local address (`ipconfig`, e.g.
+   192.168.1.18). Reserve that address for the PC in the router's DHCP settings so it doesn't change.
+3. **Windows firewall**: Docker Desktop's rule covers *Public* networks. On a *Private* one, once in
+   an admin PowerShell:
+   `New-NetFirewallRule -DisplayName 'Winou HTTPS' -Direction Inbound -Protocol TCP -LocalPort 80,443 -Action Allow`
+4. **`.env`**: `WINOU_DOMAIN=<subdomain>.duckdns.org`, strong `JWT_SECRET` and `LOCATION_FUZZ_SECRET`
+   (never the defaults: they are public on GitHub), and `POSTGIS_IMAGE=postgis/postgis:18-3.6` if
+   the database was created with the official image.
+5. **Start**: `docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d`.
+   The API stays on `127.0.0.1:8080` for scripts and USB; the internet only reaches Caddy.
+6. **Docker Desktop** → Settings → General → *Start Docker Desktop when you sign in*, and Windows
+   power settings: never sleep when plugged in.
+
+On the home Wi-Fi itself, the public name works only if the router supports "NAT loopback";
+otherwise use the PC's local address there (Server address in the app).
+
 ## 1. A free name (DuckDNS)
 
 1. Sign in at <https://www.duckdns.org> (with GitHub or Google).
