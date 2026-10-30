@@ -1476,4 +1476,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get done => 'Done';
+
+  @override
+  String get viewCards => 'Cards';
+
+  @override
+  String get viewList => 'List';
+
+  @override
+  String get viewGrid => 'Grid';
 }

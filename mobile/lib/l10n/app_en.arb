@@ -885,5 +885,8 @@
     }
   },
   "shareGoodNews": "Share the good news",
-  "done": "Done"
+  "done": "Done",
+  "viewCards": "Cards",
+  "viewList": "List",
+  "viewGrid": "Grid"
 }

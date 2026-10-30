@@ -58,6 +58,24 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 
 Finder _markers() => find.byWidgetPredicate((w) => w.runtimeType.toString() == '_MarkerIcon');
 
+/// Enough lost pets to fill a grid.
+final _manyLost = [
+  for (final (i, (name, species)) in [
+    ('Luna', 'cat'),
+    ('Rocky', 'dog'),
+    ('Mimi', 'cat'),
+    ('Rex', 'dog'),
+    ('Simba', 'cat'),
+    ('Bella', 'dog'),
+  ].indexed)
+    lostJson(
+      id: name.toLowerCase(),
+      name: name,
+      species: species,
+      seen: Duration(hours: 2 + i * 9),
+    ),
+];
+
 final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('01_splash', () => const SplashScreen(), FakeApi.new, null),
   ('02_sign_in', () => const LoginScreen(), FakeApi.new, null),
@@ -300,6 +318,18 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     ),
     FakeApi.new,
     null,
+  ),
+  (
+    '67_home_list',
+    () => const LostFeedScreen(),
+    () => FakeApi(lost: _manyLost),
+    (tester) => _tap(tester, find.byTooltip(_l10n.viewList)),
+  ),
+  (
+    '68_home_grid',
+    () => const LostFeedScreen(),
+    () => FakeApi(lost: _manyLost),
+    (tester) => _tap(tester, find.byTooltip(_l10n.viewGrid)),
   ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];

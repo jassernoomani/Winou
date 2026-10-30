@@ -414,5 +414,8 @@
   "reunionBody": "Merci de ne pas avoir abandonné. Tous ceux qui ont aidé ont appris la bonne nouvelle.",
   "reunionShareText": "Bonne nouvelle : {name} est rentré à la maison ! Merci à tous ceux qui ont partagé et cherché. Retrouvé avec Winou.",
   "shareGoodNews": "Partager la bonne nouvelle",
-  "done": "Terminé"
+  "done": "Terminé",
+  "viewCards": "Cartes",
+  "viewList": "Liste",
+  "viewGrid": "Grille"
 }

@@ -1523,4 +1523,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get done => 'تم';
+
+  @override
+  String get viewCards => 'بطاقات';
+
+  @override
+  String get viewList => 'قائمة';
+
+  @override
+  String get viewGrid => 'شبكة';
 }

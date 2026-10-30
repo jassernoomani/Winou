@@ -4,6 +4,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
+import '../l10n/app_localizations.dart';
+import '../preferences.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../theme.dart';
@@ -168,6 +170,10 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               const AppLogo(size: 36),
               const SizedBox(width: 10),
               const Expanded(child: Wordmark(size: 26, color: Colors.white)),
+              _LayoutSwitch(
+                ref.watch(preferencesProvider).feedLayout,
+                onChanged: ref.read(preferencesProvider.notifier).setFeedLayout,
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -252,28 +258,231 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
       if (_nearMe && _position == null) return [message(LucideIcons.mapPinOff, l10n.locationOffForNearby)];
       return [message(LucideIcons.heart, _nearMe ? l10n.noMissingPetsNearby : l10n.noMissingPets)];
     }
+    final layout = ref.watch(preferencesProvider).feedLayout;
+    Widget item(int i) {
+      final report = _reports[i];
+      void open() => _open('/lost/${report.id}', extra: report);
+      return FadeSlideIn(
+        key: ValueKey('${layout.name}-${report.id}'), // switching layouts plays the entrance again
+        index: i,
+        child: switch (layout) {
+          FeedLayout.cards => _ReportCard(report, from: _position, onTap: open),
+          FeedLayout.list => _ReportRow(report, from: _position, onTap: open),
+          FeedLayout.grid => _ReportTile(report, from: _position, onTap: open),
+        },
+      );
+    }
+
+    const more = Padding(
+      padding: EdgeInsets.all(16),
+      child: Center(child: CircularProgressIndicator()),
+    );
+    if (layout == FeedLayout.grid) {
+      return [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+          sliver: SliverGrid.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 220, // two columns on a phone, more on a tablet
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.72,
+            ),
+            itemCount: _reports.length,
+            itemBuilder: (context, i) => item(i),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.only(bottom: 160), // room for the buttons
+          sliver: SliverToBoxAdapter(child: _hasMore ? more : null),
+        ),
+      ];
+    }
     return [
       SliverPadding(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 160), // room for the buttons
         sliver: SliverList.builder(
           itemCount: _reports.length + (_hasMore ? 1 : 0),
-          itemBuilder: (context, i) => i == _reports.length
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : FadeSlideIn(
-                  key: ValueKey(_reports[i].id),
-                  index: i,
-                  child: _ReportCard(
-                    _reports[i],
-                    from: _position,
-                    onTap: () => _open('/lost/${_reports[i].id}', extra: _reports[i]),
-                  ),
-                ),
+          itemBuilder: (context, i) => i == _reports.length ? more : item(i),
         ),
       ),
     ];
+  }
+}
+
+/// "Cat · 1.2 km away": the distance only when the phone's position is known.
+String _speciesAndDistance(AppLocalizations l10n, LostReport report, LatLng? from) {
+  final km = from == null ? null : const Distance().as(LengthUnit.Meter, from, report.lastSeen) / 1000;
+  return [
+    speciesLabel(l10n, report.species),
+    if (km != null) l10n.kmAway(km < 1 ? '< 1' : km.toStringAsFixed(km < 10 ? 1 : 0)),
+  ].join(' · ');
+}
+
+/// Cards, list or grid: three icons on the header's gradient, the chosen one filled.
+class _LayoutSwitch extends StatelessWidget {
+  const _LayoutSwitch(this.layout, {required this.onChanged});
+
+  final FeedLayout layout;
+  final ValueChanged<FeedLayout> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(14)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final (option, icon, label) in [
+            (FeedLayout.cards, LucideIcons.galleryVertical, l10n.viewCards),
+            (FeedLayout.list, LucideIcons.list, l10n.viewList),
+            (FeedLayout.grid, LucideIcons.layoutGrid, l10n.viewGrid),
+          ])
+            Semantics(
+              selected: option == layout,
+              child: IconButton(
+                tooltip: label,
+                visualDensity: VisualDensity.compact,
+                onPressed: () => onChanged(option),
+                style: IconButton.styleFrom(
+                  backgroundColor: option == layout ? Colors.white : Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+                ),
+                icon: Icon(icon, size: 20, color: option == layout ? Brand.indigo : Colors.white),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The list layout: a small photo and the essentials on one row, many pets per screen.
+class _ReportRow extends StatelessWidget {
+  const _ReportRow(this.report, {required this.from, required this.onTap});
+
+  final LostReport report;
+  final LatLng? from;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tokens = context.tokens;
+    final muted = TextStyle(fontSize: 13, color: tokens.muted);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: tokens.card, borderRadius: BorderRadius.circular(20), boxShadow: cardShadow),
+        child: Material(
+          type: MaterialType.transparency,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                spacing: 12,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox.square(
+                      dimension: 72,
+                      child: Hero(tag: 'lost-photo-${report.id}', child: NetworkPhoto(report.photos.firstOrNull?.url)),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 3,
+                      children: [
+                        Text(
+                          report.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                        ),
+                        Text(
+                          _speciesAndDistance(l10n, report, from),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: muted,
+                        ),
+                        Text(l10n.seenAgo(timeAgo(l10n, report.lastSeenAt)), maxLines: 1, style: muted),
+                      ],
+                    ),
+                  ),
+                  const ForwardIcon(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The grid layout: photos first, two per row, with the name and how far.
+class _ReportTile extends StatelessWidget {
+  const _ReportTile(this.report, {required this.from, required this.onTap});
+
+  final LostReport report;
+  final LatLng? from;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tokens = context.tokens;
+    return DecoratedBox(
+      decoration: BoxDecoration(color: tokens.card, borderRadius: BorderRadius.circular(20), boxShadow: cardShadow),
+      child: Material(
+        type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Hero(tag: 'lost-photo-${report.id}', child: NetworkPhoto(report.photos.firstOrNull?.url)),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      report.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+                    ),
+                    Text(
+                      _speciesAndDistance(l10n, report, from),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: tokens.muted),
+                    ),
+                    Text(
+                      timeAgo(l10n, report.lastSeenAt),
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 12, color: tokens.muted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -339,7 +548,6 @@ class _ReportCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tokens = context.tokens;
-    final km = from == null ? null : const Distance().as(LengthUnit.Meter, from!, report.lastSeen) / 1000;
     Widget meta(IconData icon, String text) => Row(
       spacing: 6,
       children: [
@@ -395,13 +603,7 @@ class _ReportCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      meta(
-                        LucideIcons.mapPin,
-                        [
-                          speciesLabel(l10n, report.species),
-                          if (km != null) l10n.kmAway(km < 1 ? '< 1' : km.toStringAsFixed(km < 10 ? 1 : 0)),
-                        ].join(' · '),
-                      ),
+                      meta(LucideIcons.mapPin, _speciesAndDistance(l10n, report, from)),
                       meta(LucideIcons.clock, l10n.seenAgo(timeAgo(l10n, report.lastSeenAt))),
                       if (report.description case final description? when description.trim().isNotEmpty)
                         Text(

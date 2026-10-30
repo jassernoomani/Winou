@@ -1491,4 +1491,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get done => 'Terminé';
+
+  @override
+  String get viewCards => 'Cartes';
+
+  @override
+  String get viewList => 'Liste';
+
+  @override
+  String get viewGrid => 'Grille';
 }

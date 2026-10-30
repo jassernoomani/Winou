@@ -2589,6 +2589,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get done;
+
+  /// No description provided for @viewCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get viewCards;
+
+  /// No description provided for @viewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get viewList;
+
+  /// No description provided for @viewGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid'**
+  String get viewGrid;
 }
 
 class _AppLocalizationsDelegate
