@@ -2101,6 +2101,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Google sign-in didn\'t work. Try again.'**
   String get errorGoogleFailed;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email: we\'ll send you a 6-digit code.'**
+  String get forgotPasswordHelp;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the code'**
+  String get sendCode;
+
+  /// No description provided for @sendNewCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get sendNewCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent. Check your inbox, and your spam.'**
+  String get codeSent;
+
+  /// No description provided for @enterCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get enterCodeTitle;
+
+  /// No description provided for @enterCodeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code we sent to {email}. It works for 15 minutes.'**
+  String enterCodeHelp(String email);
+
+  /// No description provided for @code.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get code;
+
+  /// No description provided for @codeSixDigits.
+  ///
+  /// In en, this message translates to:
+  /// **'6 digits'**
+  String get codeSixDigits;
+
+  /// No description provided for @setPasswordAndSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and sign in'**
+  String get setPasswordAndSignIn;
+
+  /// No description provided for @confirmEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your email'**
+  String get confirmEmail;
+
+  /// No description provided for @confirmEmailHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'So you can get a new password if you forget it'**
+  String get confirmEmailHelp;
+
+  /// No description provided for @emailConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Email confirmed.'**
+  String get emailConfirmed;
+
+  /// No description provided for @emailConfirmedPill.
+  ///
+  /// In en, this message translates to:
+  /// **'Email confirmed'**
+  String get emailConfirmedPill;
+
+  /// No description provided for @emailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not confirmed'**
+  String get emailNotConfirmed;
+
+  /// No description provided for @errorWrongCode.
+  ///
+  /// In en, this message translates to:
+  /// **'This code isn\'t right.'**
+  String get errorWrongCode;
+
+  /// No description provided for @errorCodeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This code expired or was tried too many times. Ask for a new one.'**
+  String get errorCodeExpired;
+
+  /// No description provided for @errorTooManyCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'We already sent several codes. Check your spam, or try again in an hour.'**
+  String get errorTooManyCodes;
 }
 
 class _AppLocalizationsDelegate

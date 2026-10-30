@@ -1184,4 +1184,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorGoogleFailed => 'Google sign-in didn\'t work. Try again.';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get forgotPasswordTitle => 'Choose a new password';
+
+  @override
+  String get forgotPasswordHelp =>
+      'Enter your email: we\'ll send you a 6-digit code.';
+
+  @override
+  String get sendCode => 'Send the code';
+
+  @override
+  String get sendNewCode => 'Send a new code';
+
+  @override
+  String get codeSent => 'Code sent. Check your inbox, and your spam.';
+
+  @override
+  String get enterCodeTitle => 'Check your email';
+
+  @override
+  String enterCodeHelp(String email) {
+    return 'Enter the 6-digit code we sent to $email. It works for 15 minutes.';
+  }
+
+  @override
+  String get code => 'Code';
+
+  @override
+  String get codeSixDigits => '6 digits';
+
+  @override
+  String get setPasswordAndSignIn => 'Save and sign in';
+
+  @override
+  String get confirmEmail => 'Confirm your email';
+
+  @override
+  String get confirmEmailHelp =>
+      'So you can get a new password if you forget it';
+
+  @override
+  String get emailConfirmed => 'Email confirmed.';
+
+  @override
+  String get emailConfirmedPill => 'Email confirmed';
+
+  @override
+  String get emailNotConfirmed => 'Email not confirmed';
+
+  @override
+  String get errorWrongCode => 'This code isn\'t right.';
+
+  @override
+  String get errorCodeExpired =>
+      'This code expired or was tried too many times. Ask for a new one.';
+
+  @override
+  String get errorTooManyCodes =>
+      'We already sent several codes. Check your spam, or try again in an hour.';
 }

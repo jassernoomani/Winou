@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winou/api/models.dart';
 import 'package:winou/auth/auth_controller.dart';
 import 'package:winou/auth/auth_screens.dart';
+import 'package:winou/auth/forgot_password_screen.dart';
 import 'package:winou/auth/suspended_screen.dart';
 import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
@@ -227,6 +228,19 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     () => const AccountScreen(),
     FakeApi.new,
     (tester) => _tap(tester, find.text(_l10n.deleteAccount)),
+  ),
+  ('54_forgot_password', () => const ForgotPasswordScreen(email: 'sami@example.com'), FakeApi.new, null),
+  (
+    '55_forgot_password_code',
+    () => const ForgotPasswordScreen(email: 'sami@example.com'),
+    FakeApi.new,
+    (tester) => _tap(tester, find.text(_l10n.sendCode)),
+  ),
+  (
+    '56_confirm_email',
+    () => const AccountScreen(),
+    FakeApi.new,
+    (tester) => _tap(tester, find.text(_l10n.confirmEmail)),
   ),
   (
     '39_activity_menu',

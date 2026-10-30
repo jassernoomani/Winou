@@ -28,6 +28,19 @@ spring:
   threads:
     virtual:
       enabled: true
+  # Sign-in codes by email. Gmail: MAIL_USERNAME is the address, MAIL_PASSWORD an app password
+  # (Google account > Security > 2-Step Verification > App passwords). Without them, emails are logged.
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
 
 server:
   port: 8080
@@ -105,6 +118,8 @@ winou:
     login-attempts-per-ip: ${LOGIN_ATTEMPTS_PER_IP:30}
     login-attempt-window: ${LOGIN_ATTEMPT_WINDOW_MINUTES:15}m
     registrations-per-ip-per-hour: ${REGISTRATIONS_PER_IP_PER_HOUR:10}
+  mail:
+    from-name: ${MAIL_FROM_NAME:Winou}
   google:
     # The project's Web client ID (Firebase console: Authentication > Google > Web SDK configuration)
     client-ids: ${GOOGLE_CLIENT_IDS:}

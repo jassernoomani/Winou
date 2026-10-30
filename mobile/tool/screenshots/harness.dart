@@ -633,6 +633,12 @@ class FakeApi implements WinouApi {
   );
 
   @override
+  Future<void> requestPasswordReset(String email) => _answer(() {});
+
+  @override
+  Future<void> requestEmailVerification() => _answer(() {});
+
+  @override
   Future<AdminSummary> adminSummary() =>
       _answer(() => AdminSummary.fromJson({'reported': 2, 'requests': 2, 'hidden': 2}));
 

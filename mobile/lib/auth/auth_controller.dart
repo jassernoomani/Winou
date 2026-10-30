@@ -75,6 +75,9 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void>? _googleReady;
 
+  /// Signed in another way (a code from a forgot-password email).
+  Future<void> signedIn(SessionTokens tokens) => _save(tokens);
+
   /// New tokens after a password change: the other phones were signed out, not this one.
   Future<void> replaceTokens(SessionTokens tokens) => _save(tokens, registerPush: false);
 

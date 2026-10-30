@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'api/models.dart';
 import 'auth/auth_controller.dart';
 import 'auth/auth_screens.dart';
+import 'auth/forgot_password_screen.dart';
 import 'auth/suspended_screen.dart';
 import 'chat/chat_screen.dart';
 import 'chat/conversations_screen.dart';
@@ -25,7 +26,7 @@ import 'sightings/sighting_thanks_screen.dart';
 import 'splash_screen.dart';
 import 'widgets/location.dart';
 
-const _publicPaths = {'/login', '/register'};
+const _publicPaths = {'/login', '/register', '/forgot-password'};
 
 final routerProvider = Provider<GoRouter>((ref) {
   // Re-run the redirect whenever the user signs in or out
@@ -49,6 +50,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const LoginScreen(register: true)),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (_, state) => ForgotPasswordScreen(email: state.extra as String?),
+      ),
       GoRoute(path: '/suspended', builder: (_, _) => const SuspendedScreen()),
       GoRoute(path: '/', builder: (_, _) => const LostFeedScreen()),
       GoRoute(path: '/map', builder: (_, _) => const MapScreen()),

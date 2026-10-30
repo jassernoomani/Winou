@@ -6,6 +6,7 @@ import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../auth/auth_screens.dart' show ShowPasswordButton;
+import '../auth/forgot_password_screen.dart' show CodeField;
 import '../reports/lost_report_detail_screen.dart' show confirm;
 import '../theme.dart';
 import '../widgets/animations.dart';
@@ -36,6 +37,15 @@ class AccountScreen extends ConsumerWidget {
       builder: (_) => _PasswordSheet(hasPassword: me.hasPassword),
     );
     if (changed == true && context.mounted) _say(context, context.l10n.passwordChanged);
+  }
+
+  Future<void> _verify(BuildContext context, User me) async {
+    final verified = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _VerifySheet(email: me.email),
+    );
+    if (verified == true && context.mounted) _say(context, context.l10n.emailConfirmed);
   }
 
   Future<void> _signOutEverywhere(BuildContext context, WidgetRef ref) async {
@@ -81,6 +91,12 @@ class AccountScreen extends ConsumerWidget {
                           children: [
                             Text(value.displayName, style: theme.textTheme.titleLarge),
                             Text(value.email, style: theme.textTheme.bodyMedium?.copyWith(color: tokens.muted)),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: value.emailVerified
+                                  ? StatusPill(l10n.emailConfirmedPill, tone: Tone.found, icon: LucideIcons.mailCheck)
+                                  : StatusPill(l10n.emailNotConfirmed, tone: Tone.stray, icon: LucideIcons.mailWarning),
+                            ),
                             if (value.google)
                               Padding(
                                 padding: const EdgeInsets.only(top: 6),
@@ -98,6 +114,21 @@ class AccountScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            if (!value.emailVerified) ...[
+              const SizedBox(height: 12),
+              FadeSlideIn(
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: const Icon(LucideIcons.mailCheck),
+                    title: Text(l10n.confirmEmail),
+                    subtitle: Text(l10n.confirmEmailHelp),
+                    trailing: const Icon(LucideIcons.chevronRight),
+                    onTap: () => _verify(context, value),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             FadeSlideIn(
               index: 1,
@@ -401,6 +432,81 @@ class _DeleteSheetState extends ConsumerState<_DeleteSheet> {
                   : const Icon(LucideIcons.trash2),
               label: Text(l10n.deleteAccountForGood),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Sends a code (on request: one was emailed at sign-up) and checks it.
+class _VerifySheet extends ConsumerStatefulWidget {
+  const _VerifySheet({required this.email});
+
+  final String email;
+
+  @override
+  ConsumerState<_VerifySheet> createState() => _VerifySheetState();
+}
+
+class _VerifySheetState extends ConsumerState<_VerifySheet> {
+  final _form = GlobalKey<FormState>();
+  final _code = TextEditingController();
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    setState(() => _busy = true);
+    try {
+      await ref.read(apiProvider).requestEmailVerification();
+      if (mounted) _say(context, context.l10n.codeSent);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _confirm() async {
+    if (!_form.currentState!.validate()) return;
+    setState(() => _busy = true);
+    try {
+      await ref.read(apiProvider).confirmEmailVerification(_code.text.trim());
+      ref.invalidate(meProvider);
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        showError(context, e);
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return _Sheet(
+      child: Form(
+        key: _form,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
+          children: [
+            Text(l10n.confirmEmail, style: Theme.of(context).textTheme.titleLarge),
+            Text(l10n.enterCodeHelp(widget.email), style: TextStyle(color: context.tokens.muted)),
+            CodeField(controller: _code),
+            FilledButton(
+              onPressed: _busy ? null : _confirm,
+              child: _busy
+                  ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : Text(l10n.confirmEmail),
+            ),
+            TextButton(onPressed: _busy ? null : _send, child: Text(l10n.sendNewCode)),
           ],
         ),
       ),

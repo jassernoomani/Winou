@@ -1196,4 +1196,68 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get errorGoogleFailed =>
       'La connexion avec Google n\'a pas fonctionné. Réessayez.';
+
+  @override
+  String get forgotPassword => 'Mot de passe oublié ?';
+
+  @override
+  String get forgotPasswordTitle => 'Choisir un nouveau mot de passe';
+
+  @override
+  String get forgotPasswordHelp =>
+      'Saisissez votre e-mail : nous vous enverrons un code à 6 chiffres.';
+
+  @override
+  String get sendCode => 'Envoyer le code';
+
+  @override
+  String get sendNewCode => 'Envoyer un nouveau code';
+
+  @override
+  String get codeSent =>
+      'Code envoyé. Regardez votre boîte de réception, et les spams.';
+
+  @override
+  String get enterCodeTitle => 'Regardez vos e-mails';
+
+  @override
+  String enterCodeHelp(String email) {
+    return 'Saisissez le code à 6 chiffres envoyé à $email. Il est valable 15 minutes.';
+  }
+
+  @override
+  String get code => 'Code';
+
+  @override
+  String get codeSixDigits => '6 chiffres';
+
+  @override
+  String get setPasswordAndSignIn => 'Enregistrer et se connecter';
+
+  @override
+  String get confirmEmail => 'Confirmer votre e-mail';
+
+  @override
+  String get confirmEmailHelp =>
+      'Pour pouvoir choisir un nouveau mot de passe si vous l\'oubliez';
+
+  @override
+  String get emailConfirmed => 'E-mail confirmé.';
+
+  @override
+  String get emailConfirmedPill => 'E-mail confirmé';
+
+  @override
+  String get emailNotConfirmed => 'E-mail non confirmé';
+
+  @override
+  String get errorWrongCode => 'Ce code n\'est pas le bon.';
+
+  @override
+  String get errorCodeExpired =>
+      'Ce code a expiré ou a été essayé trop de fois. Demandez-en un nouveau.';
+
+  @override
+  String get errorTooManyCodes =>
+      'Nous avons déjà envoyé plusieurs codes. Regardez les spams, ou réessayez dans une heure.';
 }

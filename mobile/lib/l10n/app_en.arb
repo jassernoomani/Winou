@@ -718,5 +718,31 @@
   "setPasswordHelp": "To sign in with your email too, not only with Google",
   "errorGoogleDisabled": "Google sign-in isn't available on this server.",
   "errorGoogleNoEmail": "This Google account has no verified email.",
-  "errorGoogleFailed": "Google sign-in didn't work. Try again."
+  "errorGoogleFailed": "Google sign-in didn't work. Try again.",
+  "forgotPassword": "Forgot password?",
+  "forgotPasswordTitle": "Choose a new password",
+  "forgotPasswordHelp": "Enter your email: we'll send you a 6-digit code.",
+  "sendCode": "Send the code",
+  "sendNewCode": "Send a new code",
+  "codeSent": "Code sent. Check your inbox, and your spam.",
+  "enterCodeTitle": "Check your email",
+  "enterCodeHelp": "Enter the 6-digit code we sent to {email}. It works for 15 minutes.",
+  "@enterCodeHelp": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "code": "Code",
+  "codeSixDigits": "6 digits",
+  "setPasswordAndSignIn": "Save and sign in",
+  "confirmEmail": "Confirm your email",
+  "confirmEmailHelp": "So you can get a new password if you forget it",
+  "emailConfirmed": "Email confirmed.",
+  "emailConfirmedPill": "Email confirmed",
+  "emailNotConfirmed": "Email not confirmed",
+  "errorWrongCode": "This code isn't right.",
+  "errorCodeExpired": "This code expired or was tried too many times. Ask for a new one.",
+  "errorTooManyCodes": "We already sent several codes. Check your spam, or try again in an hour."
 }

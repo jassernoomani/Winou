@@ -1,3 +1,5 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:latlong2/latlong.dart';
@@ -74,8 +76,10 @@ class WinouApi {
     listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
   );
 
-  static RequestOptions _toServer(RequestOptions options) =>
-      options..baseUrl = Config.apiUrl; // may have been changed in the app since
+  static RequestOptions _toServer(RequestOptions options) => options
+    ..baseUrl = Config
+        .apiUrl // may have been changed in the app since
+    ..headers['Accept-Language'] = PlatformDispatcher.instance.locale.languageCode; // emails in the phone's language
 
   final Dio _dio;
   final Dio _plain; // without the token or renewal: for the session's own calls
@@ -111,6 +115,22 @@ class WinouApi {
   /// Continue with Google: [idToken] from Google Sign-In.
   Future<SessionTokens> google(String idToken) =>
       _call(() => _dio.post('/auth/google', data: {'id_token': idToken}), _tokens);
+
+  /// Forgot password: emails a code (the answer is the same whether the email has an account or not).
+  Future<void> requestPasswordReset(String email) =>
+      _call(() => _plain.post('/auth/password-reset', data: {'email': email}), (_) {});
+
+  /// The code and a new password: signs in.
+  Future<SessionTokens> confirmPasswordReset(String email, String code, String newPassword) => _call(
+    () =>
+        _plain.post('/auth/password-reset/confirm', data: {'email': email, 'code': code, 'new_password': newPassword}),
+    _tokens,
+  );
+
+  Future<void> requestEmailVerification() => _call(() => _dio.post('/me/email/verification'), (_) {});
+
+  Future<User> confirmEmailVerification(String code) =>
+      _call(() => _dio.post('/me/email/verification/confirm', data: {'code': code}), (data) => User.fromJson(data));
 
   /// New tokens for a refresh token, which stops working.
   Future<SessionTokens> refreshSession(String refreshToken) =>

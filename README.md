@@ -177,6 +177,16 @@ and the storage bucket if missing.
 **Admins** are the accounts whose email is in `ADMIN_EMAILS` in `.env`; restart the `api` service
 after changing it.
 
+**Continue with Google** needs, in the Firebase console: Authentication → Sign-in method → enable
+Google; Project settings → your Android app → add the SHA-1 of the key that signs the APK; then
+download `google-services.json` again into `mobile/android/app/`. Put the Web client ID (Google
+provider → Web SDK configuration) in `GOOGLE_CLIENT_IDS` in `.env`.
+
+**Emails** (forgot password, confirm email) go through Gmail: set `MAIL_USERNAME` to the address and
+`MAIL_PASSWORD` to an [app password](https://myaccount.google.com/apppasswords) (needs 2-Step
+Verification), not the account's password. Without them, emails and their codes are written to the
+`api` log.
+
 **Push notifications** need the Firebase service account key at
 `secrets/firebase-service-account.json` (Firebase console → Project settings → Service accounts →
 Generate new private key). Without it, notifications are only logged. `secrets/` is git-ignored.
@@ -218,8 +228,12 @@ use **Authorize** with your email as the username.
 
 | Endpoint | What it does |
 |---|---|
-| `POST /auth/register`, `POST /auth/login` | returns an access token (JWT) |
+| `POST /auth/register`, `POST /auth/login`, `POST /auth/google` | an access token (JWT, 1 h) and a refresh token |
+| `POST /auth/refresh`, `POST /auth/logout` | renew the access token (the refresh token works once); end the session |
+| `POST /auth/password-reset`, `.../confirm` | forgot password: a 6-digit code by email, then the code and a new password |
 | `GET/PATCH /me` | profile, FCM token |
+| `POST /me/password`, `POST /me/sign-out-everywhere`, `DELETE /me` | change password, sign out every phone, delete the account |
+| `POST /me/email/verification`, `.../confirm` | confirm the email with a code |
 | `POST /lost-reports`, `GET/PATCH/DELETE /lost-reports/{id}`, `GET /me/lost-reports` | lost pets |
 | `POST /sightings`, `GET/PATCH/DELETE /sightings/{id}`, `GET /me/sightings` | loose animals and strays (`is_stray`) |
 | `POST /lost-reports/{id}/photos`, `POST /sightings/{id}/photos` | upload one photo (max 5 per report, 3 per sighting) |
@@ -281,6 +295,12 @@ can see, once they report it. Hidden content takes no part in matching. Admins c
 delete anything at once, dismiss wrong reports, and suspend accounts: a suspended user can't sign
 in or post, and what they posted is hidden from others until the suspension ends. Every admin
 decision is logged.
+
+**Signing in.** Email and password, or Google. The access token lasts an hour; the app renews it
+with its refresh token, which changes at every use and lapses after `REFRESH_TOKEN_DAYS` (90) unused.
+Five wrong passwords for an email (30 per network address) within 15 minutes block signing in for
+a while. A password change, a reset or "sign out everywhere" ends every other session at once.
+Codes by email work once, for 15 minutes, with 5 tries; at most 3 are sent per hour.
 
 **Privacy.** Lost-report positions are moved up to 300 m (fixed per report) for everyone but the
 owner. Sighting reporters and user emails are never exposed. Creating reports, sightings and photos

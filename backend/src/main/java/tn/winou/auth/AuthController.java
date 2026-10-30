@@ -48,11 +48,13 @@ public class AuthController {
     private final Admins admins;
     private final AttemptLimiter limiter;
     private final GoogleTokens googleTokens;
+    private final EmailCodes codes;
     private final WinouProperties.Auth settings;
 
     public AuthController(UserRepository users, Passwords passwords, Sessions sessions, Admins admins,
-            AttemptLimiter limiter, GoogleTokens googleTokens, WinouProperties properties) {
+            AttemptLimiter limiter, GoogleTokens googleTokens, EmailCodes codes, WinouProperties properties) {
         this.googleTokens = googleTokens;
+        this.codes = codes;
         this.users = users;
         this.passwords = passwords;
         this.sessions = sessions;
@@ -63,7 +65,7 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create an account; signs in at once",
+    @Operation(summary = "Create an account; signs in at once and emails a code to confirm the address",
             description = "At most REGISTRATIONS_PER_IP_PER_HOUR accounts per network address and hour.")
     public TokenOut register(@Valid @RequestBody RegisterIn body, HttpServletRequest request) {
         String ipKey = "register:" + request.getRemoteAddr();
@@ -80,6 +82,11 @@ public class AuthController {
             throw emailTaken(); // registered at the same moment by another request
         }
         limiter.record(ipKey, HOUR);
+        try {
+            codes.send(user, EmailCodes.Purpose.VERIFY, CodesController.french(request));
+        } catch (ApiException e) {
+            // The account works without it: they can ask again from the Account screen
+        }
         return sessions.start(user);
     }
 

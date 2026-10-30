@@ -120,6 +120,8 @@ public abstract class ApiTestBase {
     protected VectorIndex index;
     @Autowired
     protected PhotoWorker worker;
+    @Autowired
+    protected RecordingMailer mailer;
 
     @AfterEach
     void cleanUp() {
@@ -131,6 +133,7 @@ public abstract class ApiTestBase {
         ml.calls.set(0);
         ml.down = false;
         notifier.clear();
+        mailer.sent.clear();
     }
 
     // --- fakes ---
@@ -154,6 +157,12 @@ public abstract class ApiTestBase {
         @Primary
         RecordingNotifier recordingNotifier() {
             return new RecordingNotifier();
+        }
+
+        @Bean
+        @Primary
+        RecordingMailer recordingMailer() {
+            return new RecordingMailer();
         }
 
         /** Google ID tokens are "sub|email|email_verified|name" in tests. */
@@ -251,6 +260,32 @@ public abstract class ApiTestBase {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
+        }
+    }
+
+    /** Emails "sent", newest last. */
+    public static class RecordingMailer implements tn.winou.infra.Mailer {
+
+        public record Sent(String to, String subject, String text) {}
+
+        public final List<Sent> sent = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+        @Override
+        public void send(String to, String subject, String text, String html) {
+            sent.add(new Sent(to, subject, text));
+        }
+
+        /** The 6-digit code in the last email to [to]. */
+        public String lastCode(String to) {
+            for (int i = sent.size() - 1; i >= 0; i--) {
+                if (sent.get(i).to().equals(to)) {
+                    var matcher = java.util.regex.Pattern.compile("\\b(\\d{6})\\b").matcher(sent.get(i).text());
+                    if (matcher.find()) {
+                        return matcher.group(1);
+                    }
+                }
+            }
+            throw new IllegalStateException("no code sent to " + to);
         }
     }
 

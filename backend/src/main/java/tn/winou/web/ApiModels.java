@@ -83,6 +83,15 @@ public final class ApiModels {
 
     public record GoogleIn(@NotBlank @Size(max = 4096) String idToken) {}
 
+    public record PasswordResetIn(@NotBlank @Email @Size(max = 320) String email) {}
+
+    public record PasswordResetConfirmIn(
+            @NotBlank @Email @Size(max = 320) String email,
+            @NotBlank @Size(max = 12) String code,
+            @NotNull @Size(min = 8, max = 128) String newPassword) {}
+
+    public record CodeIn(@NotBlank @Size(max = 12) String code) {}
+
     /** fcm_token may be cleared with an explicit null; the name may not. */
     @Getter
     public static final class UserUpdate {
