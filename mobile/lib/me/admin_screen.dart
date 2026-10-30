@@ -140,7 +140,7 @@ class _UsersState extends ConsumerState<_Users> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: FilterChip(
               label: Text(l10n.bannedOnly),
               avatar: const Icon(LucideIcons.shieldBan, size: 16),
@@ -168,7 +168,7 @@ class _UsersState extends ConsumerState<_Users> {
                     UserPills(u),
                   ],
                 ),
-                trailing: const Icon(LucideIcons.chevronRight),
+                trailing: const ForwardIcon(),
                 onTap: () async {
                   await context.push('/admin/users/${u.id}');
                   ref.invalidate(provider); // may have been banned since
@@ -386,10 +386,10 @@ class _Content extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      if (open != null) const Icon(LucideIcons.chevronRight),
+                      if (open != null) const ForwardIcon(),
                     ],
                   ),
-                  if (item.text case final text? when text.isNotEmpty) Text(text),
+                  if (item.text case final text? when text.isNotEmpty) Text(text, textDirection: textDirectionOf(text)),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
@@ -401,11 +401,12 @@ class _Content extends ConsumerWidget {
                   for (final note in item.notes)
                     Text(
                       '“$note”',
+                      textDirection: textDirectionOf(note),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
                     ),
                   if ((item.authorId, item.authorName) case (final id?, final name?))
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: TextButton.icon(
                         onPressed: () => context.push('/admin/users/$id'),
                         icon: const Icon(LucideIcons.user, size: 18),

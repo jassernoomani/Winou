@@ -183,7 +183,7 @@ class _RequestFormState extends ConsumerState<_RequestForm> {
             onPressed: _sending || _location == null ? null : _send,
             icon: _sending
                 ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(LucideIcons.send),
+                : const DirectionalIcon(LucideIcons.send),
             label: Text(l10n.sendRequest),
           ),
         ],

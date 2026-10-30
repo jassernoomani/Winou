@@ -242,7 +242,7 @@ class _RoundBack extends StatelessWidget {
     padding: const EdgeInsets.all(8),
     child: CircleAvatar(
       backgroundColor: Colors.black38,
-      child: BackButton(color: Colors.white, onPressed: () => Navigator.maybePop(context)),
+      child: BackButton(color: Colors.white, onPressed: () => context.canPop() ? context.pop() : context.go('/')),
     ),
   );
 }

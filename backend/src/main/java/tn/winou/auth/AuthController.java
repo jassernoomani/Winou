@@ -83,7 +83,7 @@ public class AuthController {
         }
         limiter.record(ipKey, HOUR);
         try {
-            codes.send(user, EmailCodes.Purpose.VERIFY, CodesController.french(request));
+            codes.send(user, EmailCodes.Purpose.VERIFY, CodesController.language(request));
         } catch (ApiException e) {
             // The account works without it: they can ask again from the Account screen
         }

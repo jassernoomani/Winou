@@ -133,6 +133,17 @@ class EmailCodesTest extends ApiTestBase {
     }
 
     @Test
+    void phonesInArabicGetEmailsInArabic() {
+        String email = email();
+        call(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.ACCEPT_LANGUAGE, "ar-TN,ar;q=0.9")
+                .content(body(Map.of("email", email, "password", "password123", "display_name", "سامي"))));
+        assertThat(mailer.sent.getFirst().subject()).startsWith("تأكيد بريدك الإلكتروني على Winou: ");
+        assertThat(mailer.sent.getFirst().text()).startsWith("مرحبًا سامي،");
+        assertThat(mailer.lastCode(email)).hasSize(6);
+    }
+
+    @Test
     void phonesInFrenchGetEmailsInFrench() {
         String email = email();
         call(post("/auth/register").contentType(MediaType.APPLICATION_JSON)

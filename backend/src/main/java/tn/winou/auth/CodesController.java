@@ -51,9 +51,10 @@ public class CodesController {
         this.limiter = limiter;
     }
 
-    /** French emails for phones in French, English otherwise. */
-    static boolean french(HttpServletRequest request) {
-        return "fr".equals(request.getLocale().getLanguage());
+    /** Emails in the phone's language: "fr", "ar", or "en" for anything else. */
+    static String language(HttpServletRequest request) {
+        String language = request.getLocale().getLanguage();
+        return "fr".equals(language) || "ar".equals(language) ? language : "en";
     }
 
     @PostMapping("/auth/password-reset")
@@ -67,7 +68,7 @@ public class CodesController {
         limiter.record(ipKey, HOUR);
         users.findByEmail(body.email().strip().toLowerCase()).filter(u -> !u.isBanned()).ifPresent(user -> {
             try {
-                codes.send(user, Purpose.RESET, french(request));
+                codes.send(user, Purpose.RESET, language(request));
             } catch (ApiException e) {
                 // Too many codes already: same answer as for an unknown email
             }
@@ -98,7 +99,7 @@ public class CodesController {
         if (user.getEmailVerifiedAt() != null) {
             throw ApiException.coded(HttpStatus.CONFLICT, "already_verified", "This email is already confirmed.");
         }
-        codes.send(user, Purpose.VERIFY, french(request));
+        codes.send(user, Purpose.VERIFY, language(request));
     }
 
     @PostMapping("/me/email/verification/confirm")

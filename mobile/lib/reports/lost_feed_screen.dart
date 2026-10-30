@@ -300,7 +300,7 @@ class _SkeletonCardState extends State<_SkeletonCard> with SingleTickerProviderS
     final tokens = context.tokens;
     Widget bar(double widthFactor) => FractionallySizedBox(
       widthFactor: widthFactor,
-      alignment: Alignment.centerLeft,
+      alignment: AlignmentDirectional.centerStart,
       child: Container(
         height: 10,
         decoration: BoxDecoration(color: tokens.tonal, borderRadius: BorderRadius.circular(5)),
@@ -406,6 +406,7 @@ class _ReportCard extends StatelessWidget {
                       if (report.description case final description? when description.trim().isNotEmpty)
                         Text(
                           description.trim(),
+                          textDirection: textDirectionOf(description),
                           style: const TextStyle(fontSize: 14, height: 1.4),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

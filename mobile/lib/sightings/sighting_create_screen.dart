@@ -163,7 +163,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
             if (_photos.length == 1) ...[
               _BigPhoto(_photos.single, onRetake: _firstPhoto),
               Align(
-                alignment: Alignment.centerLeft,
+                alignment: AlignmentDirectional.centerStart,
                 child: TextButton.icon(
                   onPressed: _addMore,
                   icon: const Icon(LucideIcons.plus, size: 18),
@@ -233,7 +233,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
             onPressed: busy || _photos.isEmpty || location == null || _seenAt == null ? null : _submit,
             icon: busy
                 ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(LucideIcons.send),
+                : const DirectionalIcon(LucideIcons.send),
             label: Text(busy ? l10n.uploading(_progress!) : l10n.postSighting),
           ),
         ),

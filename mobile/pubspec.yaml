@@ -75,6 +75,7 @@ flutter:
 
   assets:
     - assets/fonts/OFL.txt # shown in the app's licenses page
+    - assets/fonts/OFL-Tajawal.txt
     - assets/icon/icon.png
 
   fonts:
@@ -88,6 +89,18 @@ flutter:
         - asset: assets/fonts/Nunito-ExtraBold.ttf
           weight: 800
         - asset: assets/fonts/Nunito-Black.ttf
+          weight: 900
+    # Arabic letters (Nunito has none), same weights; OFL, assets/fonts/OFL-Tajawal.txt
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 600
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Tajawal-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Tajawal-Black.ttf
           weight: 900
 
   # The following line ensures that the Material Icons font is

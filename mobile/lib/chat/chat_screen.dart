@@ -228,9 +228,9 @@ class _Bubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mine = message.mine;
-    final time = DateFormat.Hm(Localizations.localeOf(context).toString()).format(message.createdAt.toLocal());
+    final time = DateFormat.Hm(dateLocale(context)).format(message.createdAt.toLocal());
     final bubble = Align(
-      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: mine ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
         child: Container(
@@ -253,9 +253,13 @@ class _Bubble extends StatelessWidget {
             children: [
               // The other person's messages answer a long press with "Report" instead of selecting text
               if (onReport == null)
-                SelectableText(message.body, style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15))
+                SelectableText(
+                  message.body,
+                  textDirection: textDirectionOf(message.body),
+                  style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15),
+                )
               else
-                Text(message.body, style: const TextStyle(fontSize: 15)),
+                Text(message.body, textDirection: textDirectionOf(message.body), style: const TextStyle(fontSize: 15)),
               const SizedBox(height: 2),
               Text(
                 time,
@@ -337,7 +341,7 @@ class _Composer extends StatelessWidget {
                           dimension: 20,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Brand.ink),
                         )
-                      : const Icon(LucideIcons.send, color: Brand.ink),
+                      : const DirectionalIcon(LucideIcons.send, color: Brand.ink),
                 ),
               ),
             ),

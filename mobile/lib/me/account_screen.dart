@@ -123,7 +123,7 @@ class AccountScreen extends ConsumerWidget {
                     leading: const Icon(LucideIcons.mailCheck),
                     title: Text(l10n.confirmEmail),
                     subtitle: Text(l10n.confirmEmailHelp),
-                    trailing: const Icon(LucideIcons.chevronRight),
+                    trailing: const ForwardIcon(),
                     onTap: () => _verify(context, value),
                   ),
                 ),

@@ -244,7 +244,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               if (item.condition != null && item.condition != Condition.healthy) conditionLabel(l10n, item.condition!),
             ].join(' · '),
           ),
-          trailing: const Icon(LucideIcons.chevronRight),
+          trailing: const ForwardIcon(),
           onTap: () {
             Navigator.pop(sheet);
             _open(item.type == MapItemType.lost ? '/lost/${item.id}' : '/sightings/${item.id}');

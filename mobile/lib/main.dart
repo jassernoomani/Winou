@@ -21,9 +21,10 @@ import 'widgets/server_settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // config from android/app/google-services.json
-  await (loadServerAddress(), loadPreferences()).wait; // the server and the theme and language chosen in the app
+  await (loadServerAddress(), loadPreferences(), initDates()).wait; // the server and the theme and language chosen in the app
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(['Nunito'], await rootBundle.loadString('assets/fonts/OFL.txt'));
+    yield LicenseEntryWithLineBreaks(['Tajawal'], await rootBundle.loadString('assets/fonts/OFL-Tajawal.txt'));
   });
   runApp(const ProviderScope(child: WinouApp()));
 }

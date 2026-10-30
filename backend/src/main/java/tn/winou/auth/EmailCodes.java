@@ -41,9 +41,9 @@ public class EmailCodes {
         this.mailer = mailer;
     }
 
-    /** Sends a new code (the previous one stops working), in French or English. */
+    /** Sends a new code (the previous one stops working), in English, French or Arabic. */
     @Transactional
-    public void send(User user, Purpose purpose, boolean french) {
+    public void send(User user, Purpose purpose, String language) {
         long recent = jdbc.sql("""
                         SELECT count(*) FROM email_codes
                         WHERE user_id = :user AND purpose = :purpose AND created_at > now() - interval '1 hour'""")
@@ -68,7 +68,7 @@ public class EmailCodes {
                 .param("hash", hash(user.getId(), code))
                 .param("expires", OffsetDateTime.now().plus(VALID))
                 .update();
-        Email email = email(purpose, code, user.getDisplayName(), french);
+        Email email = email(purpose, code, user.getDisplayName(), language);
         String to = user.getEmail();
         AfterCommit.run(() -> mailer.send(to, email.subject(), email.text(), email.html()));
     }
@@ -118,37 +118,50 @@ public class EmailCodes {
 
     record Email(String subject, String text, String html) {}
 
-    static Email email(Purpose purpose, String code, String name, boolean french) {
-        String subject;
-        String intro;
-        String outro;
-        if (purpose == Purpose.RESET) {
-            subject = french ? "Votre code Winou : " + code : "Your Winou code: " + code;
-            intro = french ? "Voici le code pour choisir un nouveau mot de passe :"
-                    : "Here is the code to choose a new password:";
-            outro = french ? "Si vous n'avez rien demandé, ignorez cet e-mail : votre mot de passe ne change pas."
-                    : "If you didn't ask for it, ignore this email: your password stays the same.";
-        } else {
-            subject = french ? "Confirmez votre e-mail Winou : " + code : "Confirm your Winou email: " + code;
-            intro = french ? "Voici le code pour confirmer votre adresse e-mail :"
-                    : "Here is the code to confirm your email address:";
-            outro = french ? "Si vous n'avez pas créé de compte Winou, ignorez cet e-mail."
-                    : "If you didn't create a Winou account, ignore this email.";
-        }
-        String hello = (french ? "Bonjour " : "Hi ") + name + ",";
-        String valid = french ? "Il est valable 15 minutes." : "It works for 15 minutes.";
-        String text = hello + "\n\n" + intro + "\n\n    " + code + "\n\n" + valid + "\n\n" + outro + "\n\nWinou";
+    /** The words of each email: subject, greeting, intro, how long it works, and what if it wasn't you. */
+    private record Words(String subject, String hello, String intro, String valid, String outro) {}
+
+    static Email email(Purpose purpose, String code, String name, String language) {
+        boolean reset = purpose == Purpose.RESET;
+        Words w = switch (language) {
+            case "fr" -> new Words(
+                    reset ? "Votre code Winou : " : "Confirmez votre e-mail Winou : ",
+                    "Bonjour " + name + ",",
+                    reset ? "Voici le code pour choisir un nouveau mot de passe :"
+                            : "Voici le code pour confirmer votre adresse e-mail :",
+                    "Il est valable 15 minutes.",
+                    reset ? "Si vous n'avez rien demandé, ignorez cet e-mail : votre mot de passe ne change pas."
+                            : "Si vous n'avez pas créé de compte Winou, ignorez cet e-mail.");
+            case "ar" -> new Words(
+                    reset ? "رمز Winou الخاص بك: " : "تأكيد بريدك الإلكتروني على Winou: ",
+                    "مرحبًا " + name + "،",
+                    reset ? "إليك الرمز لاختيار كلمة مرور جديدة:" : "إليك الرمز لتأكيد بريدك الإلكتروني:",
+                    "صالح لمدة 15 دقيقة.",
+                    reset ? "إذا لم تطلب ذلك، تجاهل هذه الرسالة: كلمة مرورك لن تتغير."
+                            : "إذا لم تُنشئ حسابًا على Winou، تجاهل هذه الرسالة.");
+            default -> new Words(
+                    reset ? "Your Winou code: " : "Confirm your Winou email: ",
+                    "Hi " + name + ",",
+                    reset ? "Here is the code to choose a new password:"
+                            : "Here is the code to confirm your email address:",
+                    "It works for 15 minutes.",
+                    reset ? "If you didn't ask for it, ignore this email: your password stays the same."
+                            : "If you didn't create a Winou account, ignore this email.");
+        };
+        String text = w.hello() + "\n\n" + w.intro() + "\n\n    " + code + "\n\n" + w.valid() + "\n\n"
+                + w.outro() + "\n\nWinou";
         String html = """
-                <div style="font-family:Arial,sans-serif;max-width:440px;margin:auto;color:#111D36">
+                <div dir="%s" style="font-family:Arial,sans-serif;max-width:440px;margin:auto;color:#111D36">
                   <p style="font-size:20px;font-weight:bold;color:#3884FF">winou</p>
                   <p>%s</p>
                   <p>%s</p>
-                  <p style="font-size:32px;font-weight:bold;letter-spacing:6px;background:#EAF0FF;
+                  <p dir="ltr" style="font-size:32px;font-weight:bold;letter-spacing:6px;background:#EAF0FF;
                      padding:14px;border-radius:12px;text-align:center">%s</p>
                   <p>%s</p>
                   <p style="color:#526079;font-size:13px">%s</p>
-                </div>""".formatted(escape(hello), intro, code, valid, outro);
-        return new Email(subject, text, html);
+                </div>""".formatted("ar".equals(language) ? "rtl" : "ltr", escape(w.hello()), w.intro(), code,
+                w.valid(), w.outro());
+        return new Email(w.subject() + code, text, html);
     }
 
     private static String escape(String text) {

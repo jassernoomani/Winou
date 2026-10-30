@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/api_client.dart';
@@ -32,7 +33,50 @@ String statusLabel(AppLocalizations l10n, ReportStatus status) => switch (status
 };
 
 String formatDateTime(BuildContext context, DateTime date) =>
-    DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_Hm().format(date);
+    DateFormat.yMMMd(dateLocale(context)).add_Hm().format(date);
+
+/// The locale for dates. Arabic uses the Maghreb month names (جانفي, أفريل...), as in Tunisia,
+/// with Western digits.
+String dateLocale(BuildContext context) {
+  final locale = Localizations.localeOf(context);
+  return locale.languageCode == 'ar' ? 'ar_DZ' : locale.toString();
+}
+
+/// Loads the Maghreb Arabic month names, and writes Arabic dates with 0-9 as in Tunisia. Call at start.
+Future<void> initDates() async {
+  await initializeDateFormatting('ar_DZ');
+  for (final locale in ['ar', 'ar_DZ']) {
+    DateFormat.useNativeDigitsByDefaultFor(locale, false);
+  }
+}
+
+/// The direction of text people wrote, from its letters: an English message stays left to right
+/// in the Arabic app, an Arabic one right to left in the English app.
+TextDirection textDirectionOf(String text) =>
+    Bidi.detectRtlDirectionality(text) ? TextDirection.rtl : TextDirection.ltr;
+
+/// An icon that points somewhere (forward, back, send): mirrored in right-to-left languages.
+class DirectionalIcon extends StatelessWidget {
+  const DirectionalIcon(this.icon, {super.key, this.color, this.size});
+
+  final IconData icon;
+  final Color? color;
+  final double? size;
+
+  @override
+  Widget build(BuildContext context) => Transform.flip(
+    flipX: Directionality.of(context) == TextDirection.rtl,
+    child: Icon(icon, color: color, size: size),
+  );
+}
+
+/// The ">" at the end of a row that opens something.
+class ForwardIcon extends StatelessWidget {
+  const ForwardIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) => const DirectionalIcon(LucideIcons.chevronRight);
+}
 
 /// Opens a screen and completes when the user is back. A screen may return the next location
 /// to show, e.g. a create form returns its new report, so callers can reload once at the end.
@@ -248,7 +292,7 @@ class InfoRow extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 12),
-          Expanded(child: Text(text)),
+          Expanded(child: Text(text, textDirection: textDirectionOf(text))),
         ],
       ),
     );

@@ -110,6 +110,9 @@ class WinouTokens extends ThemeExtension<WinouTokens> {
 
 const _font = 'Nunito';
 
+/// Nunito has no Arabic letters: Tajawal draws them, in the same weights.
+const _fallback = ['Tajawal'];
+
 /// Card shadow from the guide: 0 6 20, ink at 6%.
 const cardShadow = [BoxShadow(color: Color(0x0F101D36), blurRadius: 20, offset: Offset(0, 6))];
 
@@ -140,8 +143,14 @@ ThemeData winouTheme(Brightness brightness) {
 
   // The guide's type scale: Display 32/900/38, Title 26/900/32, Heading 20/800/26,
   // Body 16/400/24, Label 14/800/20, Caption 12/400/18.
-  TextStyle style(double size, FontWeight weight, double height) =>
-      TextStyle(fontFamily: _font, fontSize: size, fontWeight: weight, height: height / size, color: t.ink);
+  TextStyle style(double size, FontWeight weight, double height) => TextStyle(
+    fontFamily: _font,
+    fontFamilyFallback: _fallback,
+    fontSize: size,
+    fontWeight: weight,
+    height: height / size,
+    color: t.ink,
+  );
   final text = TextTheme(
     displaySmall: style(32, FontWeight.w900, 38),
     headlineMedium: style(32, FontWeight.w900, 38),
@@ -158,7 +167,12 @@ ThemeData winouTheme(Brightness brightness) {
   );
 
   const pill = StadiumBorder();
-  const buttonText = TextStyle(fontFamily: _font, fontSize: 15, fontWeight: FontWeight.w800);
+  const buttonText = TextStyle(
+    fontFamily: _font,
+    fontFamilyFallback: _fallback,
+    fontSize: 15,
+    fontWeight: FontWeight.w800,
+  );
   OutlineInputBorder field(Color color, double width) => OutlineInputBorder(
     borderRadius: BorderRadius.circular(16),
     borderSide: BorderSide(color: color, width: width),
@@ -168,10 +182,17 @@ ThemeData winouTheme(Brightness brightness) {
     useMaterial3: true,
     colorScheme: scheme,
     fontFamily: _font,
+    fontFamilyFallback: _fallback,
     textTheme: text,
     extensions: [t],
     scaffoldBackgroundColor: background,
-    actionIconTheme: ActionIconThemeData(backButtonIconBuilder: (_) => const Icon(LucideIcons.arrowLeft)),
+    actionIconTheme: ActionIconThemeData(
+      // Mirrored in right-to-left, like Material's own back arrow
+      backButtonIconBuilder: (context) => Transform.flip(
+        flipX: Directionality.of(context) == TextDirection.rtl,
+        child: const Icon(LucideIcons.arrowLeft),
+      ),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: background,
       foregroundColor: t.ink,
@@ -203,6 +224,7 @@ ThemeData winouTheme(Brightness brightness) {
       ),
       labelStyle: TextStyle(
         fontFamily: _font,
+        fontFamilyFallback: _fallback,
         fontSize: 14,
         fontWeight: FontWeight.w800,
         color: WidgetStateColor.resolveWith((states) => states.contains(WidgetState.selected) ? t.accent : t.ink),
@@ -238,7 +260,7 @@ ThemeData winouTheme(Brightness brightness) {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: t.card,
-      hintStyle: TextStyle(fontFamily: _font, fontSize: 16, color: t.muted),
+      hintStyle: TextStyle(fontFamily: _font, fontFamilyFallback: _fallback, fontSize: 16, color: t.muted),
       prefixIconColor: t.muted,
       suffixIconColor: t.muted,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
@@ -247,7 +269,7 @@ ThemeData winouTheme(Brightness brightness) {
       focusedBorder: field(Brand.blue, 2),
       errorBorder: field(Brand.red, 2),
       focusedErrorBorder: field(Brand.red, 2),
-      errorStyle: TextStyle(fontFamily: _font, fontSize: 12, color: t.errorText),
+      errorStyle: TextStyle(fontFamily: _font, fontFamilyFallback: _fallback, fontSize: 12, color: t.errorText),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: t.card,
@@ -257,7 +279,12 @@ ThemeData winouTheme(Brightness brightness) {
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       backgroundColor: dark ? const Color(0xFFE8EDF7) : Brand.ink,
-      contentTextStyle: TextStyle(fontFamily: _font, fontSize: 14, color: dark ? Brand.ink : Colors.white),
+      contentTextStyle: TextStyle(
+        fontFamily: _font,
+        fontFamilyFallback: _fallback,
+        fontSize: 14,
+        color: dark ? Brand.ink : Colors.white,
+      ),
       actionTextColor: dark ? const Color(0xFF294AB8) : const Color(0xFFA9C8FF),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
@@ -293,7 +320,7 @@ ThemeData winouTheme(Brightness brightness) {
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
         textStyle: const WidgetStatePropertyAll(
-          TextStyle(fontFamily: _font, fontSize: 14, fontWeight: FontWeight.w800),
+          TextStyle(fontFamily: _font, fontFamilyFallback: _fallback, fontSize: 14, fontWeight: FontWeight.w800),
         ),
         backgroundColor: WidgetStateColor.resolveWith(
           (states) => states.contains(WidgetState.selected) ? t.tonal : t.card,

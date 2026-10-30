@@ -170,7 +170,7 @@ class _Header extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final tokens = context.tokens;
-    final joined = DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(user.createdAt);
+    final joined = DateFormat.yMMMd(dateLocale(context)).format(user.createdAt);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -299,7 +299,7 @@ class _ContentTile extends StatelessWidget {
             ],
           ),
         ),
-        trailing: const Icon(LucideIcons.chevronRight),
+        trailing: const ForwardIcon(),
         onTap: onTap,
       ),
     );
@@ -359,7 +359,7 @@ class AdminActionTile extends StatelessWidget {
               Text(adminActionLabel(l10n, entry)),
               if (showUser && entry.userName != null)
                 Text(l10n.aboutUser(entry.userName!), style: Theme.of(context).textTheme.titleSmall),
-              if (entry.note case final note?) Text(note, style: muted),
+              if (entry.note case final note?) Text(note, textDirection: textDirectionOf(note), style: muted),
               Text('${entry.adminName ?? l10n.deletedAdmin} · ${timeAgo(l10n, entry.createdAt)}', style: muted),
             ],
           ),

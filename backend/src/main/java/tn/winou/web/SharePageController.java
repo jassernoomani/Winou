@@ -153,11 +153,18 @@ public class SharePageController {
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
-    /** The page's words, in French or English from the browser's language. */
+    /** The page's words, in French, Arabic or English from the browser's language. */
     private record Text(String lang, Locale locale, String cat, String dog, String pet, String lastSeen,
             String help, String getApp, String tagline, String gone, String goneBody) {
 
         static Text of(Locale requested) {
+            if ("ar".equals(requested.getLanguage())) {
+                return new Text("ar", Locale.forLanguageTag("ar-DZ"), "قطّ ضائع", "كلب ضائع", "حيوان ضائع",
+                        "آخر مشاهدة:",
+                        "هل رأيت هذا الحيوان؟ أبلغ عنه في تطبيق Winou: سيُبلَّغ المالك فورًا.",
+                        "حمّل Winou (Android)", "Winou: ابحث عن الحيوانات الضائعة وساعد حيوانات الشارع.",
+                        "لم يعد مفقودًا", "لم يعد هذا الحيوان مُدرجًا كضائع. شكرًا على مساعدتك!");
+            }
             if ("fr".equals(requested.getLanguage())) {
                 return new Text("fr", Locale.FRENCH, "Chat perdu", "Chien perdu", "Animal perdu", "Vu pour la dernière fois le",
                         "Vous l'avez vu ? Signalez-le dans l'application Winou : le propriétaire est prévenu tout de suite.",

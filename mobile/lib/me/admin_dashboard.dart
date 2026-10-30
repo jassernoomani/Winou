@@ -118,7 +118,7 @@ class _Tile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     stat.label,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodySmall?.copyWith(color: tokens.muted),
                   ),
@@ -163,7 +163,7 @@ class _WeeklyCardState extends State<_WeeklyCard> {
     final tokens = context.tokens;
     final colors = _seriesColors(theme.brightness);
     final names = [l10n.seriesLost, l10n.seriesSightings, l10n.seriesReunited];
-    final locale = Localizations.localeOf(context).toString();
+    final locale = dateLocale(context);
     final weeks = widget.weeks;
     final shown = _selected ?? weeks.length - 1; // the legend shows this week's numbers
     return Card(

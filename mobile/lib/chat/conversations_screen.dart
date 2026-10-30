@@ -77,6 +77,7 @@ class _ConversationTile extends ConsumerWidget {
       ),
       subtitle: Text(
         last == null ? l10n.aboutPet(c.petName) : (last.mine ? l10n.youSaid(last.body) : last.body),
+        textDirection: last == null || last.mine ? null : textDirectionOf(last.body),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

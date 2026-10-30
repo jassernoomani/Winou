@@ -208,7 +208,7 @@ class PushNotifierTest extends ApiTestBase {
         assertThat(sender.sent.get(1).push().bodyArgs()).containsExactly("Refuge de Tunis");
 
         // Every key the backend sends exists in the app, in both languages
-        for (String values : List.of("values", "values-fr")) {
+        for (String values : List.of("values", "values-fr", "values-ar")) {
             String strings = Files.readString(Path.of("../mobile/android/app/src/main/res/" + values + "/strings.xml"));
             for (String key : List.of("help_title", "help_injured_body", "help_needs_help_body",
                     "association_approved_title", "association_approved_body", "association_rejected_title",

@@ -20,6 +20,8 @@ import 'package:winou/auth/welcome_screen.dart';
 import 'package:winou/home_shell.dart';
 import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
+import 'package:winou/l10n/app_localizations.dart';
+import 'package:winou/l10n/app_localizations_ar.dart';
 import 'package:winou/l10n/app_localizations_en.dart';
 import 'package:winou/map/map_screen.dart';
 import 'package:winou/me/account_screen.dart';
@@ -36,12 +38,14 @@ import 'package:winou/sightings/sighting_create_screen.dart';
 import 'package:winou/sightings/sighting_detail_screen.dart';
 import 'package:winou/sightings/sighting_thanks_screen.dart';
 import 'package:winou/splash_screen.dart';
+import 'package:winou/widgets/common.dart' show initDates;
 
 import 'harness.dart';
 
 typedef Act = Future<void> Function(WidgetTester tester);
 
-final _l10n = AppLocalizationsEn();
+/// The language of the scene being rendered: acts find buttons by their label.
+AppLocalizations _l10n = AppLocalizationsEn();
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.tap(finder.first, warnIfMissed: false);
@@ -289,25 +293,33 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
 void main() {
   setUpAll(() async {
     await loadFonts();
+    await initDates();
     mockPlugins();
   });
 
+  // Light and dark in English, and Arabic (right to left) in light
+  final variants = [
+    ('light', Brightness.light, const Locale('en')),
+    ('dark', Brightness.dark, const Locale('en')),
+    ('ar', Brightness.light, const Locale('ar')),
+  ];
   for (final (name, screen, api, act) in _scenes) {
-    for (final brightness in Brightness.values) {
-      testWidgets('$name ${brightness.name}', (tester) async {
+    for (final (variant, brightness, locale) in variants) {
+      testWidgets('$name $variant', (tester) async {
+        _l10n = locale.languageCode == 'ar' ? AppLocalizationsAr() : AppLocalizationsEn();
         phoneSize(tester);
         await HttpOverridesScope.run(tester, () async {
-          await tester.pumpWidget(app(screen(), brightness: brightness, api: api()));
+          await tester.pumpWidget(app(screen(), brightness: brightness, api: api(), locale: locale));
           await settle(tester, rounds: 10); // photos from files take a few real-time rounds to decode
           if (act != null) await act(tester);
-          await expectLater(find.byKey(screenshotKey), matchesGoldenFile('out/${name}_${brightness.name}.png'));
+          await expectLater(find.byKey(screenshotKey), matchesGoldenFile('out/${name}_$variant.png'));
           // HIRES=1 also writes a 1080 x 2400 copy to out/hires/ (for the portfolio).
           if (Platform.environment['HIRES'] != null) {
             final boundary = tester.renderObject<RenderRepaintBoundary>(find.byKey(screenshotKey));
             await tester.runAsync(() async {
               final image = await boundary.toImage(pixelRatio: 3);
               final png = await image.toByteData(format: ui.ImageByteFormat.png);
-              File('tool/screenshots/out/hires/${name}_${brightness.name}.png')
+              File('tool/screenshots/out/hires/${name}_$variant.png')
                 ..createSync(recursive: true)
                 ..writeAsBytesSync(png!.buffer.asUint8List());
             });

@@ -102,7 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     children: [
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: AlignmentDirectional.centerEnd,
                         child: IconButton(
                           tooltip: l10n.serverAddress,
                           color: Colors.white70,
@@ -217,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             if (!register)
               Align(
-                alignment: Alignment.centerRight,
+                alignment: AlignmentDirectional.centerEnd,
                 child: TextButton(
                   onPressed: () => context.push('/forgot-password', extra: _email.text.trim()),
                   child: Text(l10n.forgotPassword),

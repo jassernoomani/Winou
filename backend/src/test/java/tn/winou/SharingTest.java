@@ -89,6 +89,8 @@ class SharingTest extends ApiTestBase {
 
         Response french = call(get("/lost/" + report).header(HttpHeaders.ACCEPT_LANGUAGE, "fr"));
         assertThat(french.text()).contains("Chat perdu", "lang=\"fr\"");
+        Response arabic = call(get("/lost/" + report).header(HttpHeaders.ACCEPT_LANGUAGE, "ar-TN"));
+        assertThat(arabic.text()).contains("قطّ ضائع", "lang=\"ar\" dir=\"rtl\"");
     }
 
     @Test

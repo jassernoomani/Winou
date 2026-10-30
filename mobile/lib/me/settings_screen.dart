@@ -56,13 +56,13 @@ class SettingsScreen extends ConsumerWidget {
               leading: const Icon(LucideIcons.circleUser),
               title: Text(me?.displayName ?? l10n.account),
               subtitle: me == null ? null : Text(me.email),
-              trailing: const Icon(LucideIcons.chevronRight),
+              trailing: const ForwardIcon(),
               onTap: () => context.push('/account'),
             ),
             ListTile(
               leading: const Icon(LucideIcons.heartHandshake),
               title: Text(me?.associationName ?? l10n.becomeAssociation),
-              trailing: const Icon(LucideIcons.chevronRight),
+              trailing: const ForwardIcon(),
               onTap: () => context.push('/association'),
             ),
             if (me?.isAdmin ?? false)
@@ -74,7 +74,7 @@ class SettingsScreen extends ConsumerWidget {
                   spacing: 8,
                   children: [
                     if (waiting > 0) Badge.count(count: waiting),
-                    const Icon(LucideIcons.chevronRight),
+                    const ForwardIcon(),
                   ],
                 ),
                 onTap: () => context.push('/admin').then((_) => ref.invalidate(adminSummaryProvider)),
@@ -109,7 +109,12 @@ class SettingsScreen extends ConsumerWidget {
               onChanged: (language) => ref.read(preferencesProvider.notifier).setLanguage(language),
               child: Column(
                 children: [
-                  for (final (code, name) in [(null, l10n.languageSystem), ('en', 'English'), ('fr', 'Français')])
+                  for (final (code, name) in [
+                    (null, l10n.languageSystem),
+                    ('en', 'English'),
+                    ('fr', 'Français'),
+                    ('ar', 'العربية'),
+                  ])
                     RadioListTile<String?>(value: code, title: Text(name)),
                 ],
               ),
@@ -126,13 +131,13 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               leading: const Icon(LucideIcons.server),
               title: Text(l10n.serverAddress),
-              trailing: const Icon(LucideIcons.chevronRight),
+              trailing: const ForwardIcon(),
               onTap: () => editServerAddress(context),
             ),
             ListTile(
               leading: const Icon(LucideIcons.info),
               title: Text(l10n.about),
-              trailing: const Icon(LucideIcons.chevronRight),
+              trailing: const ForwardIcon(),
               onTap: () => showAboutDialog(
                 context: context,
                 applicationName: 'Winou',

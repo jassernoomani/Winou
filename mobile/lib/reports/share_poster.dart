@@ -158,7 +158,7 @@ class _Poster extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final locale = Localizations.localeOf(context).toString();
+    final locale = dateLocale(context);
     final seen = DateFormat.yMMMMd(locale).add_Hm().format(report.lastSeenAt);
     return Theme(
       data: winouTheme(Brightness.light),

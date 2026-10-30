@@ -109,7 +109,7 @@ strays they help are credited to them.
 a dashboard, user search, suspensions, a Reported tab, an audit log, and push alerts when
 something needs them.
 
-**Also:** English and French, light and dark themes, full-screen zoomable photos, HEIC from iPhones.
+**Also:** English, French and Arabic (right to left), light and dark themes, full-screen zoomable photos, HEIC from iPhones.
 
 ## How it works
 

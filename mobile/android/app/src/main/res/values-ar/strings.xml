@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Push notifications in Arabic; the backend sends these keys, not the text -->
+    <string name="match_title">تطابق محتمل</string>
+    <string name="match_body">ربما رأى أحدهم %1$s. انقر لمقارنة الصور.</string>
+    <string name="confirmed_title">ربما عثرت على حيوان ضائع</string>
+    <string name="confirmed_body">تعرّف مالك %1$s على الحيوان الذي رأيته. قد يراسلك.</string>
+    <string name="found_title">عاد %1$s إلى البيت!</string>
+    <string name="found_body">شكرًا على مساعدتك في إعادة %1$s إلى بيته.</string>
+    <string name="message_title">%1$s · بخصوص %2$s</string>
+    <string name="help_title">حيوان يحتاج إلى مساعدة بالقرب منك</string>
+    <string name="help_injured_body">أُبلغ عن حيوان مصاب بالقرب منك. انقر لرؤية المكان.</string>
+    <string name="help_needs_help_body">أُبلغ عن حيوان يحتاج إلى مساعدة بالقرب منك. انقر لرؤية المكان.</string>
+    <string name="association_approved_title">أصبحت جمعية موثَّقة</string>
+    <string name="association_approved_body">قُبلت %1$s. ستصلك تنبيهات بالحيوانات المصابة القريبة منك.</string>
+    <string name="association_rejected_title">رُفض طلب الجمعية</string>
+    <string name="association_rejected_body">لم نتمكن من التحقق من %1$s. يمكنك إرسال طلب جديد بمزيد من التفاصيل.</string>
+    <!-- To admins -->
+    <string name="admin_hidden_title">أُخفي بعد بلاغات</string>
+    <string name="admin_hidden_lost_body">أُخفي بلاغ عن حيوان ضائع. انقر لمراجعته.</string>
+    <string name="admin_hidden_sighting_body">أُخفيت مشاهدة. انقر لمراجعتها.</string>
+    <string name="admin_hidden_message_body">أُخفيت رسالة في محادثة. انقر لمراجعتها.</string>
+    <string name="admin_request_title">طلب جمعية جديد</string>
+    <string name="admin_request_body">تريد %1$s أن تصبح جمعية موثَّقة.</string>
+</resources>
