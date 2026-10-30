@@ -1879,4 +1879,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trailSimilar => 'يشبه حيوانك';
+
+  @override
+  String get searchPets => 'ابحث: الاسم، اللون، الطوق…';
+
+  @override
+  String get clearSearch => 'مسح';
+
+  @override
+  String get sortBy => 'ترتيب';
+
+  @override
+  String get sortRecent => 'شوهد مؤخرًا';
+
+  @override
+  String get sortNearest => 'الأقرب';
+
+  @override
+  String get sortReward => 'أكبر مكافأة';
+
+  @override
+  String noSearchResults(String query) {
+    return 'لا يوجد حيوان مفقود يطابق «$query»';
+  }
+
+  @override
+  String pushStillMissingTitle(String a) {
+    return 'هل ما زال $a مفقودًا؟';
+  }
+
+  @override
+  String pushStillMissingBody(String a) {
+    return 'إذا عاد $a إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد.';
+  }
 }

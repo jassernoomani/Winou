@@ -507,5 +507,14 @@
   "trailHint": "مشاهدات قد تخص {name}، من الأقدم إلى الأحدث. العلم يشير إلى المكان الذي اختفى فيه {name}.",
   "trailConfirmed": "تعرّفت على حيوانك",
   "trailReportedAsYours": "أُبلغ عنه على أنه حيوانك",
-  "trailSimilar": "يشبه حيوانك"
+  "trailSimilar": "يشبه حيوانك",
+  "searchPets": "ابحث: الاسم، اللون، الطوق…",
+  "clearSearch": "مسح",
+  "sortBy": "ترتيب",
+  "sortRecent": "شوهد مؤخرًا",
+  "sortNearest": "الأقرب",
+  "sortReward": "أكبر مكافأة",
+  "noSearchResults": "لا يوجد حيوان مفقود يطابق «{query}»",
+  "pushStillMissingTitle": "هل ما زال {a} مفقودًا؟",
+  "pushStillMissingBody": "إذا عاد {a} إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد."
 }

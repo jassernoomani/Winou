@@ -61,6 +61,14 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await settle(tester); // a new tab or sheet loads its data, then fades in
 }
 
+Future<void> _search(WidgetTester tester, String text) async {
+  await tester.enterText(find.byType(TextField).first, text);
+  await tester.pump(const Duration(milliseconds: 500)); // the search waits for typing to pause
+  await settle(tester);
+  FocusManager.instance.primaryFocus?.unfocus(); // no keyboard caret in the picture
+  await settle(tester);
+}
+
 Finder _markers() => find.byWidgetPredicate((w) => w.runtimeType.toString() == '_MarkerIcon');
 
 /// Places crowded in two spots, and one alone: grouped on the map.
@@ -398,6 +406,9 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     null,
   ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
+  ('80_home_search', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'red collar')),
+  ('81_home_no_results', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'zebra')),
+  ('82_home_sort', () => const LostFeedScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.sortBy))),
   (
     '78_chat_media',
     () => const ChatScreen(id: 'c1'),

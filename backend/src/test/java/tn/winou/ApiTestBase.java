@@ -322,6 +322,13 @@ public abstract class ApiTestBase {
             found.add(report.getName() + ": " + finderIds);
         }
 
+        public final List<String> stillMissing = new ArrayList<>();
+
+        @Override
+        public void stillMissing(LostReport report) {
+            stillMissing.add(report.getName());
+        }
+
         @Override
         public void newMessage(Conversation conversation, ChatMessage message) {
             messages.add(conversation.getId() + ": " + message.getBody());

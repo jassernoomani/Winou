@@ -507,5 +507,14 @@
   "trailHint": "Les signalements qui pourraient être {name}, du plus ancien au plus récent. Le drapeau marque l'endroit où {name} a disparu.",
   "trailConfirmed": "Vous avez reconnu votre animal",
   "trailReportedAsYours": "Signalé comme votre animal",
-  "trailSimilar": "Ressemble à votre animal"
+  "trailSimilar": "Ressemble à votre animal",
+  "searchPets": "Rechercher : nom, couleur, collier…",
+  "clearSearch": "Effacer",
+  "sortBy": "Trier",
+  "sortRecent": "Vus récemment",
+  "sortNearest": "Les plus proches",
+  "sortReward": "Plus grosse récompense",
+  "noSearchResults": "Aucun animal perdu ne correspond à « {query} »",
+  "pushStillMissingTitle": "{a} est toujours perdu ?",
+  "pushStillMissingBody": "Si {a} est rentré, clôturez l'annonce pour que les gens arrêtent de chercher. Sinon, partagez l'affiche à nouveau."
 }

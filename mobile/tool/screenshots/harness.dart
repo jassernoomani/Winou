@@ -547,9 +547,19 @@ class FakeApi implements WinouApi {
     dynamic near,
     double radiusKm = 25,
     Species? species,
+    String? query,
+    FeedSort sort = FeedSort.recent,
     int limit = 20,
     int offset = 0,
-  }) => _answer(() => offset > 0 ? [] : [for (final r in lost) LostReport.fromJson(r)]);
+  }) => _answer(
+    () => offset > 0
+        ? []
+        : [
+            for (final r in lost)
+              if (query == null || '${r['name']} ${r['description']}'.toLowerCase().contains(query.toLowerCase()))
+                LostReport.fromJson(r),
+          ],
+  );
 
   @override
   Future<LostReport> lostReport(String id) =>

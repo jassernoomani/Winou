@@ -1128,5 +1128,35 @@
   },
   "trailConfirmed": "You recognised your pet",
   "trailReportedAsYours": "Reported as your pet",
-  "trailSimilar": "Looks similar"
+  "trailSimilar": "Looks similar",
+  "searchPets": "Search: name, colour, collar…",
+  "clearSearch": "Clear",
+  "sortBy": "Sort",
+  "sortRecent": "Recently seen",
+  "sortNearest": "Nearest",
+  "sortReward": "Biggest reward",
+  "noSearchResults": "No missing pet matches “{query}”",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "pushStillMissingTitle": "Is {a} still missing?",
+  "@pushStillMissingTitle": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushStillMissingBody": "If {a} is back home, close the report so people stop looking. If not, share the poster again.",
+  "@pushStillMissingBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  }
 }

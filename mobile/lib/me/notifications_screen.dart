@@ -71,6 +71,7 @@ class _Item extends StatelessWidget {
     'message' => LucideIcons.messageCircle,
     'help' => LucideIcons.heartPulse,
     'lost' => LucideIcons.megaphone,
+    'still_missing' => LucideIcons.calendarClock,
     'association' => LucideIcons.heartHandshake,
     'admin' => LucideIcons.shieldCheck,
     _ => LucideIcons.bell,

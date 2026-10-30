@@ -109,6 +109,14 @@ public class PushNotifier implements Notifier {
     }
 
     @Override
+    public void stillMissing(LostReport report) {
+        String pet = report.getName();
+        push(report.getOwnerId(), new Push("still_missing_title", List.of(pet), "still_missing_body", List.of(pet),
+                null, "still-missing-" + report.getId(),
+                Map.of("type", "still_missing", "lost_report_id", report.getId().toString(), "pet_name", pet)));
+    }
+
+    @Override
     public void associationDecided(AssociationRequest request) {
         boolean approved = request.getStatus() == RequestStatus.APPROVED;
         String key = approved ? "association_approved" : "association_rejected";

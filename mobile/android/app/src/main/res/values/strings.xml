@@ -32,4 +32,6 @@
     <color name="notification">#2563EB</color>
     <!-- Launch screen, the same blue as the app's animated splash -->
     <color name="splash">#2F5BEA</color>
+    <string name="still_missing_title">Is %1$s still missing?</string>
+    <string name="still_missing_body">If %1$s is back home, close the report so people stop looking. If not, share the poster again.</string>
 </resources>

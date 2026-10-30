@@ -320,10 +320,13 @@ class WinouApi {
       _call(() => _dio.get('/lost-reports/$id'), (data) => LostReport.fromJson(data));
 
   /// Open reports, most recently seen first. With [near], only those within [radiusKm].
+  /// [query] searches names and descriptions; [FeedSort.nearest] needs [near].
   Future<List<LostReport>> lostReports({
     LatLng? near,
     double radiusKm = 25,
     Species? species,
+    String? query,
+    FeedSort sort = FeedSort.recent,
     int limit = 20,
     int offset = 0,
   }) => _call(
@@ -332,6 +335,8 @@ class WinouApi {
       queryParameters: {
         if (near != null) ...{'lat': near.latitude, 'lon': near.longitude, 'radius_km': radiusKm},
         'species': ?species?.api,
+        if (query != null && query.trim().isNotEmpty) 'q': query.trim(),
+        'sort': sort.name,
         'limit': limit,
         'offset': offset,
       },

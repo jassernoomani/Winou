@@ -32,6 +32,8 @@ String? pushText(AppLocalizations l10n, String? key, List<String> args) {
     'admin_hidden_message_body' => l10n.pushAdminHiddenMessageBody,
     'admin_request_title' => l10n.pushAdminRequestTitle,
     'admin_request_body' => l10n.pushAdminRequestBody(arg(0)),
+    'still_missing_title' => l10n.pushStillMissingTitle(arg(0)),
+    'still_missing_body' => l10n.pushStillMissingBody(arg(0)),
     _ => null,
   };
 }

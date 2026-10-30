@@ -40,4 +40,7 @@ public interface Notifier {
 
     /** To admins: someone asked to be an association. */
     void associationRequested(AssociationRequest request);
+
+    /** Asks the owner whether their pet is still missing (two and four weeks after the report). */
+    void stillMissing(LostReport report);
 }

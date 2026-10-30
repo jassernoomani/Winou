@@ -3147,6 +3147,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Looks similar'**
   String get trailSimilar;
+
+  /// No description provided for @searchPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Search: name, colour, collar…'**
+  String get searchPets;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearSearch;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortBy;
+
+  /// No description provided for @sortRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently seen'**
+  String get sortRecent;
+
+  /// No description provided for @sortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest'**
+  String get sortNearest;
+
+  /// No description provided for @sortReward.
+  ///
+  /// In en, this message translates to:
+  /// **'Biggest reward'**
+  String get sortReward;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No missing pet matches “{query}”'**
+  String noSearchResults(String query);
+
+  /// No description provided for @pushStillMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Is {a} still missing?'**
+  String pushStillMissingTitle(String a);
+
+  /// No description provided for @pushStillMissingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If {a} is back home, close the report so people stop looking. If not, share the poster again.'**
+  String pushStillMissingBody(String a);
 }
 
 class _AppLocalizationsDelegate

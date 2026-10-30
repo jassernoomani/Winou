@@ -29,4 +29,6 @@
     <string name="admin_hidden_message_body">أُخفيت رسالة في محادثة. انقر لمراجعتها.</string>
     <string name="admin_request_title">طلب جمعية جديد</string>
     <string name="admin_request_body">تريد %1$s أن تصبح جمعية موثَّقة.</string>
+    <string name="still_missing_title">هل ما زال %1$s مفقودًا؟</string>
+    <string name="still_missing_body">إذا عاد %1$s إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد.</string>
 </resources>

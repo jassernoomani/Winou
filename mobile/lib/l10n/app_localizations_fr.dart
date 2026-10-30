@@ -1849,4 +1849,37 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get trailSimilar => 'Ressemble à votre animal';
+
+  @override
+  String get searchPets => 'Rechercher : nom, couleur, collier…';
+
+  @override
+  String get clearSearch => 'Effacer';
+
+  @override
+  String get sortBy => 'Trier';
+
+  @override
+  String get sortRecent => 'Vus récemment';
+
+  @override
+  String get sortNearest => 'Les plus proches';
+
+  @override
+  String get sortReward => 'Plus grosse récompense';
+
+  @override
+  String noSearchResults(String query) {
+    return 'Aucun animal perdu ne correspond à « $query »';
+  }
+
+  @override
+  String pushStillMissingTitle(String a) {
+    return '$a est toujours perdu ?';
+  }
+
+  @override
+  String pushStillMissingBody(String a) {
+    return 'Si $a est rentré, clôturez l\'annonce pour que les gens arrêtent de chercher. Sinon, partagez l\'affiche à nouveau.';
+  }
 }

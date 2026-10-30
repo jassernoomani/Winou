@@ -173,6 +173,9 @@ class Photo {
   bool get isProcessing => status == 'PENDING' || status == 'PROCESSING';
 }
 
+/// How the home list is ordered.
+enum FeedSort { recent, nearest, reward }
+
 class LostReport {
   LostReport.fromJson(Map<String, dynamic> json)
     : id = json['id'],

@@ -1,13 +1,15 @@
 package tn.winou.reports;
 
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
@@ -119,8 +121,11 @@ public class LostReportService {
      * search point can't reveal the exact one.
      */
     @Transactional(readOnly = true)
-    public List<LostReportOut> list(User viewer, GeoPoint center, double radiusKm, List<Species> species, int limit,
-            int offset) {
+    /** The order of the lost pets list. */
+    public enum ListSort { RECENT, NEAREST, REWARD }
+
+    public List<LostReportOut> list(User viewer, GeoPoint center, double radiusKm, List<Species> species, String q,
+            ListSort sort, int limit, int offset) {
         StringBuilder sql = new StringBuilder("""
                 SELECT id, owner_id, ST_Y(last_seen_point::geometry) AS lat, ST_X(last_seen_point::geometry) AS lon
                 FROM lost_reports WHERE status = 'OPEN' AND hidden_at IS NULL""" + " AND " + Views.notBanned("owner_id"));
@@ -128,6 +133,11 @@ public class LostReportService {
         if (species != null && !species.isEmpty()) {
             sql.append(" AND species IN (:species)");
             params.put("species", species.stream().map(Species::api).toList());
+        }
+        if (q != null && !q.isBlank()) {
+            // Any part of the name or description, ignoring case ("tabby", "red collar")
+            sql.append(" AND (name || ' ' || coalesce(description, '')) ILIKE :q ESCAPE '\\'");
+            params.put("q", "%" + q.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%");
         }
         double radiusM = radiusKm * 1000;
         if (center != null) {
@@ -137,23 +147,28 @@ public class LostReportService {
             params.put("lon", center.lon());
             params.put("within", radiusM + properties.privacy().locationFuzzM());
         }
-        sql.append(" ORDER BY last_seen_at DESC, id");
+        sql.append(sort == ListSort.REWARD ? " ORDER BY reward_tnd DESC NULLS LAST, last_seen_at DESC, id"
+                : " ORDER BY last_seen_at DESC, id");
         if (center == null) {
             sql.append(" LIMIT :limit OFFSET :offset");
             params.put("limit", limit);
             params.put("offset", offset);
         }
-        List<UUID> ids = jdbc.sql(sql.toString()).params(params).query((rs, i) -> {
+        record Found(UUID id, double distanceM) {}
+        Stream<Found> found = jdbc.sql(sql.toString()).params(params).query((rs, i) -> {
             UUID id = rs.getObject("id", UUID.class);
-            if (center != null) {
-                GeoPoint shown = views.shownPosition(id, rs.getObject("owner_id", UUID.class),
-                        new GeoPoint(rs.getDouble("lat"), rs.getDouble("lon")), viewer);
-                if (Geo.distanceM(center, shown) > radiusM) {
-                    return null;
-                }
+            if (center == null) {
+                return new Found(id, 0);
             }
-            return id;
-        }).list().stream().filter(Objects::nonNull).toList();
+            GeoPoint shown = views.shownPosition(id, rs.getObject("owner_id", UUID.class),
+                    new GeoPoint(rs.getDouble("lat"), rs.getDouble("lon")), viewer);
+            double distanceM = Geo.distanceM(center, shown);
+            return distanceM > radiusM ? null : new Found(id, distanceM);
+        }).list().stream().filter(Objects::nonNull);
+        if (sort == ListSort.NEAREST) {
+            found = found.sorted(Comparator.comparingDouble(Found::distanceM)); // stable: recent first on ties
+        }
+        List<UUID> ids = found.map(Found::id).toList();
         if (center != null) {
             ids = ids.subList(Math.min(offset, ids.size()), Math.min(offset + limit, ids.size()));
         }

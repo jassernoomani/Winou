@@ -1,6 +1,7 @@
 package tn.winou.matching;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +9,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
+
+import tn.winou.reports.StillMissingReminders;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -29,16 +32,20 @@ public class PhotoWorker implements SmartLifecycle {
 
     private static final Logger log = LoggerFactory.getLogger(PhotoWorker.class);
     private static final Duration LEASE = Duration.ofMinutes(10);
+    private static final Duration REMINDERS_EVERY = Duration.ofHours(1);
 
     private final JdbcClient jdbc;
     private final TransactionTemplate tx;
     private final PhotoRepository photos;
     private final Matcher matcher;
     private final WinouProperties.Worker settings;
+    private final StillMissingReminders reminders;
     private volatile Thread thread;
+    private Instant nextReminders = Instant.now();
 
     public PhotoWorker(JdbcClient jdbc, TransactionTemplate tx, PhotoRepository photos, Matcher matcher,
-            WinouProperties properties) {
+            WinouProperties properties, StillMissingReminders reminders) {
+        this.reminders = reminders;
         this.jdbc = jdbc;
         this.tx = tx;
         this.photos = photos;
@@ -108,6 +115,13 @@ public class PhotoWorker implements SmartLifecycle {
         while (thread != null) {
             boolean busy;
             try {
+                if (Instant.now().isAfter(nextReminders)) {
+                    nextReminders = Instant.now().plus(REMINDERS_EVERY);
+                    int sent = reminders.sendDue();
+                    if (sent > 0) {
+                        log.info("sent {} still-missing reminders", sent);
+                    }
+                }
                 busy = runOnce();
             } catch (RuntimeException e) {
                 log.error("worker loop error", e); // e.g. database briefly unavailable

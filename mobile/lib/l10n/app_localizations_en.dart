@@ -1833,4 +1833,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trailSimilar => 'Looks similar';
+
+  @override
+  String get searchPets => 'Search: name, colour, collar…';
+
+  @override
+  String get clearSearch => 'Clear';
+
+  @override
+  String get sortBy => 'Sort';
+
+  @override
+  String get sortRecent => 'Recently seen';
+
+  @override
+  String get sortNearest => 'Nearest';
+
+  @override
+  String get sortReward => 'Biggest reward';
+
+  @override
+  String noSearchResults(String query) {
+    return 'No missing pet matches “$query”';
+  }
+
+  @override
+  String pushStillMissingTitle(String a) {
+    return 'Is $a still missing?';
+  }
+
+  @override
+  String pushStillMissingBody(String a) {
+    return 'If $a is back home, close the report so people stop looking. If not, share the poster again.';
+  }
 }

@@ -25,8 +25,10 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import tn.winou.common.ApiException;
 import tn.winou.domain.GeoPoint;
+import tn.winou.reports.LostReportService.ListSort;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.PhotoSource;
 import tn.winou.domain.Species;
@@ -62,7 +64,8 @@ public class LostReportController {
     }
 
     @GetMapping("/lost-reports")
-    @Operation(summary = "Open lost reports, the most recently seen first. Fewer than `limit` items means the last page.",
+    @Operation(summary = "Open lost reports, the most recently seen first (or nearest, or biggest reward). "
+            + "Fewer than `limit` items means the last page.",
             description = "With lat/lon, only reports within radius_km. The distance is measured to the position "
                     + "shown (approximate unless it's yours), so moving the search point can't reveal the exact one.")
     public List<LostReportOut> list(
@@ -72,13 +75,24 @@ public class LostReportController {
             @RequestParam(name = "radius_km", defaultValue = "25") @DecimalMin(value = "0", inclusive = false)
                     @DecimalMax("200") double radiusKm,
             @RequestParam(required = false) List<Species> species,
+            @RequestParam(required = false) @Size(max = 80) String q,
+            @RequestParam(defaultValue = "recent") String sort,
             @RequestParam(defaultValue = "20") @Min(1) @Max(50) int limit,
             @RequestParam(defaultValue = "0") @Min(0) int offset) {
         if ((lat == null) != (lon == null)) {
             throw ApiException.invalid("give both lat and lon, or neither");
         }
         GeoPoint center = lat == null ? null : new GeoPoint(lat, lon);
-        return reports.list(user, center, radiusKm, species, limit, offset);
+        ListSort order = switch (sort) {
+            case "recent" -> ListSort.RECENT;
+            case "nearest" -> ListSort.NEAREST;
+            case "reward" -> ListSort.REWARD;
+            default -> throw ApiException.invalid("sort is recent, nearest or reward");
+        };
+        if (order == ListSort.NEAREST && center == null) {
+            throw ApiException.invalid("nearest needs lat and lon");
+        }
+        return reports.list(user, center, radiusKm, species, q, order, limit, offset);
     }
 
     @GetMapping("/me/lost-reports")

@@ -28,4 +28,6 @@
     <string name="admin_hidden_message_body">Un message a été masqué. Touchez pour l\'examiner.</string>
     <string name="admin_request_title">Nouvelle demande d\'association</string>
     <string name="admin_request_body">%1$s souhaite devenir une association vérifiée.</string>
+    <string name="still_missing_title">%1$s est toujours perdu ?</string>
+    <string name="still_missing_body">Si %1$s est rentré, clôturez l\'annonce pour que les gens arrêtent de chercher. Sinon, partagez l\'affiche à nouveau.</string>
 </resources>

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +38,9 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
   LatLng? _position;
   bool _nearMe = true;
   Species? _species; // null = all
+  FeedSort _sort = FeedSort.recent;
+  final _search = TextEditingController();
+  Timer? _typing; // searches once typing pauses
 
   @override
   void initState() {
@@ -48,6 +53,8 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
 
   @override
   void dispose() {
+    _typing?.cancel();
+    _search.dispose();
     _scroll.dispose();
     super.dispose();
   }
@@ -77,7 +84,14 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
     try {
       final page = await ref
           .read(apiProvider)
-          .lostReports(near: _nearMe ? _position : null, species: _species, limit: _pageSize, offset: _reports.length);
+          .lostReports(
+            near: _nearMe ? _position : null,
+            species: _species,
+            query: _search.text,
+            sort: _sort == FeedSort.nearest && (!_nearMe || _position == null) ? FeedSort.recent : _sort,
+            limit: _pageSize,
+            offset: _reports.length,
+          );
       if (!mounted || request != _request) return;
       setState(() {
         _reports = [..._reports, ...page];
@@ -90,8 +104,22 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
     }
   }
 
+  void _searchChanged(String _) {
+    setState(() {}); // the clear button
+    _typing?.cancel();
+    _typing = Timer(const Duration(milliseconds: 400), _reload);
+  }
+
+  void _setSort(FeedSort sort) {
+    setState(() => _sort = sort);
+    _reload();
+  }
+
   Future<void> _setNearMe(bool nearMe) async {
-    setState(() => _nearMe = nearMe);
+    setState(() {
+      _nearMe = nearMe;
+      if (!nearMe && _sort == FeedSort.nearest) _sort = FeedSort.recent; // nearest to what?
+    });
     if (nearMe && _position == null) {
       await _locateThenLoad(); // location may have been turned on since
     } else {
@@ -194,6 +222,50 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               style: text.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
             ),
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 8),
+            child: TextField(
+              controller: _search,
+              onChanged: _searchChanged,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) {
+                _typing?.cancel();
+                _reload();
+              },
+              style: const TextStyle(color: Brand.ink),
+              decoration: InputDecoration(
+                hintText: l10n.searchPets,
+                hintStyle: const TextStyle(color: Color(0xFF6B7591)),
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(LucideIcons.search, color: Color(0xFF6B7591)),
+                suffixIcon: _search.text.isEmpty
+                    ? null
+                    : IconButton(
+                        tooltip: l10n.clearSearch,
+                        icon: const Icon(LucideIcons.x, color: Color(0xFF6B7591)),
+                        onPressed: () {
+                          _search.clear();
+                          _searchChanged('');
+                        },
+                      ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderSide: BorderSide(color: Brand.sky, width: 2),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -207,6 +279,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
       child: Row(
         spacing: 8,
         children: [
+          _SortMenu(_sort, nearestAvailable: _nearMe && _position != null, onChanged: _setSort),
           ChoiceChip(
             avatar: const Icon(LucideIcons.navigation, size: 18),
             label: Text(l10n.nearMe),
@@ -257,6 +330,9 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
             sliver: SliverToBoxAdapter(child: Column(children: [_SkeletonCard(), _SkeletonCard()])),
           ),
         ];
+      }
+      if (_search.text.trim().isNotEmpty) {
+        return [message(LucideIcons.searchX, l10n.noSearchResults(_search.text.trim()))];
       }
       if (_nearMe && _position == null) return [message(LucideIcons.mapPinOff, l10n.locationOffForNearby)];
       return [message(LucideIcons.heart, _nearMe ? l10n.noMissingPetsNearby : l10n.noMissingPets)];
@@ -320,6 +396,45 @@ String _speciesAndDistance(AppLocalizations l10n, LostReport report, LatLng? fro
     speciesLabel(l10n, report.species),
     if (km != null) l10n.kmAway(km < 1 ? '< 1' : km.toStringAsFixed(km < 10 ? 1 : 0)),
   ].join(' · ');
+}
+
+/// "Sort ▾" with the current order; nearest only when the list is around the user's position.
+class _SortMenu extends StatelessWidget {
+  const _SortMenu(this.sort, {required this.nearestAvailable, required this.onChanged});
+
+  final FeedSort sort;
+  final bool nearestAvailable;
+  final ValueChanged<FeedSort> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    String label(FeedSort s) => switch (s) {
+      FeedSort.recent => l10n.sortRecent,
+      FeedSort.nearest => l10n.sortNearest,
+      FeedSort.reward => l10n.sortReward,
+    };
+    return PopupMenuButton<FeedSort>(
+      tooltip: l10n.sortBy,
+      initialValue: sort,
+      onSelected: onChanged,
+      itemBuilder: (_) => [
+        for (final s in FeedSort.values)
+          PopupMenuItem(value: s, enabled: s != FeedSort.nearest || nearestAvailable, child: Text(label(s))),
+      ],
+      child: IgnorePointer(
+        child: ActionChip(
+          avatar: const Icon(LucideIcons.arrowDownUp, size: 18),
+          label: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 2,
+            children: [Text(label(sort)), const Icon(LucideIcons.chevronDown, size: 16)],
+          ),
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
 }
 
 /// The notifications list, with how many are new.
