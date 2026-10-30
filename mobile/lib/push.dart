@@ -28,7 +28,11 @@ class PushNotifications {
   /// The app works without notifications, so failures are only logged.
   Future<void> register() async {
     try {
-      final settings = await _messaging.requestPermission();
+      // Asked on the welcome screen, with the reason; here only if it never was (not again after a "no")
+      var settings = await _messaging.getNotificationSettings();
+      if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+        settings = await _messaging.requestPermission();
+      }
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       if (_installationId case final id?) await _send(id); // already registered this run
       await _messaging.register(); // new or changed registrations arrive through onRegistered

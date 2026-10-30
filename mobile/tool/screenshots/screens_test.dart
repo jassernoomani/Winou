@@ -16,6 +16,8 @@ import 'package:winou/auth/auth_controller.dart';
 import 'package:winou/auth/auth_screens.dart';
 import 'package:winou/auth/forgot_password_screen.dart';
 import 'package:winou/auth/suspended_screen.dart';
+import 'package:winou/auth/welcome_screen.dart';
+import 'package:winou/home_shell.dart';
 import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
 import 'package:winou/l10n/app_localizations_en.dart';
@@ -25,6 +27,7 @@ import 'package:winou/me/admin_screen.dart';
 import 'package:winou/me/admin_user_screen.dart';
 import 'package:winou/me/association_screen.dart';
 import 'package:winou/me/match_detail_screen.dart';
+import 'package:winou/me/settings_screen.dart';
 import 'package:winou/me/my_activity_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
@@ -269,11 +272,18 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     null,
   ),
   (
-    '39_activity_menu',
-    () => const MyActivityScreen(),
-    () => FakeApi(role: 'ADMIN'),
-    (tester) => _tap(tester, find.byTooltip(_l10n.more)),
+    '61_home_tabs',
+    () => Scaffold(
+      body: const LostFeedScreen(),
+      bottomNavigationBar: AppNavigationBar(index: 0, onSelected: (_) {}),
+    ),
+    FakeApi.new,
+    null,
   ),
+  ('62_settings', () => const SettingsScreen(), () => FakeApi(role: 'ADMIN'), null),
+  ('63_welcome', () => const WelcomeScreen(), FakeApi.new, null),
+  ('64_welcome_permissions', () => const WelcomeScreen(), FakeApi.new, (tester) => _tap(tester, find.text(_l10n.skip))),
+  ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 
 void main() {

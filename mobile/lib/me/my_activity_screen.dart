@@ -5,11 +5,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
-import '../auth/auth_controller.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
-import '../widgets/server_settings.dart';
 
 /// Tabs: matches for my lost pets, my lost reports, my sightings.
 class MyActivityScreen extends ConsumerWidget {
@@ -18,7 +16,7 @@ class MyActivityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false; // loaded with the screen, not when the menu opens
+    final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false;
     final waiting = isAdmin ? ref.watch(adminSummaryProvider).value?.total ?? 0 : 0;
     return DefaultTabController(
       length: 3,
@@ -26,41 +24,10 @@ class MyActivityScreen extends ConsumerWidget {
         appBar: AppBar(
           title: Text(l10n.myActivity),
           actions: [
-            PopupMenuButton<String>(
-              icon: Badge(isLabelVisible: waiting > 0, child: const Icon(LucideIcons.ellipsisVertical)),
-              tooltip: l10n.more,
-              onSelected: (action) => switch (action) {
-                'logout' => ref.read(authProvider.notifier).logout(),
-                'server' => editServerAddress(context),
-                _ => context.push(action).then((_) => ref.invalidate(adminSummaryProvider)),
-              },
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: '/account',
-                  child: ListTile(leading: const Icon(LucideIcons.circleUser), title: Text(l10n.account)),
-                ),
-                PopupMenuItem(
-                  value: '/association',
-                  child: ListTile(leading: const Icon(LucideIcons.heartHandshake), title: Text(l10n.becomeAssociation)),
-                ),
-                if (isAdmin)
-                  PopupMenuItem(
-                    value: '/admin',
-                    child: ListTile(
-                      leading: const Icon(LucideIcons.shieldCheck),
-                      title: Text(l10n.admin),
-                      trailing: waiting > 0 ? Badge.count(count: waiting) : null,
-                    ),
-                  ),
-                PopupMenuItem(
-                  value: 'server',
-                  child: ListTile(leading: const Icon(LucideIcons.server), title: Text(l10n.serverAddress)),
-                ),
-                PopupMenuItem(
-                  value: 'logout',
-                  child: ListTile(leading: const Icon(LucideIcons.logOut), title: Text(l10n.signOut)),
-                ),
-              ],
+            IconButton(
+              tooltip: l10n.settings,
+              onPressed: () => context.push('/settings').then((_) => ref.invalidate(adminSummaryProvider)),
+              icon: Badge(isLabelVisible: waiting > 0, child: const Icon(LucideIcons.settings)),
             ),
           ],
           bottom: TabBar(

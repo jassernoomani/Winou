@@ -10,7 +10,7 @@ from PIL import Image
 HERE = Path(__file__).parent
 TARGET = HERE.parents[2] / "docs" / "screenshots"
 SCREENS = {
-    "04_home": "home",
+    "61_home_tabs": "home",
     "08_lost_detail": "lost-pet",
     "12_match_pending": "match",
     "17_map": "map",

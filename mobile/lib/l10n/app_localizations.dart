@@ -2335,6 +2335,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look closely at markings and features before writing to them: people can be mistaken.'**
   String get finderMatchTip;
+
+  /// No description provided for @tabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get tabHome;
+
+  /// No description provided for @tabMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get tabMe;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'The phone\'s language'**
+  String get languageSystem;
+
+  /// No description provided for @thisPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone'**
+  String get thisPhone;
+
+  /// No description provided for @permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications and location'**
+  String get permissions;
+
+  /// No description provided for @permissionsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow or block them in Android\'s settings'**
+  String get permissionsHelp;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About Winou'**
+  String get about;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get getStarted;
+
+  /// No description provided for @welcomeLostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a lost pet'**
+  String get welcomeLostTitle;
+
+  /// No description provided for @welcomeLostBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Report your pet with a few photos. Winou compares them with every animal seen nearby and tells you when one looks like yours.'**
+  String get welcomeLostBody;
+
+  /// No description provided for @welcomeSawTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saw an animal?'**
+  String get welcomeSawTitle;
+
+  /// No description provided for @welcomeSawBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo of a loose cat or dog. If someone is looking for it, they hear about it at once, and you can talk without sharing your number.'**
+  String get welcomeSawBody;
+
+  /// No description provided for @welcomeStraysTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help street animals'**
+  String get welcomeStraysTitle;
+
+  /// No description provided for @welcomeStraysBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Put strays on the map, say when one is hurt, and associations nearby are alerted.'**
+  String get welcomeStraysBody;
+
+  /// No description provided for @welcomePermissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Two things that help'**
+  String get welcomePermissionsTitle;
+
+  /// No description provided for @welcomePermissionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Winou works without them, but works better with them.'**
+  String get welcomePermissionsBody;
+
+  /// No description provided for @permissionNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get permissionNotificationsTitle;
+
+  /// No description provided for @permissionNotificationsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Hear at once when someone may have seen your pet, or writes to you.'**
+  String get permissionNotificationsBody;
+
+  /// No description provided for @permissionLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get permissionLocationTitle;
+
+  /// No description provided for @permissionLocationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Show lost pets near you, and place your sightings. Never shared: other people only see an approximate area of a lost pet.'**
+  String get permissionLocationBody;
+
+  /// No description provided for @permissionsLater.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings.'**
+  String get permissionsLater;
+
+  /// No description provided for @allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get allow;
+
+  /// No description provided for @allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed'**
+  String get allowed;
+
+  /// No description provided for @notAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not allowed'**
+  String get notAllowed;
 }
 
 class _AppLocalizationsDelegate

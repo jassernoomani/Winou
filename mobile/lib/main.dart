@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'api/providers.dart';
 import 'auth/auth_controller.dart';
 import 'l10n/app_localizations.dart';
+import 'home_shell.dart' show tabRoots;
+import 'preferences.dart';
 import 'push.dart';
 import 'router.dart';
 import 'theme.dart';
@@ -19,7 +21,7 @@ import 'widgets/server_settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // config from android/app/google-services.json
-  await loadServerAddress(); // the laptop's address saved in the app, if any
+  await (loadServerAddress(), loadPreferences()).wait; // the server and the theme and language chosen in the app
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(['Nunito'], await rootBundle.loadString('assets/fonts/OFL.txt'));
   });
@@ -81,7 +83,8 @@ class _WinouAppState extends ConsumerState<WinouApp> {
       return;
     }
     // Already showing it (the app was in the background on that screen): just come back to it
-    if (router.state.uri.path != route) router.push(route); // state: the top screen, pushed ones included
+    if (router.state.uri.path == route) return; // state: the top screen, pushed ones included
+    tabRoots.contains(route) ? router.go(route) : router.push(route); // a tab is switched to, not stacked
   }
 
   /// While the app is open, Android shows no notification: show a snack bar instead, or nothing
@@ -124,6 +127,7 @@ class _WinouAppState extends ConsumerState<WinouApp> {
   @override
   Widget build(BuildContext context) {
     ref.listen(authProvider, (_, _) => _openPending());
+    final prefs = ref.watch(preferencesProvider);
     return MaterialApp.router(
       title: 'Winou',
       routerConfig: ref.watch(routerProvider),
@@ -132,6 +136,8 @@ class _WinouAppState extends ConsumerState<WinouApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       theme: winouTheme(Brightness.light),
       darkTheme: winouTheme(Brightness.dark),
+      themeMode: prefs.themeMode,
+      locale: prefs.locale,
     );
   }
 }

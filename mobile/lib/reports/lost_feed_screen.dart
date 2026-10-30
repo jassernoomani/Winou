@@ -106,7 +106,6 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final unread = ref.watch(conversationsProvider).value?.fold<int>(0, (sum, c) => sum + c.unread) ?? 0;
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _reload,
@@ -115,7 +114,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
           controller: _scroll,
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverToBoxAdapter(child: _header(context, unread)),
+            SliverToBoxAdapter(child: _header(context)),
             SliverToBoxAdapter(child: _filters(context)),
             ..._list(context),
           ],
@@ -152,20 +151,9 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
   }
 
   /// Blue header: title, actions and how many pets are missing.
-  Widget _header(BuildContext context, int unread) {
+  Widget _header(BuildContext context) {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
-    Widget action(IconData icon, String tooltip, String location, {int badge = 0}) => IconButton(
-      tooltip: tooltip,
-      onPressed: () => _open(location),
-      style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: 0.16)),
-      icon: Badge.count(
-        count: badge,
-        isLabelVisible: badge > 0,
-        backgroundColor: Brand.coral,
-        child: Icon(icon, color: Colors.white),
-      ),
-    );
     return Container(
       decoration: const BoxDecoration(
         gradient: Brand.gradient,
@@ -180,11 +168,6 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               const AppLogo(size: 36),
               const SizedBox(width: 10),
               const Expanded(child: Wordmark(size: 26, color: Colors.white)),
-              action(LucideIcons.map, l10n.map, '/map'),
-              const SizedBox(width: 6),
-              action(LucideIcons.messageCircle, l10n.messages, '/conversations', badge: unread),
-              const SizedBox(width: 6),
-              action(LucideIcons.user, l10n.myActivity, '/me'),
             ],
           ),
           const SizedBox(height: 20),

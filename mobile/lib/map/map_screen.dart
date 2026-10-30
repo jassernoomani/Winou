@@ -130,7 +130,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             : null,
         actions: [
           IconButton(icon: const Icon(LucideIcons.slidersHorizontal), tooltip: l10n.filters, onPressed: _editFilters),
-          IconButton(icon: const Icon(LucideIcons.user), tooltip: l10n.myActivity, onPressed: () => _open('/me')),
         ],
       ),
       body: FlutterMap(

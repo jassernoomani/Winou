@@ -1334,4 +1334,108 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get finderMatchTip =>
       'Regardez bien les marques et les détails avant d\'écrire : on peut se tromper.';
+
+  @override
+  String get tabHome => 'Accueil';
+
+  @override
+  String get tabMe => 'Moi';
+
+  @override
+  String get settings => 'Paramètres';
+
+  @override
+  String get appearance => 'Apparence';
+
+  @override
+  String get themeSystem => 'Auto';
+
+  @override
+  String get themeLight => 'Clair';
+
+  @override
+  String get themeDark => 'Sombre';
+
+  @override
+  String get language => 'Langue';
+
+  @override
+  String get languageSystem => 'La langue du téléphone';
+
+  @override
+  String get thisPhone => 'Ce téléphone';
+
+  @override
+  String get permissions => 'Notifications et position';
+
+  @override
+  String get permissionsHelp =>
+      'Les autoriser ou les bloquer dans les réglages d\'Android';
+
+  @override
+  String get about => 'À propos de Winou';
+
+  @override
+  String get skip => 'Passer';
+
+  @override
+  String get next => 'Suivant';
+
+  @override
+  String get getStarted => 'Commencer';
+
+  @override
+  String get welcomeLostTitle => 'Retrouver un animal perdu';
+
+  @override
+  String get welcomeLostBody =>
+      'Signalez votre animal avec quelques photos. Winou les compare à chaque animal vu près de chez vous et vous prévient quand l\'un lui ressemble.';
+
+  @override
+  String get welcomeSawTitle => 'Vous avez vu un animal ?';
+
+  @override
+  String get welcomeSawBody =>
+      'Prenez en photo un chat ou un chien errant. Si quelqu\'un le cherche, il est prévenu tout de suite, et vous pouvez échanger sans donner votre numéro.';
+
+  @override
+  String get welcomeStraysTitle => 'Aider les animaux des rues';
+
+  @override
+  String get welcomeStraysBody =>
+      'Mettez les animaux errants sur la carte, signalez un animal blessé, et les associations proches sont alertées.';
+
+  @override
+  String get welcomePermissionsTitle => 'Deux choses qui aident';
+
+  @override
+  String get welcomePermissionsBody =>
+      'Winou fonctionne sans, mais mieux avec.';
+
+  @override
+  String get permissionNotificationsTitle => 'Notifications';
+
+  @override
+  String get permissionNotificationsBody =>
+      'Être prévenu tout de suite quand quelqu\'un a peut-être vu votre animal, ou vous écrit.';
+
+  @override
+  String get permissionLocationTitle => 'Position';
+
+  @override
+  String get permissionLocationBody =>
+      'Afficher les animaux perdus près de vous, et situer vos signalements. Jamais partagée : les autres ne voient qu\'une zone approximative.';
+
+  @override
+  String get permissionsLater =>
+      'Vous pourrez changer cela dans les paramètres.';
+
+  @override
+  String get allow => 'Autoriser';
+
+  @override
+  String get allowed => 'Autorisé';
+
+  @override
+  String get notAllowed => 'Non autorisé';
 }

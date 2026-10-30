@@ -1321,4 +1321,106 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get finderMatchTip =>
       'Look closely at markings and features before writing to them: people can be mistaken.';
+
+  @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabMe => 'Me';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get themeSystem => 'Auto';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageSystem => 'The phone\'s language';
+
+  @override
+  String get thisPhone => 'This phone';
+
+  @override
+  String get permissions => 'Notifications and location';
+
+  @override
+  String get permissionsHelp => 'Allow or block them in Android\'s settings';
+
+  @override
+  String get about => 'About Winou';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get getStarted => 'Get started';
+
+  @override
+  String get welcomeLostTitle => 'Find a lost pet';
+
+  @override
+  String get welcomeLostBody =>
+      'Report your pet with a few photos. Winou compares them with every animal seen nearby and tells you when one looks like yours.';
+
+  @override
+  String get welcomeSawTitle => 'Saw an animal?';
+
+  @override
+  String get welcomeSawBody =>
+      'Take a photo of a loose cat or dog. If someone is looking for it, they hear about it at once, and you can talk without sharing your number.';
+
+  @override
+  String get welcomeStraysTitle => 'Help street animals';
+
+  @override
+  String get welcomeStraysBody =>
+      'Put strays on the map, say when one is hurt, and associations nearby are alerted.';
+
+  @override
+  String get welcomePermissionsTitle => 'Two things that help';
+
+  @override
+  String get welcomePermissionsBody =>
+      'Winou works without them, but works better with them.';
+
+  @override
+  String get permissionNotificationsTitle => 'Notifications';
+
+  @override
+  String get permissionNotificationsBody =>
+      'Hear at once when someone may have seen your pet, or writes to you.';
+
+  @override
+  String get permissionLocationTitle => 'Location';
+
+  @override
+  String get permissionLocationBody =>
+      'Show lost pets near you, and place your sightings. Never shared: other people only see an approximate area of a lost pet.';
+
+  @override
+  String get permissionsLater => 'You can change this later in Settings.';
+
+  @override
+  String get allow => 'Allow';
+
+  @override
+  String get allowed => 'Allowed';
+
+  @override
+  String get notAllowed => 'Not allowed';
 }
