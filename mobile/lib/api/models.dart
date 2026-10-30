@@ -178,7 +178,8 @@ class LostReport {
       lastSeenAt = _date(json['last_seen_at']),
       status = _enum(ReportStatus.values, json['status']),
       photos = [for (final p in json['photos']) Photo.fromJson(p)],
-      hidden = json['hidden'] ?? false;
+      hidden = json['hidden'] ?? false,
+      authorId = json['author_id'];
 
   final String id;
   final String name;
@@ -190,6 +191,7 @@ class LostReport {
   final ReportStatus status;
   final List<Photo> photos;
   final bool hidden; // reported by several people: only the owner sees it
+  final String? authorId; // sent to admins only
 
   bool get isMine => !locationIsApproximate;
 }
@@ -208,7 +210,8 @@ class Sighting {
       helpedBy = json['helped_by'],
       isMine = json['mine'],
       photos = [for (final p in json['photos']) Photo.fromJson(p)],
-      hidden = json['hidden'] ?? false;
+      hidden = json['hidden'] ?? false,
+      authorId = json['author_id'];
 
   final String id;
   final Species species;
@@ -223,6 +226,7 @@ class Sighting {
   final bool isMine;
   final List<Photo> photos;
   final bool hidden;
+  final String? authorId; // sent to admins only
 
   bool get needsHelp => condition != Condition.healthy;
 }
@@ -346,7 +350,7 @@ class AssociationRequest {
   final DateTime createdAt;
 }
 
-/// Content hidden after reports, for the admin to restore or delete.
+/// Reported or hidden content, for the admin to act on.
 class HiddenItem {
   HiddenItem.fromJson(Map<String, dynamic> json)
     : type = _enum(ReportTarget.values, json['target_type']),
@@ -354,20 +358,26 @@ class HiddenItem {
       title = json['title'],
       text = json['text'],
       photoUrl = absoluteUrl(json['photo_url']),
-      hiddenAt = _date(json['hidden_at']),
+      hiddenAt = _optionalDate(json['hidden_at']),
       reports = json['reports'],
       reasons = [for (final r in json['reasons']) _enum(ReportReason.values, r)],
-      notes = [for (final n in json['notes']) n as String];
+      notes = [for (final n in json['notes']) n as String],
+      authorId = json['author_id'],
+      authorName = json['author_name'],
+      lastReportedAt = _optionalDate(json['last_reported_at']);
 
   final ReportTarget type;
   final String id;
   final String? title; // pet name, species, or the sender's name
   final String? text;
   final String? photoUrl;
-  final DateTime hiddenAt;
+  final DateTime? hiddenAt; // null while it's still shown
   final int reports;
   final List<ReportReason> reasons;
   final List<String> notes;
+  final String? authorId;
+  final String? authorName;
+  final DateTime? lastReportedAt;
 }
 
 /// Why and until when an account is suspended, from a 403 with code "banned".
@@ -386,7 +396,9 @@ enum AdminAction with ApiEnum {
   approveAssociation('APPROVE_ASSOCIATION'),
   rejectAssociation('REJECT_ASSOCIATION'),
   revokeAssociation('REVOKE_ASSOCIATION'),
+  hideContent('HIDE_CONTENT'),
   restoreContent('RESTORE_CONTENT'),
+  dismissReports('DISMISS_REPORTS'),
   deleteContent('DELETE_CONTENT'),
   banUser('BAN_USER'),
   unbanUser('UNBAN_USER');

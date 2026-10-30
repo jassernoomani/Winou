@@ -317,6 +317,19 @@ class WinouApi {
   Future<void> deleteHidden(ReportTarget type, String id) =>
       _call(() => _dio.delete('/admin/hidden/${type.api}/$id'), (_) {});
 
+  /// Reported, not hidden yet: the most reported first.
+  Future<List<HiddenItem>> reportedContent() =>
+      _call(() => _dio.get('/admin/reported'), (data) => [for (final h in data) HiddenItem.fromJson(h)]);
+
+  Future<void> hideContent(ReportTarget type, String id) =>
+      _call(() => _dio.post('/admin/content/${type.api}/$id/hide'), (_) {});
+
+  Future<void> dismissReports(ReportTarget type, String id) =>
+      _call(() => _dio.post('/admin/content/${type.api}/$id/dismiss'), (_) {});
+
+  Future<void> deleteContent(ReportTarget type, String id) =>
+      _call(() => _dio.delete('/admin/content/${type.api}/$id'), (_) {});
+
   Future<List<AdminUser>> adminUsers({String query = '', bool bannedOnly = false}) => _call(
     () => _dio.get('/admin/users', queryParameters: {'q': query, 'banned': bannedOnly, 'limit': 100}),
     (data) => [for (final u in data) AdminUser.fromJson(u)],

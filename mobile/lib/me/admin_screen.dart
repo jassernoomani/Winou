@@ -14,8 +14,8 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/report_sheet.dart';
 
-/// For admins: users to look up and ban, association requests to approve or reject, and reported
-/// content to restore or delete.
+/// For admins: users to look up and ban, reported content to dismiss or hide, association
+/// requests to approve or reject, and hidden content to restore or delete.
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 
@@ -23,19 +23,22 @@ class AdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.admin),
           bottom: TabBar(
+            isScrollable: true, // four tabs, longer in French
+            tabAlignment: TabAlignment.start,
             tabs: [
               Tab(text: l10n.adminUsers),
+              Tab(text: l10n.adminReported),
               Tab(text: l10n.adminRequests),
               Tab(text: l10n.adminHidden),
             ],
           ),
         ),
-        body: const TabBarView(children: [_Users(), _Requests(), _Hidden()]),
+        body: const TabBarView(children: [_Users(), _Content(hidden: false), _Requests(), _Content(hidden: true)]),
       ),
     );
   }
@@ -253,16 +256,23 @@ class _Requests extends ConsumerWidget {
   }
 }
 
-class _Hidden extends ConsumerWidget {
-  const _Hidden();
+/// Reported content: still shown ([hidden] false, dismiss or hide now) or hidden already
+/// (restore or delete). Tap a lost report or sighting to open it, the author to see their account.
+class _Content extends ConsumerWidget {
+  const _Content({required this.hidden});
 
-  Future<void> _act(BuildContext context, WidgetRef ref, HiddenItem item, {required bool restore}) async {
+  final bool hidden;
+
+  FutureProvider<List<HiddenItem>> get _provider => hidden ? hiddenContentProvider : reportedContentProvider;
+
+  Future<void> _act(BuildContext context, WidgetRef ref, Future<void> Function() action, {String? question}) async {
     final l10n = context.l10n;
-    if (!restore && !await confirm(context, l10n.deleteForGood, l10n.delete)) return;
+    if (question != null && !await confirm(context, question, l10n.delete)) return;
     try {
-      final api = ref.read(apiProvider);
-      await (restore ? api.restoreHidden(item.type, item.id) : api.deleteHidden(item.type, item.id));
-      ref.invalidate(hiddenContentProvider);
+      await action();
+      ref
+        ..invalidate(reportedContentProvider)
+        ..invalidate(hiddenContentProvider);
     } catch (e) {
       if (context.mounted) showError(context, e);
     }
@@ -271,73 +281,123 @@ class _Hidden extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final api = ref.read(apiProvider);
     return _AdminList<HiddenItem>(
-      provider: hiddenContentProvider,
-      empty: l10n.noHiddenContent,
+      provider: _provider,
+      empty: hidden ? l10n.noHiddenContent : l10n.noReportedContent,
       emptyIcon: LucideIcons.shieldCheck,
-      item: (item) => Card(
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              Row(
-                spacing: 12,
-                children: [
-                  if (item.type != ReportTarget.message)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: SizedBox.square(dimension: 56, child: NetworkPhoto(item.photoUrl)),
-                    ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(switch (item.type) {
-                          ReportTarget.lostReport => '${l10n.typeLostOne} · ${item.title ?? ''}',
-                          ReportTarget.sighting => l10n.typeSighting,
-                          ReportTarget.message => l10n.messageFrom(item.title ?? ''),
-                        }, style: Theme.of(context).textTheme.titleMedium),
-                        Text(timeAgo(l10n, item.hiddenAt), style: Theme.of(context).textTheme.bodySmall),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (item.text case final text? when text.isNotEmpty) Text(text),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  StatusPill(l10n.reportsCount(item.reports), tone: Tone.injured, icon: LucideIcons.flag),
-                  for (final reason in item.reasons) StatusPill(reasonLabel(l10n, reason), tone: Tone.neutral),
-                ],
-              ),
-              for (final note in item.notes)
-                Text('“$note”', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
-              Row(
+      item: (item) {
+        final open = switch (item.type) {
+          ReportTarget.lostReport => '/lost/${item.id}',
+          ReportTarget.sighting => '/sightings/${item.id}',
+          ReportTarget.message => null, // private: only shown here
+        };
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: open == null
+                ? null
+                : () async {
+                    await context.push(open);
+                    ref.invalidate(_provider); // may have been acted on from there
+                  },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: 8,
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => _act(context, ref, item, restore: false),
-                      child: Text(l10n.delete),
-                    ),
+                  Row(
+                    spacing: 12,
+                    children: [
+                      if (item.type != ReportTarget.message)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox.square(dimension: 56, child: NetworkPhoto(item.photoUrl)),
+                        ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(switch (item.type) {
+                              ReportTarget.lostReport => '${l10n.typeLostOne} · ${item.title ?? ''}',
+                              ReportTarget.sighting => l10n.typeSighting,
+                              ReportTarget.message => l10n.messageFrom(item.title ?? ''),
+                            }, style: Theme.of(context).textTheme.titleMedium),
+                            if (item.hiddenAt ?? item.lastReportedAt case final date?)
+                              Text(timeAgo(l10n, date), style: Theme.of(context).textTheme.bodySmall),
+                          ],
+                        ),
+                      ),
+                      if (open != null) const Icon(LucideIcons.chevronRight),
+                    ],
                   ),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () => _act(context, ref, item, restore: true),
-                      child: Text(l10n.restore),
+                  if (item.text case final text? when text.isNotEmpty) Text(text),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      StatusPill(l10n.reportsCount(item.reports), tone: Tone.injured, icon: LucideIcons.flag),
+                      for (final reason in item.reasons) StatusPill(reasonLabel(l10n, reason), tone: Tone.neutral),
+                    ],
+                  ),
+                  for (final note in item.notes)
+                    Text(
+                      '“$note”',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
                     ),
+                  if ((item.authorId, item.authorName) case (final id?, final name?))
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () => context.push('/admin/users/$id'),
+                        icon: const Icon(LucideIcons.user, size: 18),
+                        label: Text(l10n.byAuthor(name)),
+                      ),
+                    ),
+                  Row(
+                    spacing: 8,
+                    children: hidden
+                        ? [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => _act(
+                                  context,
+                                  ref,
+                                  () => api.deleteContent(item.type, item.id),
+                                  question: l10n.deleteForGood,
+                                ),
+                                child: Text(l10n.delete),
+                              ),
+                            ),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () => _act(context, ref, () => api.restoreHidden(item.type, item.id)),
+                                child: Text(l10n.restore),
+                              ),
+                            ),
+                          ]
+                        : [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => _act(context, ref, () => api.dismissReports(item.type, item.id)),
+                                child: Text(l10n.dismissReports),
+                              ),
+                            ),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () => _act(context, ref, () => api.hideContent(item.type, item.id)),
+                                child: Text(l10n.hideNow),
+                              ),
+                            ),
+                          ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -1711,6 +1711,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message'**
   String get targetMessage;
+
+  /// No description provided for @adminReported.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported'**
+  String get adminReported;
+
+  /// No description provided for @noReportedContent.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports waiting.'**
+  String get noReportedContent;
+
+  /// No description provided for @dismissReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismissReports;
+
+  /// No description provided for @hideNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide now'**
+  String get hideNow;
+
+  /// No description provided for @byAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'By {name}'**
+  String byAuthor(String name);
+
+  /// No description provided for @viewAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Who posted it'**
+  String get viewAuthor;
+
+  /// No description provided for @adminDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete (admin)'**
+  String get adminDelete;
+
+  /// No description provided for @hiddenFromOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden from everyone but its author.'**
+  String get hiddenFromOthers;
+
+  /// No description provided for @shownAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown again.'**
+  String get shownAgain;
+
+  /// No description provided for @actionHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{what} hidden'**
+  String actionHidden(String what);
+
+  /// No description provided for @actionDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports on a {what} dismissed'**
+  String actionDismissed(String what);
 }
 
 class _AppLocalizationsDelegate

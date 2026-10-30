@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,49 +119,105 @@ public class ModerationService {
     @Transactional(readOnly = true)
     public List<HiddenItemOut> hidden(User admin) {
         Admins.require(admin);
-        record Item(ReportTarget type, UUID id, String title, String text, UUID photoId, OffsetDateTime hiddenAt) {}
+        return items("hidden_at IS NOT NULL", Comparator.comparing(HiddenItemOut::hiddenAt).reversed());
+    }
+
+    /**
+     * Content still shown that people reported, not yet enough of them to hide it: the most
+     * reported first. An admin dismisses the reports or hides it now.
+     */
+    @Transactional(readOnly = true)
+    public List<HiddenItemOut> reported(User admin) {
+        Admins.require(admin);
+        return items("hidden_at IS NULL AND id IN (SELECT target_id FROM content_reports)",
+                Comparator.comparingLong(HiddenItemOut::reports).reversed()
+                        .thenComparing(HiddenItemOut::lastReportedAt, Comparator.reverseOrder()));
+    }
+
+    /** Lost reports, sightings and messages matching [where] (on their own table), with their reports. */
+    private List<HiddenItemOut> items(String where, Comparator<HiddenItemOut> order) {
+        record Item(ReportTarget type, UUID id, String title, String text, UUID photoId, OffsetDateTime hiddenAt,
+                UUID authorId, String authorName) {}
         List<Item> items = new ArrayList<>();
         items.addAll(jdbc.sql("""
-                        SELECT r.id, r.name, r.description, r.hidden_at,
+                        SELECT r.id, r.name, r.description, r.hidden_at, u.id AS author_id, u.display_name,
                                (SELECT p.id FROM photos p WHERE p.lost_report_id = r.id ORDER BY p.created_at LIMIT 1) AS photo_id
-                        FROM lost_reports r WHERE r.hidden_at IS NOT NULL""")
+                        FROM (SELECT * FROM lost_reports WHERE %s) r JOIN users u ON u.id = r.owner_id""".formatted(where))
                 .query((rs, i) -> new Item(ReportTarget.LOST_REPORT, rs.getObject("id", UUID.class),
                         rs.getString("name"), rs.getString("description"), rs.getObject("photo_id", UUID.class),
-                        rs.getObject("hidden_at", OffsetDateTime.class))).list());
+                        rs.getObject("hidden_at", OffsetDateTime.class), rs.getObject("author_id", UUID.class),
+                        rs.getString("display_name"))).list());
         items.addAll(jdbc.sql("""
-                        SELECT s.id, s.species, s.note, s.hidden_at,
+                        SELECT s.id, s.species, s.note, s.hidden_at, u.id AS author_id, u.display_name,
                                (SELECT p.id FROM photos p WHERE p.sighting_id = s.id ORDER BY p.created_at LIMIT 1) AS photo_id
-                        FROM sightings s WHERE s.hidden_at IS NOT NULL""")
+                        FROM (SELECT * FROM sightings WHERE %s) s JOIN users u ON u.id = s.reporter_id""".formatted(where))
                 .query((rs, i) -> new Item(ReportTarget.SIGHTING, rs.getObject("id", UUID.class),
                         rs.getString("species"), rs.getString("note"), rs.getObject("photo_id", UUID.class),
-                        rs.getObject("hidden_at", OffsetDateTime.class))).list());
+                        rs.getObject("hidden_at", OffsetDateTime.class), rs.getObject("author_id", UUID.class),
+                        rs.getString("display_name"))).list());
         items.addAll(jdbc.sql("""
-                        SELECT m.id, u.display_name, m.body, m.hidden_at
-                        FROM messages m JOIN users u ON u.id = m.sender_id WHERE m.hidden_at IS NOT NULL""")
+                        SELECT m.id, u.display_name, m.body, m.hidden_at, u.id AS author_id
+                        FROM (SELECT * FROM messages WHERE %s) m JOIN users u ON u.id = m.sender_id""".formatted(where))
                 .query((rs, i) -> new Item(ReportTarget.MESSAGE, rs.getObject("id", UUID.class),
                         rs.getString("display_name"), rs.getString("body"), null,
-                        rs.getObject("hidden_at", OffsetDateTime.class))).list());
+                        rs.getObject("hidden_at", OffsetDateTime.class), rs.getObject("author_id", UUID.class),
+                        rs.getString("display_name"))).list());
         if (items.isEmpty()) {
             return List.of();
         }
 
-        record Reason(UUID target, ReportReason reason, String note) {}
+        record Reason(UUID target, ReportReason reason, String note, OffsetDateTime at) {}
         Map<UUID, List<Reason>> reasons = jdbc.sql("""
-                        SELECT target_id, reason, note FROM content_reports
+                        SELECT target_id, reason, note, created_at FROM content_reports
                         WHERE target_id IN (:ids) ORDER BY created_at""")
                 .param("ids", items.stream().map(Item::id).toList())
                 .query((rs, i) -> new Reason(rs.getObject("target_id", UUID.class),
-                        ReportReason.valueOf(rs.getString("reason")), rs.getString("note")))
+                        ReportReason.valueOf(rs.getString("reason")), rs.getString("note"),
+                        rs.getObject("created_at", OffsetDateTime.class)))
                 .list().stream().collect(Collectors.groupingBy(Reason::target));
         return items.stream()
-                .sorted(Comparator.comparing(Item::hiddenAt).reversed())
                 .map(item -> {
                     List<Reason> why = reasons.getOrDefault(item.id(), List.of());
                     return new HiddenItemOut(item.type(), item.id(), item.title(), item.text(),
                             Views.imageUrl(item.photoId()), item.hiddenAt(), why.size(),
                             why.stream().map(Reason::reason).distinct().toList(),
-                            why.stream().map(Reason::note).filter(n -> n != null).toList());
-                }).toList();
+                            why.stream().map(Reason::note).filter(n -> n != null).toList(),
+                            item.authorId(), item.authorName(),
+                            why.isEmpty() ? null : why.getLast().at());
+                })
+                .sorted(order).toList();
+    }
+
+    /** Hides it at once, without waiting for more reports. */
+    @Transactional
+    public void hide(ReportTarget type, UUID id, User admin) {
+        Admins.require(admin);
+        UUID author = authorId(type, id);
+        if (author == null) {
+            throw ApiException.notFound("Content");
+        }
+        int hidden = jdbc.sql("UPDATE " + table(type) + " SET hidden_at = now() WHERE id = :id AND hidden_at IS NULL")
+                .param("id", id)
+                .update();
+        if (hidden == 0) {
+            throw ApiException.coded(HttpStatus.CONFLICT, "already_hidden", "It's already hidden.");
+        }
+        log.record(admin, AdminAction.HIDE_CONTENT, type.name(), id, author, null);
+    }
+
+    /** The reports were wrong: forget them. The content stays as it is. */
+    @Transactional
+    public void dismiss(ReportTarget type, UUID id, User admin) {
+        Admins.require(admin);
+        UUID author = authorId(type, id);
+        if (author == null) {
+            throw ApiException.notFound("Content");
+        }
+        int dismissed = forgetReports(type, id);
+        if (dismissed == 0) {
+            throw ApiException.coded(HttpStatus.CONFLICT, "no_reports", "Nobody reported it.");
+        }
+        log.record(admin, AdminAction.DISMISS_REPORTS, type.name(), id, author, dismissed + " reports");
     }
 
     /** Shows it again and forgets its reports, so the same reports can't hide it at once. */
@@ -202,8 +259,8 @@ public class ModerationService {
                 .query(UUID.class).optional().orElse(null);
     }
 
-        private void forgetReports(ReportTarget type, UUID id) {
-        jdbc.sql("DELETE FROM content_reports WHERE target_type = :type AND target_id = :id")
+        private int forgetReports(ReportTarget type, UUID id) {
+        return jdbc.sql("DELETE FROM content_reports WHERE target_type = :type AND target_id = :id")
                 .param("type", type.name())
                 .param("id", id)
                 .update();

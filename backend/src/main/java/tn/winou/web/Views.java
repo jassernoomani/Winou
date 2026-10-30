@@ -41,7 +41,7 @@ public class Views {
 
     /** Hidden content, and content by a banned user, is shown to its author and to admins only. */
     public boolean canSee(UUID authorId, java.time.OffsetDateTime hiddenAt, User viewer) {
-        if (viewer != null && (viewer.getId().equals(authorId) || viewer.getRole() == Role.ADMIN)) {
+        if (viewer != null && (viewer.getId().equals(authorId) || isAdmin(viewer))) {
             return true;
         }
         return hiddenAt == null && !users.existsByIdAndBannedUntilAfter(authorId, java.time.OffsetDateTime.now());
@@ -52,7 +52,11 @@ public class Views {
         return "NOT EXISTS (SELECT 1 FROM users banned WHERE banned.id = " + column + " AND banned.banned_until > now())";
     }
 
-    public static String imageUrl(UUID photoId) {
+    private static boolean isAdmin(User viewer) {
+        return viewer != null && viewer.getRole() == Role.ADMIN;
+    }
+
+        public static String imageUrl(UUID photoId) {
         return photoId == null ? null : "/photos/" + photoId + "/image";
     }
 
@@ -85,7 +89,7 @@ public class Views {
             GeoPoint shown = shownPosition(r.getId(), r.getOwnerId(), r.getLastSeen(), viewer);
             return new LostReportOut(r.getId(), r.getName(), r.getSpecies(), r.getDescription(), Location.of(shown),
                     !exact, r.getLastSeenAt(), r.getStatus(), photoList(byReport.get(r.getId())),
-                    r.getHiddenAt() != null, r.getCreatedAt());
+                    r.getHiddenAt() != null, r.getCreatedAt(), isAdmin(viewer) ? r.getOwnerId() : null);
         }).toList();
     }
 
@@ -110,7 +114,8 @@ public class Views {
                 s.getSeenAt(), s.getCondition(), s.getNote(), s.isStray(), s.getStrayStatus(), s.getStrayStatusAt(),
                 s.getStrayStatus() == StrayStatus.HELPED ? helpers.get(s.getStrayStatusBy()) : null,
                 viewer != null && viewer.getId().equals(s.getReporterId()),
-                photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt())).toList();
+                photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt(),
+                isAdmin(viewer) ? s.getReporterId() : null)).toList();
     }
 
     private static List<PhotoOut> photoList(List<Photo> photos) {

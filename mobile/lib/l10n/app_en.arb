@@ -583,5 +583,37 @@
   "actionUnbanned": "Suspension lifted",
   "targetLostReport": "Lost pet report",
   "targetSighting": "Sighting",
-  "targetMessage": "Message"
+  "targetMessage": "Message",
+  "adminReported": "Reported",
+  "noReportedContent": "No reports waiting.",
+  "dismissReports": "Dismiss",
+  "hideNow": "Hide now",
+  "byAuthor": "By {name}",
+  "@byAuthor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewAuthor": "Who posted it",
+  "adminDelete": "Delete (admin)",
+  "hiddenFromOthers": "Hidden from everyone but its author.",
+  "shownAgain": "Shown again.",
+  "actionHidden": "{what} hidden",
+  "@actionHidden": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "actionDismissed": "Reports on a {what} dismissed",
+  "@actionDismissed": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  }
 }

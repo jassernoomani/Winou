@@ -7,6 +7,7 @@ import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../theme.dart';
+import '../widgets/admin_menu.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
@@ -25,6 +26,22 @@ class LostReportDetailScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final api = ref.read(apiProvider);
     try {
+      if (action.startsWith('admin:')) {
+        final gone = await runAdminAction(
+          context,
+          ref,
+          action,
+          ReportTarget.lostReport,
+          report.id,
+          authorId: report.authorId,
+        );
+        if (gone && context.mounted) {
+          context.pop();
+        } else {
+          ref.invalidate(lostReportProvider(id));
+        }
+        return;
+      }
       if (action == 'report') {
         if (await reportContent(context, ref, ReportTarget.lostReport, report.id) == true && context.mounted) {
           context.pop(); // hidden: nothing left to see
@@ -55,6 +72,7 @@ class LostReportDetailScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final async = ref.watch(lostReportProvider(id));
     final report = async.value ?? initial; // the list's copy shows at once, then the fresh one
+    final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -80,6 +98,7 @@ class LostReportDetailScreen extends ConsumerWidget {
                       if (r.status != ReportStatus.open) PopupMenuItem(value: 'open', child: Text(l10n.reopenReport)),
                       PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
                     ],
+                    if (isAdmin) ...adminMenuItems(l10n, hidden: r.hidden, mine: r.isMine, authorId: r.authorId),
                   ],
                 ),
               ),

@@ -198,6 +198,7 @@ Map<String, dynamic> lostJson({
   'last_seen_at': _ago(seen),
   'status': status,
   'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
+  'author_id': mine ? null : 'u4', // admins only
 };
 
 Map<String, dynamic> sightingJson({
@@ -536,6 +537,8 @@ class FakeApi implements WinouApi {
         'reports': 3,
         'reasons': ['SPAM', 'FAKE'],
         'notes': ['This is an ad, not a sighting'],
+        'author_id': 'u1',
+        'author_name': 'Karim',
       }),
       HiddenItem.fromJson({
         'target_type': 'MESSAGE',
@@ -547,6 +550,42 @@ class FakeApi implements WinouApi {
         'reports': 1,
         'reasons': ['DANGEROUS'],
         'notes': [],
+        'author_id': 'u1',
+        'author_name': 'Karim',
+      }),
+    ],
+  );
+
+  @override
+  Future<List<HiddenItem>> reportedContent() => _answer(
+    () => [
+      HiddenItem.fromJson({
+        'target_type': 'LOST_REPORT',
+        'target_id': 'rocky',
+        'title': 'Rocky',
+        'text': 'Reward 500 DT, send the money first and I tell you where he is',
+        'photo_url': '/files/dog.jpg',
+        'hidden_at': null,
+        'reports': 2,
+        'reasons': ['FAKE', 'DANGEROUS'],
+        'notes': ['Asks for money up front'],
+        'author_id': 'u4',
+        'author_name': 'Amira',
+        'last_reported_at': _ago(const Duration(minutes: 25)),
+      }),
+      HiddenItem.fromJson({
+        'target_type': 'SIGHTING',
+        'target_id': 's2',
+        'title': 'cat',
+        'text': 'Near the bakery, friendly',
+        'photo_url': '/files/cat.jpg',
+        'hidden_at': null,
+        'reports': 1,
+        'reasons': ['OTHER'],
+        'notes': [],
+        'author_id': 'u5',
+        'author_name': 'Sami',
+        'last_reported_at': _ago(const Duration(hours: 6)),
       }),
     ],
   );

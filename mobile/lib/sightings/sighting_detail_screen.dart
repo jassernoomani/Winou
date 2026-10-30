@@ -8,6 +8,7 @@ import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../reports/lost_report_detail_screen.dart' show confirm;
 import '../theme.dart';
+import '../widgets/admin_menu.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
@@ -29,33 +30,45 @@ class SightingDetailScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _menu(BuildContext context, WidgetRef ref, Sighting sighting, String action) async {
+    if (action == 'report') {
+      if (await reportContent(context, ref, ReportTarget.sighting, id) == true && context.mounted) {
+        context.pop(); // hidden: nothing left to see
+      }
+      return;
+    }
+    final gone = await runAdminAction(context, ref, action, ReportTarget.sighting, id, authorId: sighting.authorId);
+    if (gone && context.mounted) {
+      context.pop();
+    } else {
+      ref.invalidate(sightingProvider(id));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final sighting = ref.watch(sightingProvider(id));
+    final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false;
+    final mine = sighting.value?.isMine ?? false;
     return Scaffold(
       appBar: AppBar(
         title: Text(sighting.value?.isStray ?? false ? l10n.typeStray : l10n.typeSighting),
         actions: [
-          if (sighting.value?.isMine ?? false)
+          if (mine)
             IconButton(
               icon: const Icon(LucideIcons.trash2),
               tooltip: l10n.delete,
               onPressed: () => _delete(context, ref),
-            )
-          else if (sighting.value != null)
-            PopupMenuButton<void>(
+            ),
+          if (sighting.value case final s? when !mine || isAdmin)
+            PopupMenuButton<String>(
               icon: const Icon(LucideIcons.ellipsisVertical),
               tooltip: l10n.more,
+              onSelected: (action) => _menu(context, ref, s, action),
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  onTap: () async {
-                    if (await reportContent(context, ref, ReportTarget.sighting, id) == true && context.mounted) {
-                      context.pop(); // hidden: nothing left to see
-                    }
-                  },
-                  child: Text(l10n.report),
-                ),
+                if (!mine) PopupMenuItem(value: 'report', child: Text(l10n.report)),
+                if (isAdmin) ...adminMenuItems(l10n, hidden: s.hidden, mine: mine, authorId: s.authorId),
               ],
             ),
         ],

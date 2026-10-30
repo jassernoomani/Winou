@@ -42,6 +42,33 @@ public class ModerationController {
         return moderation.report(body, user);
     }
 
+    @GetMapping("/admin/reported")
+    @Operation(summary = "Content people reported that is still shown, the most reported first (admins only)")
+    public List<HiddenItemOut> reported(@CurrentUser User user) {
+        return moderation.reported(user);
+    }
+
+    @PostMapping("/admin/content/{type}/{id}/hide")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Hide it now, from everyone but its author, until an admin restores it")
+    public void hide(@PathVariable ReportTarget type, @PathVariable UUID id, @CurrentUser User user) {
+        moderation.hide(type, id, user);
+    }
+
+    @PostMapping("/admin/content/{type}/{id}/dismiss")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Forget its reports: they were wrong. It stays shown.")
+    public void dismiss(@PathVariable ReportTarget type, @PathVariable UUID id, @CurrentUser User user) {
+        moderation.dismiss(type, id, user);
+    }
+
+    @DeleteMapping("/admin/content/{type}/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete any lost report, sighting or message, reported or not")
+    public void deleteContent(@PathVariable ReportTarget type, @PathVariable UUID id, @CurrentUser User user) {
+        moderation.delete(type, id, user);
+    }
+
     @GetMapping("/admin/hidden")
     @Operation(summary = "Hidden content with its reports, most recently hidden first (admins only)")
     public List<HiddenItemOut> hidden(@CurrentUser User user) {

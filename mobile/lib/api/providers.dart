@@ -38,6 +38,10 @@ final hiddenContentProvider = FutureProvider.autoDispose<List<HiddenItem>>(
   (ref) => ref.watch(apiProvider).hiddenContent(),
 );
 
+final reportedContentProvider = FutureProvider.autoDispose<List<HiddenItem>>(
+  (ref) => ref.watch(apiProvider).reportedContent(),
+);
+
 final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(
   (ref, id) => ref.watch(apiProvider).conversation(id),
 );

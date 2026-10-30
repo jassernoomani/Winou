@@ -955,4 +955,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get targetMessage => 'Message';
+
+  @override
+  String get adminReported => 'Reported';
+
+  @override
+  String get noReportedContent => 'No reports waiting.';
+
+  @override
+  String get dismissReports => 'Dismiss';
+
+  @override
+  String get hideNow => 'Hide now';
+
+  @override
+  String byAuthor(String name) {
+    return 'By $name';
+  }
+
+  @override
+  String get viewAuthor => 'Who posted it';
+
+  @override
+  String get adminDelete => 'Delete (admin)';
+
+  @override
+  String get hiddenFromOthers => 'Hidden from everyone but its author.';
+
+  @override
+  String get shownAgain => 'Shown again.';
+
+  @override
+  String actionHidden(String what) {
+    return '$what hidden';
+  }
+
+  @override
+  String actionDismissed(String what) {
+    return 'Reports on a $what dismissed';
+  }
 }

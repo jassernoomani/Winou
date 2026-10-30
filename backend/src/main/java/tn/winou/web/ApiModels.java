@@ -118,7 +118,8 @@ public final class ApiModels {
             ReportStatus status,
             List<PhotoOut> photos,
             boolean hidden, // reported by several people: only the owner and admins see it
-            OffsetDateTime createdAt) {}
+            OffsetDateTime createdAt,
+            UUID authorId) {} // for admins only, null for everyone else
 
     // --- sightings ---
 
@@ -153,7 +154,8 @@ public final class ApiModels {
             boolean mine,
             List<PhotoOut> photos,
             boolean hidden,
-            OffsetDateTime createdAt) {}
+            OffsetDateTime createdAt,
+            UUID authorId) {} // for admins only: the reporter is never shown to others
 
     /** AROUND also says "seen again today": it keeps the stray on the map. */
     public record StrayStatusUpdate(@NotNull StrayStatus status) {}
@@ -278,17 +280,20 @@ public final class ApiModels {
     /** hidden: this report was one too many, the item is now hidden. */
     public record ContentReportOut(boolean hidden) {}
 
-    /** Hidden content for the admin: what it is, and why people reported it. */
+    /** Reported or hidden content for the admin: what it is, who wrote it, and why people reported it. */
     public record HiddenItemOut(
             ReportTarget targetType,
             UUID targetId,
             String title,
             String text,
             String photoUrl,
-            OffsetDateTime hiddenAt,
+            OffsetDateTime hiddenAt, // null while it's still shown
             long reports,
             List<ReportReason> reasons,
-            List<String> notes) {}
+            List<String> notes,
+            UUID authorId,
+            String authorName,
+            OffsetDateTime lastReportedAt) {}
 
     // --- admin ---
 
@@ -327,7 +332,7 @@ public final class ApiModels {
     public record BanIn(@Min(1) @Max(3650) Integer days, @Size(max = 500) String reason) {}
 
     public enum AdminAction {
-        APPROVE_ASSOCIATION, REJECT_ASSOCIATION, REVOKE_ASSOCIATION, RESTORE_CONTENT, DELETE_CONTENT, BAN_USER,
-        UNBAN_USER
+        APPROVE_ASSOCIATION, REJECT_ASSOCIATION, REVOKE_ASSOCIATION, HIDE_CONTENT, RESTORE_CONTENT,
+        DISMISS_REPORTS, DELETE_CONTENT, BAN_USER, UNBAN_USER
     }
 }

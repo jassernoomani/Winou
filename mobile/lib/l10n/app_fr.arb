@@ -268,5 +268,16 @@
   "actionUnbanned": "Suspension levée",
   "targetLostReport": "Avis de perte",
   "targetSighting": "Signalement",
-  "targetMessage": "Message"
+  "targetMessage": "Message",
+  "adminReported": "Signalés",
+  "noReportedContent": "Aucun signalement en attente.",
+  "dismissReports": "Ignorer",
+  "hideNow": "Masquer",
+  "byAuthor": "Par {name}",
+  "viewAuthor": "Voir l'auteur",
+  "adminDelete": "Supprimer (admin)",
+  "hiddenFromOthers": "Masqué pour tous sauf son auteur.",
+  "shownAgain": "Visible à nouveau.",
+  "actionHidden": "{what} masqué",
+  "actionDismissed": "Signalements ignorés : {what}"
 }

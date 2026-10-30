@@ -183,6 +183,18 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     },
   ),
   (
+    '44_admin_reported',
+    () => const AdminScreen(),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.text(_l10n.adminReported)),
+  ),
+  (
+    '45_lost_detail_admin_menu',
+    () => const LostReportDetailScreen(id: 'rocky'),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.byTooltip(_l10n.more)),
+  ),
+  (
     '39_activity_menu',
     () => const MyActivityScreen(),
     () => FakeApi(role: 'ADMIN'),
