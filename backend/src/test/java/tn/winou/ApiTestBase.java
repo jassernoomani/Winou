@@ -301,6 +301,8 @@ public abstract class ApiTestBase {
         public final List<String> help = new ArrayList<>();
         /** "organisation: status" */
         public final List<String> associations = new ArrayList<>();
+        /** "pet name: user ids" watching where it went missing */
+        public final List<String> lostNearby = new ArrayList<>();
         /** To admins: "TYPE id" hidden, organisations asking */
         public final List<String> adminHidden = new ArrayList<>();
         public final List<String> adminRequests = new ArrayList<>();
@@ -336,6 +338,11 @@ public abstract class ApiTestBase {
         }
 
         @Override
+        public void lostNearby(LostReport report, List<UUID> userIds) {
+            lostNearby.add(report.getName() + ": " + userIds);
+        }
+
+        @Override
         public void contentHidden(tn.winou.web.ApiModels.ReportTarget type, UUID id) {
             adminHidden.add(type + " " + id);
         }
@@ -353,6 +360,7 @@ public abstract class ApiTestBase {
             help.clear();
             associations.clear();
             adminHidden.clear();
+            lostNearby.clear();
             adminRequests.clear();
         }
     }

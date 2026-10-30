@@ -47,6 +47,11 @@ public class LogNotifier implements Notifier {
     }
 
     @Override
+    public void lostNearby(LostReport report, List<UUID> userIds) {
+        log.info("lost report {}: telling {} user(s) watching the area", report.getId(), userIds.size());
+    }
+
+    @Override
     public void associationDecided(AssociationRequest request) {
         log.info("association request {}: {}", request.getId(), request.getStatus());
     }

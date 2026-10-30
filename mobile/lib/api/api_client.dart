@@ -161,6 +161,27 @@ class WinouApi {
 
   Future<void> updateMe({String? fcmToken}) => _call(() => _dio.patch('/me', data: {'fcm_token': fcmToken}), (_) {});
 
+  // --- alert areas ---
+
+  /// null when the user watches no area.
+  Future<AlertArea?> alertArea() =>
+      _call(() => _dio.get('/me/alert-area'), (data) => data is Map<String, dynamic> ? AlertArea.fromJson(data) : null);
+
+  Future<AlertArea> setAlertArea({
+    required LatLng location,
+    required double radiusKm,
+    required bool lost,
+    required bool help,
+  }) => _call(
+    () => _dio.put(
+      '/me/alert-area',
+      data: {'location': locationJson(location), 'radius_km': radiusKm.roundToDouble(), 'lost': lost, 'help': help},
+    ),
+    (data) => AlertArea.fromJson(data),
+  );
+
+  Future<void> clearAlertArea() => _call(() => _dio.delete('/me/alert-area'), (_) {});
+
   // --- map ---
 
   Future<List<MapItem>> map({

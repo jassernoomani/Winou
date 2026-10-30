@@ -2607,6 +2607,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grid'**
   String get viewGrid;
+
+  /// No description provided for @alertsNearMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts near me'**
+  String get alertsNearMe;
+
+  /// No description provided for @alertsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a place and how far around it. We\'ll tell you when a pet goes missing there, or an animal needs help.'**
+  String get alertsIntro;
+
+  /// No description provided for @changePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the place'**
+  String get changePlace;
+
+  /// No description provided for @alertRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'Around it'**
+  String get alertRadius;
+
+  /// No description provided for @alertLostPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost pets'**
+  String get alertLostPets;
+
+  /// No description provided for @alertLostPetsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet goes missing in this area'**
+  String get alertLostPetsHelp;
+
+  /// No description provided for @alertAnimalsInNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Animals in need'**
+  String get alertAnimalsInNeed;
+
+  /// No description provided for @alertAnimalsInNeedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone reports an injured animal, or one in need of help'**
+  String get alertAnimalsInNeedHelp;
+
+  /// No description provided for @turnOnAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on alerts'**
+  String get turnOnAlerts;
+
+  /// No description provided for @saveAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveAlerts;
+
+  /// No description provided for @turnOffAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off alerts'**
+  String get turnOffAlerts;
+
+  /// No description provided for @alertsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts saved. We\'ll tell you what happens nearby.'**
+  String get alertsSaved;
+
+  /// No description provided for @alertsOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get alertsOff;
+
+  /// No description provided for @lostNearbyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} went missing near you.'**
+  String lostNearbyNotification(String name);
+
+  /// No description provided for @kmRadius.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String kmRadius(int km);
 }
 
 class _AppLocalizationsDelegate

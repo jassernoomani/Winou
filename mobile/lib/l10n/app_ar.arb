@@ -417,5 +417,20 @@
   "done": "تم",
   "viewCards": "بطاقات",
   "viewList": "قائمة",
-  "viewGrid": "شبكة"
+  "viewGrid": "شبكة",
+  "alertsNearMe": "التنبيهات القريبة مني",
+  "alertsIntro": "اختر مكانًا والمسافة حوله. سنُعلمك عندما يضيع حيوان هناك، أو عندما يحتاج حيوان إلى مساعدة.",
+  "changePlace": "تغيير المكان",
+  "alertRadius": "حوله",
+  "alertLostPets": "الحيوانات الضائعة",
+  "alertLostPetsHelp": "يضيع حيوان في هذه المنطقة",
+  "alertAnimalsInNeed": "حيوانات تحتاج إلى مساعدة",
+  "alertAnimalsInNeedHelp": "يُبلغ أحدهم عن حيوان مصاب أو يحتاج إلى مساعدة",
+  "turnOnAlerts": "تفعيل التنبيهات",
+  "saveAlerts": "حفظ",
+  "turnOffAlerts": "إيقاف التنبيهات",
+  "alertsSaved": "حُفظت التنبيهات. سنُعلمك بما يحدث بالقرب منك.",
+  "alertsOff": "متوقفة",
+  "lostNearbyNotification": "ضاع {name} بالقرب منك.",
+  "kmRadius": "{km} كم"
 }

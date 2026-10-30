@@ -1500,4 +1500,56 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get viewGrid => 'Grille';
+
+  @override
+  String get alertsNearMe => 'Alertes près de chez moi';
+
+  @override
+  String get alertsIntro =>
+      'Choisissez un lieu et une distance autour. Nous vous prévenons quand un animal y disparaît, ou qu\'un animal a besoin d\'aide.';
+
+  @override
+  String get changePlace => 'Changer le lieu';
+
+  @override
+  String get alertRadius => 'Autour';
+
+  @override
+  String get alertLostPets => 'Animaux perdus';
+
+  @override
+  String get alertLostPetsHelp => 'Un animal disparaît dans cette zone';
+
+  @override
+  String get alertAnimalsInNeed => 'Animaux en détresse';
+
+  @override
+  String get alertAnimalsInNeedHelp =>
+      'Quelqu\'un signale un animal blessé ou qui a besoin d\'aide';
+
+  @override
+  String get turnOnAlerts => 'Activer les alertes';
+
+  @override
+  String get saveAlerts => 'Enregistrer';
+
+  @override
+  String get turnOffAlerts => 'Désactiver les alertes';
+
+  @override
+  String get alertsSaved =>
+      'Alertes enregistrées. Nous vous préviendrons de ce qui se passe près de chez vous.';
+
+  @override
+  String get alertsOff => 'Désactivées';
+
+  @override
+  String lostNearbyNotification(String name) {
+    return '$name a disparu près de chez vous.';
+  }
+
+  @override
+  String kmRadius(int km) {
+    return '$km km';
+  }
 }

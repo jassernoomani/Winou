@@ -15,6 +15,11 @@
     <string name="association_approved_body">%1$s is approved. You will hear about injured animals near you.</string>
     <string name="association_rejected_title">Association request declined</string>
     <string name="association_rejected_body">We could not verify %1$s. You can send a new request with more details.</string>
+    <!-- To people watching an area -->
+    <string name="nearby_lost_title">A pet went missing near you</string>
+    <string name="nearby_lost_cat_body">Have you seen %1$s? A cat lost in your area. Tap for photos.</string>
+    <string name="nearby_lost_dog_body">Have you seen %1$s? A dog lost in your area. Tap for photos.</string>
+    <string name="nearby_lost_pet_body">Have you seen %1$s? A pet lost in your area. Tap for photos.</string>
     <!-- To admins -->
     <string name="admin_hidden_title">Hidden after reports</string>
     <string name="admin_hidden_lost_body">A lost pet report was hidden. Tap to review it.</string>

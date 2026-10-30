@@ -15,6 +15,11 @@
     <string name="association_approved_body">قُبلت %1$s. ستصلك تنبيهات بالحيوانات المصابة القريبة منك.</string>
     <string name="association_rejected_title">رُفض طلب الجمعية</string>
     <string name="association_rejected_body">لم نتمكن من التحقق من %1$s. يمكنك إرسال طلب جديد بمزيد من التفاصيل.</string>
+    <!-- To people watching an area -->
+    <string name="nearby_lost_title">حيوان ضاع بالقرب منك</string>
+    <string name="nearby_lost_cat_body">هل رأيت %1$s؟ قطّ ضائع في منطقتك. انقر لرؤية الصور.</string>
+    <string name="nearby_lost_dog_body">هل رأيت %1$s؟ كلب ضائع في منطقتك. انقر لرؤية الصور.</string>
+    <string name="nearby_lost_pet_body">هل رأيت %1$s؟ حيوان ضائع في منطقتك. انقر لرؤية الصور.</string>
     <!-- To admins -->
     <string name="admin_hidden_title">أُخفي بعد بلاغات</string>
     <string name="admin_hidden_lost_body">أُخفي بلاغ عن حيوان ضائع. انقر لمراجعته.</string>

@@ -1485,4 +1485,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewGrid => 'Grid';
+
+  @override
+  String get alertsNearMe => 'Alerts near me';
+
+  @override
+  String get alertsIntro =>
+      'Choose a place and how far around it. We\'ll tell you when a pet goes missing there, or an animal needs help.';
+
+  @override
+  String get changePlace => 'Change the place';
+
+  @override
+  String get alertRadius => 'Around it';
+
+  @override
+  String get alertLostPets => 'Lost pets';
+
+  @override
+  String get alertLostPetsHelp => 'A pet goes missing in this area';
+
+  @override
+  String get alertAnimalsInNeed => 'Animals in need';
+
+  @override
+  String get alertAnimalsInNeedHelp =>
+      'Someone reports an injured animal, or one in need of help';
+
+  @override
+  String get turnOnAlerts => 'Turn on alerts';
+
+  @override
+  String get saveAlerts => 'Save';
+
+  @override
+  String get turnOffAlerts => 'Turn off alerts';
+
+  @override
+  String get alertsSaved =>
+      'Alerts saved. We\'ll tell you what happens nearby.';
+
+  @override
+  String get alertsOff => 'Off';
+
+  @override
+  String lostNearbyNotification(String name) {
+    return '$name went missing near you.';
+  }
+
+  @override
+  String kmRadius(int km) {
+    return '$km km';
+  }
 }

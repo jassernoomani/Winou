@@ -888,5 +888,34 @@
   "done": "Done",
   "viewCards": "Cards",
   "viewList": "List",
-  "viewGrid": "Grid"
+  "viewGrid": "Grid",
+  "alertsNearMe": "Alerts near me",
+  "alertsIntro": "Choose a place and how far around it. We'll tell you when a pet goes missing there, or an animal needs help.",
+  "changePlace": "Change the place",
+  "alertRadius": "Around it",
+  "alertLostPets": "Lost pets",
+  "alertLostPetsHelp": "A pet goes missing in this area",
+  "alertAnimalsInNeed": "Animals in need",
+  "alertAnimalsInNeedHelp": "Someone reports an injured animal, or one in need of help",
+  "turnOnAlerts": "Turn on alerts",
+  "saveAlerts": "Save",
+  "turnOffAlerts": "Turn off alerts",
+  "alertsSaved": "Alerts saved. We'll tell you what happens nearby.",
+  "alertsOff": "Off",
+  "lostNearbyNotification": "{name} went missing near you.",
+  "@lostNearbyNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "kmRadius": "{km} km",
+  "@kmRadius": {
+    "placeholders": {
+      "km": {
+        "type": "int"
+      }
+    }
+  }
 }

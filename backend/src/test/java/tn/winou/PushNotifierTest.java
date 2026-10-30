@@ -214,7 +214,8 @@ class PushNotifierTest extends ApiTestBase {
                     "association_approved_title", "association_approved_body", "association_rejected_title",
                     "association_rejected_body", "admin_hidden_title", "admin_hidden_lost_body",
                     "admin_hidden_sighting_body", "admin_hidden_message_body", "admin_request_title",
-                    "admin_request_body")) {
+                    "admin_request_body", "nearby_lost_title", "nearby_lost_cat_body", "nearby_lost_dog_body",
+                    "nearby_lost_pet_body")) {
                 assertThat(strings).as(values + ": " + key).contains("name=\"" + key + "\"");
             }
         }

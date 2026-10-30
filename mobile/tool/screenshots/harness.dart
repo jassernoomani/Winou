@@ -635,6 +635,16 @@ class FakeApi implements WinouApi {
   );
 
   @override
+  Future<AlertArea?> alertArea() => _answer(
+    () => AlertArea.fromJson({
+      'location': {'lat': Config.defaultLat, 'lon': Config.defaultLon},
+      'radius_km': 5,
+      'lost': true,
+      'help': false,
+    }),
+  );
+
+  @override
   Future<void> requestPasswordReset(String email) => _answer(() {});
 
   @override

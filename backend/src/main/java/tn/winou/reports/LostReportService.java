@@ -28,6 +28,7 @@ import tn.winou.domain.ReportStatus;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.Species;
 import tn.winou.domain.User;
+import tn.winou.alerts.AlertAreas;
 import tn.winou.infra.Notifications;
 import tn.winou.matching.Records;
 import tn.winou.security.CurrentUserResolver;
@@ -48,10 +49,12 @@ public class LostReportService {
     private final MatchRepository matches;
     private final SightingRepository sightings;
     private final Notifications notifications;
+    private final AlertAreas areas;
 
     public LostReportService(LostReportRepository reports, PhotoRepository photos, JdbcClient jdbc, Records records,
             Views views, WinouProperties properties, MatchRepository matches, SightingRepository sightings,
-            Notifications notifications) {
+            Notifications notifications, AlertAreas areas) {
+        this.areas = areas;
         this.matches = matches;
         this.sightings = sightings;
         this.notifications = notifications;
@@ -87,7 +90,12 @@ public class LostReportService {
         report.setDescription(body.description());
         report.setLastSeen(body.lastSeen().toPoint());
         report.setLastSeenAt(body.lastSeenAt());
-        return views.report(reports.save(report), user);
+        reports.save(report);
+        List<UUID> watching = areas.watchingLost(report.getLastSeen(), user.getId());
+        if (!watching.isEmpty()) {
+            notifications.send(n -> n.lostNearby(report, watching));
+        }
+        return views.report(report, user);
     }
 
     @Transactional(readOnly = true)

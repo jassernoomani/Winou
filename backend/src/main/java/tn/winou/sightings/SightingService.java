@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.alerts.AlertAreas;
 import tn.winou.associations.AssociationService;
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
@@ -45,10 +46,12 @@ public class SightingService {
 
     private final LostReportRepository reports;
     private final MatchRepository matches;
+    private final AlertAreas areas;
 
     public SightingService(SightingRepository sightings, PhotoRepository photos, Records records, Views views,
             WinouProperties properties, AssociationService associations, Notifications notifications,
-            LostReportRepository reports, MatchRepository matches) {
+            LostReportRepository reports, MatchRepository matches, AlertAreas areas) {
+        this.areas = areas;
         this.reports = reports;
         this.matches = matches;
         this.sightings = sightings;
@@ -186,7 +189,11 @@ public class SightingService {
         if (!isUrgent(sighting.getCondition())) {
             return;
         }
-        List<UUID> near = associations.near(sighting.getLocation(), sighting.getReporterId());
+        // Associations around, and users who asked to hear about animals in need near them
+        List<UUID> near = java.util.stream.Stream.concat(
+                        associations.near(sighting.getLocation(), sighting.getReporterId()).stream(),
+                        areas.watchingHelp(sighting.getLocation(), sighting.getReporterId()).stream())
+                .distinct().toList();
         if (!near.isEmpty()) {
             notifications.send(n -> n.animalNeedsHelp(sighting, near));
         }

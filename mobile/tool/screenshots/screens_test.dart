@@ -27,6 +27,7 @@ import 'package:winou/l10n/app_localizations_en.dart';
 import 'package:winou/map/map_screen.dart';
 import 'package:winou/me/account_screen.dart';
 import 'package:winou/me/admin_screen.dart';
+import 'package:winou/me/alert_area_screen.dart';
 import 'package:winou/me/admin_user_screen.dart';
 import 'package:winou/me/association_screen.dart';
 import 'package:winou/me/match_detail_screen.dart';
@@ -331,6 +332,7 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     () => FakeApi(lost: _manyLost),
     (tester) => _tap(tester, find.byTooltip(_l10n.viewGrid)),
   ),
+  ('69_alerts_near_me', () => const AlertAreaScreen(), FakeApi.new, null),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 

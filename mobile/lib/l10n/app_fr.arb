@@ -417,5 +417,20 @@
   "done": "Terminé",
   "viewCards": "Cartes",
   "viewList": "Liste",
-  "viewGrid": "Grille"
+  "viewGrid": "Grille",
+  "alertsNearMe": "Alertes près de chez moi",
+  "alertsIntro": "Choisissez un lieu et une distance autour. Nous vous prévenons quand un animal y disparaît, ou qu'un animal a besoin d'aide.",
+  "changePlace": "Changer le lieu",
+  "alertRadius": "Autour",
+  "alertLostPets": "Animaux perdus",
+  "alertLostPetsHelp": "Un animal disparaît dans cette zone",
+  "alertAnimalsInNeed": "Animaux en détresse",
+  "alertAnimalsInNeedHelp": "Quelqu'un signale un animal blessé ou qui a besoin d'aide",
+  "turnOnAlerts": "Activer les alertes",
+  "saveAlerts": "Enregistrer",
+  "turnOffAlerts": "Désactiver les alertes",
+  "alertsSaved": "Alertes enregistrées. Nous vous préviendrons de ce qui se passe près de chez vous.",
+  "alertsOff": "Désactivées",
+  "lostNearbyNotification": "{name} a disparu près de chez vous.",
+  "kmRadius": "{km} km"
 }

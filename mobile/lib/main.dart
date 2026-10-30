@@ -118,6 +118,7 @@ class _WinouAppState extends ConsumerState<WinouApp> {
       'confirmed' => l10n.confirmedNotification(name),
       'found' => l10n.foundNotification(name),
       'help' => l10n.helpNotification,
+      'lost' => l10n.lostNearbyNotification(name),
       'association' => l10n.associationNotification,
       _ => null,
     };

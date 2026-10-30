@@ -14,6 +14,11 @@
     <string name="association_approved_body">%1$s est approuvée. Vous serez prévenu des animaux blessés près de vous.</string>
     <string name="association_rejected_title">Demande d\'association refusée</string>
     <string name="association_rejected_body">Nous n\'avons pas pu vérifier %1$s. Vous pouvez envoyer une nouvelle demande avec plus de détails.</string>
+    <!-- To people watching an area -->
+    <string name="nearby_lost_title">Un animal a disparu près de chez vous</string>
+    <string name="nearby_lost_cat_body">Avez-vous vu %1$s ? Un chat perdu dans votre quartier. Touchez pour les photos.</string>
+    <string name="nearby_lost_dog_body">Avez-vous vu %1$s ? Un chien perdu dans votre quartier. Touchez pour les photos.</string>
+    <string name="nearby_lost_pet_body">Avez-vous vu %1$s ? Un animal perdu dans votre quartier. Touchez pour les photos.</string>
     <!-- To admins -->
     <string name="admin_hidden_title">Masqué après des signalements</string>
     <string name="admin_hidden_lost_body">Un avis de perte a été masqué. Touchez pour l\'examiner.</string>

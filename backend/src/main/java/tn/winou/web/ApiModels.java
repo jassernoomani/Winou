@@ -271,6 +271,17 @@ public final class ApiModels {
             long unread,
             OffsetDateTime createdAt) {}
 
+    // --- alert areas ---
+
+    /** radius_km: 1 to 25. lost: pets reported missing; help: animals injured or in need of help. */
+    public record AlertAreaIn(
+            @NotNull @Valid Location location,
+            @NotNull @DecimalMin("1") @DecimalMax("25") Double radiusKm,
+            boolean lost,
+            boolean help) {}
+
+    public record AlertAreaOut(Location location, double radiusKm, boolean lost, boolean help) {}
+
     // --- associations ---
 
     public record AssociationRequestIn(

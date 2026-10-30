@@ -26,8 +26,11 @@ public interface Notifier {
     /** To the other participant of the conversation. */
     void newMessage(Conversation conversation, ChatMessage message);
 
-    /** To associations near an animal reported injured or in need of help. */
+    /** To associations, and users watching the area, near an animal injured or in need of help. */
     void animalNeedsHelp(Sighting sighting, List<UUID> associationIds);
+
+    /** To users watching the area where a pet was just reported missing. */
+    void lostNearby(LostReport report, List<UUID> userIds);
 
     /** To the user who asked to be an association: approved or not. */
     void associationDecided(AssociationRequest request);

@@ -388,6 +388,20 @@ class HiddenItem {
   final DateTime? lastReportedAt;
 }
 
+/// The area a user watches, and what they hear about there.
+class AlertArea {
+  AlertArea.fromJson(Map<String, dynamic> json)
+    : location = _location(json['location']),
+      radiusKm = (json['radius_km'] as num).toDouble(),
+      lost = json['lost'],
+      help = json['help'];
+
+  final LatLng location;
+  final double radiusKm;
+  final bool lost; // pets reported missing there
+  final bool help; // animals injured or in need of help there
+}
+
 /// Why and until when an account is suspended, from a 403 with code "banned".
 class Ban {
   Ban.fromJson(Map<String, dynamic> json) : until = _optionalDate(json['until']), reason = json['reason'];

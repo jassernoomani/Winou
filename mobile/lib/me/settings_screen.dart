@@ -7,6 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../preferences.dart';
+import 'alert_area_screen.dart' show alertAreaSummary;
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/server_settings.dart';
@@ -52,6 +53,13 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           section(0, l10n.account, [
+            ListTile(
+              leading: const Icon(LucideIcons.bellRing),
+              title: Text(l10n.alertsNearMe),
+              subtitle: Text(alertAreaSummary(context, ref.watch(alertAreaProvider).value)),
+              trailing: const ForwardIcon(),
+              onTap: () => context.push('/alerts'),
+            ),
             ListTile(
               leading: const Icon(LucideIcons.circleUser),
               title: Text(me?.displayName ?? l10n.account),

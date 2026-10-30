@@ -92,6 +92,20 @@ public class PushNotifier implements Notifier {
     }
 
     @Override
+    public void lostNearby(LostReport report, List<UUID> userIds) {
+        String pet = report.getName();
+        String body = switch (report.getSpecies()) {
+            case CAT -> "nearby_lost_cat_body";
+            case DOG -> "nearby_lost_dog_body";
+            case OTHER -> "nearby_lost_pet_body";
+        };
+        for (UUID user : userIds) {
+            push(user, new Push("nearby_lost_title", List.of(), body, List.of(pet), null, "lost-" + report.getId(),
+                    Map.of("type", "lost", "lost_report_id", report.getId().toString(), "pet_name", pet)));
+        }
+    }
+
+    @Override
     public void associationDecided(AssociationRequest request) {
         boolean approved = request.getStatus() == RequestStatus.APPROVED;
         String key = approved ? "association_approved" : "association_rejected";
