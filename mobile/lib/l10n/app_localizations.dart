@@ -2697,6 +2697,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{km} km'**
   String kmRadius(int km);
+
+  /// No description provided for @pushMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible match'**
+  String get pushMatchTitle;
+
+  /// No description provided for @pushMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone may have seen {a}. Tap to compare the photos.'**
+  String pushMatchBody(String a);
+
+  /// No description provided for @pushConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You may have found a lost pet'**
+  String get pushConfirmedTitle;
+
+  /// No description provided for @pushConfirmedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner of {a} recognised the animal you saw. They may write to you.'**
+  String pushConfirmedBody(String a);
+
+  /// No description provided for @pushFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} is back home!'**
+  String pushFoundTitle(String a);
+
+  /// No description provided for @pushFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for helping {a} find their way home.'**
+  String pushFoundBody(String a);
+
+  /// No description provided for @pushMessageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} · about {b}'**
+  String pushMessageTitle(String a, String b);
+
+  /// No description provided for @pushHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An animal needs help near you'**
+  String get pushHelpTitle;
+
+  /// No description provided for @pushHelpInjuredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone reported an injured animal nearby. Tap to see where.'**
+  String get pushHelpInjuredBody;
+
+  /// No description provided for @pushHelpNeedsHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone reported an animal in need of help nearby. Tap to see where.'**
+  String get pushHelpNeedsHelpBody;
+
+  /// No description provided for @pushAssociationApprovedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are now a verified association'**
+  String get pushAssociationApprovedTitle;
+
+  /// No description provided for @pushAssociationApprovedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} is approved. You will hear about injured animals near you.'**
+  String pushAssociationApprovedBody(String a);
+
+  /// No description provided for @pushAssociationRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Association request declined'**
+  String get pushAssociationRejectedTitle;
+
+  /// No description provided for @pushAssociationRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not verify {a}. You can send a new request with more details.'**
+  String pushAssociationRejectedBody(String a);
+
+  /// No description provided for @pushNearbyLostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet went missing near you'**
+  String get pushNearbyLostTitle;
+
+  /// No description provided for @pushNearbyLostCatBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you seen {a}? A cat lost in your area. Tap for photos.'**
+  String pushNearbyLostCatBody(String a);
+
+  /// No description provided for @pushNearbyLostDogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you seen {a}? A dog lost in your area. Tap for photos.'**
+  String pushNearbyLostDogBody(String a);
+
+  /// No description provided for @pushNearbyLostPetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you seen {a}? A pet lost in your area. Tap for photos.'**
+  String pushNearbyLostPetBody(String a);
+
+  /// No description provided for @pushAdminHiddenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden after reports'**
+  String get pushAdminHiddenTitle;
+
+  /// No description provided for @pushAdminHiddenLostBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A lost pet report was hidden. Tap to review it.'**
+  String get pushAdminHiddenLostBody;
+
+  /// No description provided for @pushAdminHiddenSightingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A sighting was hidden. Tap to review it.'**
+  String get pushAdminHiddenSightingBody;
+
+  /// No description provided for @pushAdminHiddenMessageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A chat message was hidden. Tap to review it.'**
+  String get pushAdminHiddenMessageBody;
+
+  /// No description provided for @pushAdminRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New association request'**
+  String get pushAdminRequestTitle;
+
+  /// No description provided for @pushAdminRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{a} wants to be a verified association.'**
+  String pushAdminRequestBody(String a);
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing yet. Matches, messages and alerts near you will show up here.'**
+  String get noNotifications;
 }
 
 class _AppLocalizationsDelegate

@@ -34,6 +34,7 @@ class PushNotifierTest extends ApiTestBase {
     @Autowired MatchRepository matchRows;
     @Autowired ConversationRepository conversations;
     @Autowired ChatMessageRepository messageRows;
+    @Autowired tn.winou.infra.Inbox inbox;
 
     static class FakeSender implements PushSender {
 
@@ -52,7 +53,7 @@ class PushNotifierTest extends ApiTestBase {
     private final FakeSender sender = new FakeSender();
 
     private PushNotifier notifier() {
-        return new PushNotifier(sender, reports, sightings, users);
+        return new PushNotifier(sender, reports, sightings, users, inbox);
     }
 
     /** The owner's report "Mimi" matched by the finder's sighting. */
@@ -125,10 +126,35 @@ class PushNotifierTest extends ApiTestBase {
     }
 
     @Test
-    void skipsUsersWithoutAPhone() {
-        Match match = match(register("owner"), register("finder"));
+    void skipsUsersWithoutAPhoneButKeepsItInTheirList() {
+        String owner = register("owner");
+        Match match = match(owner, register("finder"));
         notifier().matchFound(match);
         assertThat(sender.sent).isEmpty();
+
+        JsonNode inbox = getJson("/me/notifications", owner).json();
+        assertThat(inbox.path("unread").asLong()).isEqualTo(1);
+        JsonNode item = inbox.path("items").get(0);
+        assertThat(item.path("title_key").asString()).isEqualTo("match_title");
+        assertThat(item.path("body_args").get(0).asString()).isEqualTo("Mimi");
+        assertThat(item.path("data").path("match_id").asString()).isEqualTo(match.getId().toString());
+        assertThat(item.path("read").asBoolean()).isFalse();
+
+        assertThat(postJson("/me/notifications/read", owner, Map.of()).status()).isEqualTo(204);
+        assertThat(getJson("/me/notifications", owner).json().path("unread").asLong()).isZero();
+        assertThat(getJson("/me/notifications", owner).json().path("items").get(0).path("read").asBoolean()).isTrue();
+    }
+
+    @Test
+    void theListKeepsTheLatestHundred() {
+        String owner = register("owner");
+        Match match = match(owner, register("finder"));
+        for (int i = 0; i < 105; i++) {
+            notifier().matchFound(match);
+        }
+        assertThat(jdbc.sql("SELECT count(*) FROM notifications").query(Long.class).single()).isEqualTo(100);
+        assertThat(getJson("/me/notifications", owner, Map.of("limit", 30)).json().path("items")).hasSize(30);
+        assertThat(getJson("/me/notifications", register("other")).json().path("items")).isEmpty();
     }
 
     @Test

@@ -26,6 +26,13 @@ final conversationsProvider = FutureProvider.autoDispose<List<Conversation>>(
 /// The signed-in user: role and association name.
 final meProvider = FutureProvider.autoDispose<User>((ref) => ref.watch(apiProvider).me());
 
+final notificationsProvider = FutureProvider.autoDispose<Inbox>((ref) => ref.watch(apiProvider).notifications());
+
+/// The bell's count. Refreshed when a notification arrives and when the list is opened.
+final unreadNotificationsProvider = FutureProvider.autoDispose<int>(
+  (ref) async => (await ref.watch(apiProvider).notifications()).unread,
+);
+
 final alertAreaProvider = FutureProvider.autoDispose<AlertArea?>((ref) => ref.watch(apiProvider).alertArea());
 
 final myAssociationRequestProvider = FutureProvider.autoDispose<AssociationRequest?>(

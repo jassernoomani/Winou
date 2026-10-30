@@ -33,6 +33,7 @@ import 'package:winou/me/association_screen.dart';
 import 'package:winou/me/match_detail_screen.dart';
 import 'package:winou/me/settings_screen.dart';
 import 'package:winou/me/my_activity_screen.dart';
+import 'package:winou/me/notifications_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
@@ -333,6 +334,7 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     (tester) => _tap(tester, find.byTooltip(_l10n.viewGrid)),
   ),
   ('69_alerts_near_me', () => const AlertAreaScreen(), FakeApi.new, null),
+  ('70_notifications', () => const NotificationsScreen(), FakeApi.new, null),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 

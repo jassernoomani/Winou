@@ -20,6 +20,7 @@ import 'me/admin_user_screen.dart';
 import 'me/association_screen.dart';
 import 'me/match_detail_screen.dart';
 import 'me/my_activity_screen.dart';
+import 'me/notifications_screen.dart';
 import 'me/settings_screen.dart';
 import 'preferences.dart';
 import 'reports/lost_feed_screen.dart';
@@ -100,6 +101,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
       GoRoute(path: '/alerts', builder: (_, _) => const AlertAreaScreen()),
+      GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: '/association', builder: (_, _) => const AssociationScreen()),
       GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
       GoRoute(

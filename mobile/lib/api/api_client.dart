@@ -161,6 +161,12 @@ class WinouApi {
 
   Future<void> updateMe({String? fcmToken}) => _call(() => _dio.patch('/me', data: {'fcm_token': fcmToken}), (_) {});
 
+  // --- notifications ---
+
+  Future<Inbox> notifications() => _call(() => _dio.get('/me/notifications'), (data) => Inbox.fromJson(data));
+
+  Future<void> markNotificationsRead() => _call(() => _dio.post('/me/notifications/read'), (_) {});
+
   // --- alert areas ---
 
   /// null when the user watches no area.

@@ -21,7 +21,8 @@ import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.UserRepository;
 import tn.winou.infra.FirebaseSender;
-import tn.winou.infra.LogNotifier;
+import tn.winou.infra.Inbox;
+import tn.winou.infra.LogSender;
 import tn.winou.infra.Notifications;
 import tn.winou.infra.Notifier;
 import tn.winou.infra.PushNotifier;
@@ -34,16 +35,16 @@ public class NotifierConfig {
 
     @Bean
     Notifier notifier(WinouProperties properties, LostReportRepository reports, SightingRepository sightings,
-            UserRepository users) throws IOException {
+            UserRepository users, Inbox inbox) throws IOException {
         String keyFile = properties.firebase().credentials();
         if (keyFile == null || keyFile.isBlank()) {
             log.info("FIREBASE_CREDENTIALS is not set: notifications are logged, not pushed");
-            return new LogNotifier();
+            return new PushNotifier(new LogSender(), reports, sightings, users, inbox);
         }
         Path key = Path.of(keyFile);
         if (!Files.isRegularFile(key)) {
             log.warn("Firebase key {} not found: notifications are logged, not pushed", key);
-            return new LogNotifier();
+            return new PushNotifier(new LogSender(), reports, sightings, users, inbox);
         }
         try (InputStream in = Files.newInputStream(key)) {
             GoogleCredentials credentials = GoogleCredentials.fromStream(in);
@@ -52,7 +53,7 @@ public class NotifierConfig {
             log.info("push notifications enabled (Firebase project {})",
                     credentials instanceof ServiceAccountCredentials account ? account.getProjectId() : "?");
             return new PushNotifier(new FirebaseSender(FirebaseMessaging.getInstance(app)), reports, sightings,
-                    users);
+                    users, inbox);
         }
     }
 

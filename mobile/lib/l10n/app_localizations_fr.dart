@@ -1552,4 +1552,112 @@ class AppLocalizationsFr extends AppLocalizations {
   String kmRadius(int km) {
     return '$km km';
   }
+
+  @override
+  String get pushMatchTitle => 'Correspondance possible';
+
+  @override
+  String pushMatchBody(String a) {
+    return 'Quelqu\'un a peut-être vu $a. Touchez pour comparer les photos.';
+  }
+
+  @override
+  String get pushConfirmedTitle =>
+      'Vous avez peut-être retrouvé un animal perdu';
+
+  @override
+  String pushConfirmedBody(String a) {
+    return 'Le propriétaire de $a a reconnu l\'animal que vous avez vu. Il pourra vous écrire.';
+  }
+
+  @override
+  String pushFoundTitle(String a) {
+    return '$a est rentré !';
+  }
+
+  @override
+  String pushFoundBody(String a) {
+    return 'Merci d\'avoir aidé $a à rentrer chez lui.';
+  }
+
+  @override
+  String pushMessageTitle(String a, String b) {
+    return '$a · à propos de $b';
+  }
+
+  @override
+  String get pushHelpTitle => 'Un animal a besoin d\'aide près de vous';
+
+  @override
+  String get pushHelpInjuredBody =>
+      'Un animal blessé a été signalé à proximité. Touchez pour voir où.';
+
+  @override
+  String get pushHelpNeedsHelpBody =>
+      'Un animal qui a besoin d\'aide a été signalé à proximité. Touchez pour voir où.';
+
+  @override
+  String get pushAssociationApprovedTitle =>
+      'Vous êtes maintenant une association vérifiée';
+
+  @override
+  String pushAssociationApprovedBody(String a) {
+    return '$a est approuvée. Vous serez prévenu des animaux blessés près de vous.';
+  }
+
+  @override
+  String get pushAssociationRejectedTitle => 'Demande d\'association refusée';
+
+  @override
+  String pushAssociationRejectedBody(String a) {
+    return 'Nous n\'avons pas pu vérifier $a. Vous pouvez envoyer une nouvelle demande avec plus de détails.';
+  }
+
+  @override
+  String get pushNearbyLostTitle => 'Un animal a disparu près de chez vous';
+
+  @override
+  String pushNearbyLostCatBody(String a) {
+    return 'Avez-vous vu $a ? Un chat perdu dans votre quartier. Touchez pour les photos.';
+  }
+
+  @override
+  String pushNearbyLostDogBody(String a) {
+    return 'Avez-vous vu $a ? Un chien perdu dans votre quartier. Touchez pour les photos.';
+  }
+
+  @override
+  String pushNearbyLostPetBody(String a) {
+    return 'Avez-vous vu $a ? Un animal perdu dans votre quartier. Touchez pour les photos.';
+  }
+
+  @override
+  String get pushAdminHiddenTitle => 'Masqué après des signalements';
+
+  @override
+  String get pushAdminHiddenLostBody =>
+      'Un avis de perte a été masqué. Touchez pour l\'examiner.';
+
+  @override
+  String get pushAdminHiddenSightingBody =>
+      'Un signalement a été masqué. Touchez pour l\'examiner.';
+
+  @override
+  String get pushAdminHiddenMessageBody =>
+      'Un message a été masqué. Touchez pour l\'examiner.';
+
+  @override
+  String get pushAdminRequestTitle => 'Nouvelle demande d\'association';
+
+  @override
+  String pushAdminRequestBody(String a) {
+    return '$a souhaite devenir une association vérifiée.';
+  }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get noNotifications =>
+      'Rien pour l\'instant. Les correspondances, messages et alertes près de chez vous apparaîtront ici.';
 }

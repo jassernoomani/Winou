@@ -100,7 +100,9 @@ class _WinouAppState extends ConsumerState<WinouApp> {
   void _showInApp(RemoteMessage message) {
     ref
       ..invalidate(myMatchesProvider)
-      ..invalidate(conversationsProvider);
+      ..invalidate(conversationsProvider)
+      ..invalidate(unreadNotificationsProvider)
+      ..invalidate(notificationsProvider);
     final data = message.data;
     final conversationId = data['conversation_id'] as String?;
     if (conversationId != null) {

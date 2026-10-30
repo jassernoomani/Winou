@@ -388,6 +388,39 @@ class HiddenItem {
   final DateTime? lastReportedAt;
 }
 
+/// A notification as it was pushed: keys and args the app turns into text, data saying what it's about.
+class AppNotification {
+  AppNotification.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      titleKey = json['title_key'],
+      titleArgs = [for (final a in json['title_args']) a as String],
+      bodyKey = json['body_key'],
+      bodyArgs = [for (final a in json['body_args']) a as String],
+      body = json['body'],
+      data = Map<String, String>.from(json['data']),
+      createdAt = _date(json['created_at']),
+      read = json['read'];
+
+  final String id;
+  final String titleKey;
+  final List<String> titleArgs;
+  final String? bodyKey;
+  final List<String> bodyArgs;
+  final String? body; // a chat message, as written
+  final Map<String, String> data;
+  final DateTime createdAt;
+  final bool read;
+}
+
+class Inbox {
+  Inbox.fromJson(Map<String, dynamic> json)
+    : items = [for (final n in json['items']) AppNotification.fromJson(n)],
+      unread = json['unread'];
+
+  final List<AppNotification> items;
+  final int unread;
+}
+
 /// The area a user watches, and what they hear about there.
 class AlertArea {
   AlertArea.fromJson(Map<String, dynamic> json)

@@ -69,7 +69,10 @@ class PushNotifications {
 final pushProvider = Provider<PushNotifications>(PushNotifications.new);
 
 /// The screen a notification opens.
-String? routeOf(RemoteMessage message) => switch (message.data) {
+String? routeOf(RemoteMessage message) => routeOfData(message.data);
+
+/// The screen for a notification's data, from a push or from the notifications list.
+String? routeOfData(Map<String, dynamic> data) => switch (data) {
   {'type': 'match', 'match_id': final String id} => '/matches/$id',
   {'type': 'message', 'conversation_id': final String id} => '/conversations/$id',
   {'type': 'confirmed' || 'found'} => '/conversations',

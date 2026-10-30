@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -174,6 +175,8 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
                 ref.watch(preferencesProvider).feedLayout,
                 onChanged: ref.read(preferencesProvider.notifier).setFeedLayout,
               ),
+              const SizedBox(width: 6),
+              _Bell(ref.watch(unreadNotificationsProvider).value ?? 0),
             ],
           ),
           const SizedBox(height: 20),
@@ -317,6 +320,26 @@ String _speciesAndDistance(AppLocalizations l10n, LostReport report, LatLng? fro
     speciesLabel(l10n, report.species),
     if (km != null) l10n.kmAway(km < 1 ? '< 1' : km.toStringAsFixed(km < 10 ? 1 : 0)),
   ].join(' · ');
+}
+
+/// The notifications list, with how many are new.
+class _Bell extends StatelessWidget {
+  const _Bell(this.unread);
+
+  final int unread;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: context.l10n.notifications,
+    onPressed: () => context.push('/notifications'),
+    style: IconButton.styleFrom(backgroundColor: Colors.white.withValues(alpha: 0.16)),
+    icon: Badge.count(
+      count: unread,
+      isLabelVisible: unread > 0,
+      backgroundColor: Brand.coral,
+      child: const Icon(LucideIcons.bell, color: Colors.white),
+    ),
+  );
 }
 
 /// Cards, list or grid: three icons on the header's gradient, the chosen one filled.

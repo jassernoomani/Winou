@@ -1537,4 +1537,111 @@ class AppLocalizationsEn extends AppLocalizations {
   String kmRadius(int km) {
     return '$km km';
   }
+
+  @override
+  String get pushMatchTitle => 'Possible match';
+
+  @override
+  String pushMatchBody(String a) {
+    return 'Someone may have seen $a. Tap to compare the photos.';
+  }
+
+  @override
+  String get pushConfirmedTitle => 'You may have found a lost pet';
+
+  @override
+  String pushConfirmedBody(String a) {
+    return 'The owner of $a recognised the animal you saw. They may write to you.';
+  }
+
+  @override
+  String pushFoundTitle(String a) {
+    return '$a is back home!';
+  }
+
+  @override
+  String pushFoundBody(String a) {
+    return 'Thank you for helping $a find their way home.';
+  }
+
+  @override
+  String pushMessageTitle(String a, String b) {
+    return '$a · about $b';
+  }
+
+  @override
+  String get pushHelpTitle => 'An animal needs help near you';
+
+  @override
+  String get pushHelpInjuredBody =>
+      'Someone reported an injured animal nearby. Tap to see where.';
+
+  @override
+  String get pushHelpNeedsHelpBody =>
+      'Someone reported an animal in need of help nearby. Tap to see where.';
+
+  @override
+  String get pushAssociationApprovedTitle =>
+      'You are now a verified association';
+
+  @override
+  String pushAssociationApprovedBody(String a) {
+    return '$a is approved. You will hear about injured animals near you.';
+  }
+
+  @override
+  String get pushAssociationRejectedTitle => 'Association request declined';
+
+  @override
+  String pushAssociationRejectedBody(String a) {
+    return 'We could not verify $a. You can send a new request with more details.';
+  }
+
+  @override
+  String get pushNearbyLostTitle => 'A pet went missing near you';
+
+  @override
+  String pushNearbyLostCatBody(String a) {
+    return 'Have you seen $a? A cat lost in your area. Tap for photos.';
+  }
+
+  @override
+  String pushNearbyLostDogBody(String a) {
+    return 'Have you seen $a? A dog lost in your area. Tap for photos.';
+  }
+
+  @override
+  String pushNearbyLostPetBody(String a) {
+    return 'Have you seen $a? A pet lost in your area. Tap for photos.';
+  }
+
+  @override
+  String get pushAdminHiddenTitle => 'Hidden after reports';
+
+  @override
+  String get pushAdminHiddenLostBody =>
+      'A lost pet report was hidden. Tap to review it.';
+
+  @override
+  String get pushAdminHiddenSightingBody =>
+      'A sighting was hidden. Tap to review it.';
+
+  @override
+  String get pushAdminHiddenMessageBody =>
+      'A chat message was hidden. Tap to review it.';
+
+  @override
+  String get pushAdminRequestTitle => 'New association request';
+
+  @override
+  String pushAdminRequestBody(String a) {
+    return '$a wants to be a verified association.';
+  }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get noNotifications =>
+      'Nothing yet. Matches, messages and alerts near you will show up here.';
 }

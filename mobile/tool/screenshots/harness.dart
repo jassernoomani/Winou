@@ -635,6 +635,53 @@ class FakeApi implements WinouApi {
   );
 
   @override
+  Future<Inbox> notifications() => _answer(
+    () => Inbox.fromJson({
+      'unread': 2,
+      'items': [
+        for (final (i, (title, titleArgs, bodyKey, bodyArgs, body, type, read, ago)) in [
+          ('match_title', <String>[], 'match_body', ['Luna'], null, 'match', false, const Duration(minutes: 12)),
+          (
+            'message_title',
+            ['Sami', 'Luna'],
+            null,
+            <String>[],
+            "She's under the blue car near the bakery",
+            'message',
+            false,
+            const Duration(hours: 1),
+          ),
+          (
+            'nearby_lost_title',
+            <String>[],
+            'nearby_lost_dog_body',
+            ['Rocky'],
+            null,
+            'lost',
+            true,
+            const Duration(hours: 9),
+          ),
+          ('found_title', ['Mimi'], 'found_body', ['Mimi'], null, 'found', true, const Duration(days: 3)),
+        ].indexed)
+          {
+            'id': 'n$i',
+            'title_key': title,
+            'title_args': titleArgs,
+            'body_key': bodyKey,
+            'body_args': bodyArgs,
+            'body': body,
+            'data': {'type': type},
+            'created_at': _ago(ago),
+            'read': read,
+          },
+      ],
+    }),
+  );
+
+  @override
+  Future<void> markNotificationsRead() => _answer(() {});
+
+  @override
   Future<AlertArea?> alertArea() => _answer(
     () => AlertArea.fromJson({
       'location': {'lat': Config.defaultLat, 'lon': Config.defaultLon},

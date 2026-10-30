@@ -23,7 +23,7 @@ import tn.winou.domain.UserRepository;
 import tn.winou.infra.PushSender.Push;
 import tn.winou.web.ApiModels.ReportTarget;
 
-/** Push notifications. A failed push never fails the action that caused it. */
+/** Push notifications, also kept in the app's notifications list. A failed push never fails the action. */
 public class PushNotifier implements Notifier {
 
     private static final Logger log = LoggerFactory.getLogger(PushNotifier.class);
@@ -33,9 +33,11 @@ public class PushNotifier implements Notifier {
     private final LostReportRepository reports;
     private final SightingRepository sightings;
     private final UserRepository users;
+    private final Inbox inbox;
 
     public PushNotifier(PushSender sender, LostReportRepository reports, SightingRepository sightings,
-            UserRepository users) {
+            UserRepository users, Inbox inbox) {
+        this.inbox = inbox;
         this.sender = sender;
         this.reports = reports;
         this.sightings = sightings;
@@ -139,6 +141,13 @@ public class PushNotifier implements Notifier {
 
     private void push(UUID userId, Push push) {
         User user = users.findById(userId).orElse(null);
+        if (user != null) {
+            try {
+                inbox.save(userId, push); // in the app's list too, phone or not
+            } catch (RuntimeException e) {
+                log.warn("{}: not kept in the notifications list", push.tag(), e);
+            }
+        }
         if (user == null || user.getFcmToken() == null) {
             log.info("{}: user {} has no device registered", push.tag(), userId);
             return;

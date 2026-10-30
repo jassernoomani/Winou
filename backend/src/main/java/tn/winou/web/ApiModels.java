@@ -271,6 +271,22 @@ public final class ApiModels {
             long unread,
             OffsetDateTime createdAt) {}
 
+    // --- notifications ---
+
+    /** A push as it was sent: the app writes its text from the keys and args, and opens what data names. */
+    public record NotificationOut(
+            UUID id,
+            String titleKey,
+            List<String> titleArgs,
+            String bodyKey,
+            List<String> bodyArgs,
+            String body,
+            java.util.Map<String, String> data,
+            OffsetDateTime createdAt,
+            boolean read) {}
+
+    public record InboxOut(List<NotificationOut> items, long unread) {}
+
     // --- alert areas ---
 
     /** radius_km: 1 to 25. lost: pets reported missing; help: animals injured or in need of help. */

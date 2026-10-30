@@ -1583,4 +1583,109 @@ class AppLocalizationsAr extends AppLocalizations {
   String kmRadius(int km) {
     return '$km كم';
   }
+
+  @override
+  String get pushMatchTitle => 'تطابق محتمل';
+
+  @override
+  String pushMatchBody(String a) {
+    return 'ربما رأى أحدهم $a. انقر لمقارنة الصور.';
+  }
+
+  @override
+  String get pushConfirmedTitle => 'ربما عثرت على حيوان ضائع';
+
+  @override
+  String pushConfirmedBody(String a) {
+    return 'تعرّف مالك $a على الحيوان الذي رأيته. قد يراسلك.';
+  }
+
+  @override
+  String pushFoundTitle(String a) {
+    return 'عاد $a إلى البيت!';
+  }
+
+  @override
+  String pushFoundBody(String a) {
+    return 'شكرًا على مساعدتك في إعادة $a إلى بيته.';
+  }
+
+  @override
+  String pushMessageTitle(String a, String b) {
+    return '$a · بخصوص $b';
+  }
+
+  @override
+  String get pushHelpTitle => 'حيوان يحتاج إلى مساعدة بالقرب منك';
+
+  @override
+  String get pushHelpInjuredBody =>
+      'أُبلغ عن حيوان مصاب بالقرب منك. انقر لرؤية المكان.';
+
+  @override
+  String get pushHelpNeedsHelpBody =>
+      'أُبلغ عن حيوان يحتاج إلى مساعدة بالقرب منك. انقر لرؤية المكان.';
+
+  @override
+  String get pushAssociationApprovedTitle => 'أصبحت جمعية موثَّقة';
+
+  @override
+  String pushAssociationApprovedBody(String a) {
+    return 'قُبلت $a. ستصلك تنبيهات بالحيوانات المصابة القريبة منك.';
+  }
+
+  @override
+  String get pushAssociationRejectedTitle => 'رُفض طلب الجمعية';
+
+  @override
+  String pushAssociationRejectedBody(String a) {
+    return 'لم نتمكن من التحقق من $a. يمكنك إرسال طلب جديد بمزيد من التفاصيل.';
+  }
+
+  @override
+  String get pushNearbyLostTitle => 'حيوان ضاع بالقرب منك';
+
+  @override
+  String pushNearbyLostCatBody(String a) {
+    return 'هل رأيت $a؟ قطّ ضائع في منطقتك. انقر لرؤية الصور.';
+  }
+
+  @override
+  String pushNearbyLostDogBody(String a) {
+    return 'هل رأيت $a؟ كلب ضائع في منطقتك. انقر لرؤية الصور.';
+  }
+
+  @override
+  String pushNearbyLostPetBody(String a) {
+    return 'هل رأيت $a؟ حيوان ضائع في منطقتك. انقر لرؤية الصور.';
+  }
+
+  @override
+  String get pushAdminHiddenTitle => 'أُخفي بعد بلاغات';
+
+  @override
+  String get pushAdminHiddenLostBody =>
+      'أُخفي بلاغ عن حيوان ضائع. انقر لمراجعته.';
+
+  @override
+  String get pushAdminHiddenSightingBody => 'أُخفيت مشاهدة. انقر لمراجعتها.';
+
+  @override
+  String get pushAdminHiddenMessageBody =>
+      'أُخفيت رسالة في محادثة. انقر لمراجعتها.';
+
+  @override
+  String get pushAdminRequestTitle => 'طلب جمعية جديد';
+
+  @override
+  String pushAdminRequestBody(String a) {
+    return 'تريد $a أن تصبح جمعية موثَّقة.';
+  }
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get noNotifications =>
+      'لا شيء بعد. ستظهر هنا التطابقات والرسائل والتنبيهات القريبة منك.';
 }

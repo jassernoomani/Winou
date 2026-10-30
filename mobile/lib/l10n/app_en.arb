@@ -917,5 +917,111 @@
         "type": "int"
       }
     }
-  }
+  },
+  "pushMatchTitle": "Possible match",
+  "pushMatchBody": "Someone may have seen {a}. Tap to compare the photos.",
+  "@pushMatchBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushConfirmedTitle": "You may have found a lost pet",
+  "pushConfirmedBody": "The owner of {a} recognised the animal you saw. They may write to you.",
+  "@pushConfirmedBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushFoundTitle": "{a} is back home!",
+  "@pushFoundTitle": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushFoundBody": "Thank you for helping {a} find their way home.",
+  "@pushFoundBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushMessageTitle": "{a} · about {b}",
+  "@pushMessageTitle": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "pushHelpTitle": "An animal needs help near you",
+  "pushHelpInjuredBody": "Someone reported an injured animal nearby. Tap to see where.",
+  "pushHelpNeedsHelpBody": "Someone reported an animal in need of help nearby. Tap to see where.",
+  "pushAssociationApprovedTitle": "You are now a verified association",
+  "pushAssociationApprovedBody": "{a} is approved. You will hear about injured animals near you.",
+  "@pushAssociationApprovedBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushAssociationRejectedTitle": "Association request declined",
+  "pushAssociationRejectedBody": "We could not verify {a}. You can send a new request with more details.",
+  "@pushAssociationRejectedBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushNearbyLostTitle": "A pet went missing near you",
+  "pushNearbyLostCatBody": "Have you seen {a}? A cat lost in your area. Tap for photos.",
+  "@pushNearbyLostCatBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushNearbyLostDogBody": "Have you seen {a}? A dog lost in your area. Tap for photos.",
+  "@pushNearbyLostDogBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushNearbyLostPetBody": "Have you seen {a}? A pet lost in your area. Tap for photos.",
+  "@pushNearbyLostPetBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "pushAdminHiddenTitle": "Hidden after reports",
+  "pushAdminHiddenLostBody": "A lost pet report was hidden. Tap to review it.",
+  "pushAdminHiddenSightingBody": "A sighting was hidden. Tap to review it.",
+  "pushAdminHiddenMessageBody": "A chat message was hidden. Tap to review it.",
+  "pushAdminRequestTitle": "New association request",
+  "pushAdminRequestBody": "{a} wants to be a verified association.",
+  "@pushAdminRequestBody": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      }
+    }
+  },
+  "notifications": "Notifications",
+  "noNotifications": "Nothing yet. Matches, messages and alerts near you will show up here."
 }
