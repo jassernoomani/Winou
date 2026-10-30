@@ -111,17 +111,29 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
                   child: Row(
                     spacing: 16,
                     children: [
-                      SimilarityRing(m.score, size: 96),
+                      // A finder's match has a score only once the model compared its photo
+                      if (m.score > 0)
+                        SimilarityRing(m.score, size: 96)
+                      else
+                        Container(
+                          width: 96,
+                          height: 96,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: context.tokens.tone(Tone.found).$1),
+                          child: Icon(LucideIcons.eye, size: 40, color: context.tokens.tone(Tone.found).$2),
+                        ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 6,
                           children: [
                             Text(
-                              l10n.possibleVisualMatch,
+                              m.byFinder ? l10n.finderMatchTitle(m.lostReportName) : l10n.possibleVisualMatch,
                               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, height: 1.2),
                             ),
-                            Text(l10n.notConfirmedIdentity, style: Theme.of(context).textTheme.bodySmall),
+                            Text(
+                              m.byFinder ? l10n.finderMatchBody : l10n.notConfirmedIdentity,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                           ],
                         ),
                       ),
@@ -183,7 +195,7 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
       else if (m.status == MatchStatus.confirmed)
         Note(l10n.matchConfirmedInfo(m.lostReportName), tone: Tone.found, icon: LucideIcons.circleCheck)
       else
-        Note(l10n.matchExplanation, tone: Tone.info, icon: LucideIcons.lightbulb),
+        Note(m.byFinder ? l10n.finderMatchTip : l10n.matchExplanation, tone: Tone.info, icon: LucideIcons.lightbulb),
       const SizedBox(height: 12),
       if (caseOpen && m.status == MatchStatus.pending) ...[
         Row(

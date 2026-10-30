@@ -242,6 +242,32 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     FakeApi.new,
     (tester) => _tap(tester, find.text(_l10n.confirmEmail)),
   ),
+  ('57_lost_detail_other', () => const LostReportDetailScreen(id: 'rocky'), FakeApi.new, null),
+  (
+    '58_share_poster',
+    () => const LostReportDetailScreen(id: 'rocky'),
+    FakeApi.new,
+    (tester) async {
+      await _tap(tester, find.text(_l10n.helpByShaRing));
+      await settle(tester, rounds: 8); // the photo loads before the poster can be shared
+    },
+  ),
+  (
+    '59_saw_this_pet',
+    () => SightingCreateScreen(
+      about: LostReport.fromJson(
+        lostJson(id: 'rocky', name: 'Rocky', species: 'dog', description: 'Sandy terrier mix, red collar.'),
+      ),
+    ),
+    FakeApi.new,
+    null,
+  ),
+  (
+    '60_match_by_finder',
+    () => const MatchDetailScreen(id: 'm1'),
+    () => FakeApi(matches: [matchJson(score: 0, byFinder: true)]),
+    null,
+  ),
   (
     '39_activity_menu',
     () => const MyActivityScreen(),

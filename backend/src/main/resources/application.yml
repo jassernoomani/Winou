@@ -120,6 +120,11 @@ winou:
     registrations-per-ip-per-hour: ${REGISTRATIONS_PER_IP_PER_HOUR:10}
   mail:
     from-name: ${MAIL_FROM_NAME:Winou}
+  share:
+    # Shared lost-pet links (https://<domain>/lost/<id>) open the app when it's installed: Android
+    # checks this package and the SHA-256 of the key that signs the APK (this laptop's debug key).
+    android-package: ${ANDROID_PACKAGE:tn.winou.winou}
+    android-cert-sha256: ${ANDROID_CERT_SHA256:F6:00:34:81:4D:B6:5F:94:94:BC:95:18:98:DE:C8:D6:69:61:B1:A1:DC:B8:8E:68:F0:3E:8D:D0:8D:09:3D:26}
   google:
     # The project's Web client ID (Firebase console: Authentication > Google > Web SDK configuration)
     client-ids: ${GOOGLE_CLIENT_IDS:}

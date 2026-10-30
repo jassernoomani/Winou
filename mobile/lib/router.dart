@@ -74,7 +74,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) =>
             LostReportDetailScreen(id: state.pathParameters['id']!, initial: state.extra as LostReport?),
       ),
-      GoRoute(path: '/sightings/new', builder: (_, _) => const SightingCreateScreen()),
+      GoRoute(
+        path: '/sightings/new',
+        builder: (_, state) => SightingCreateScreen(about: state.extra as LostReport?), // "I saw this pet"
+      ),
       GoRoute(
         path: '/sightings/:id',
         builder: (_, state) => SightingDetailScreen(id: state.pathParameters['id']!),

@@ -31,6 +31,13 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Shared lost-pet links open the app (verified with /.well-known/assetlinks.json) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="winou.duckdns.org" android:pathPrefix="/lost/"/>
+            </intent-filter>
         </activity>
         <!-- Push notifications: register with the installation ID (direct send), small icon, colour -->
         <meta-data

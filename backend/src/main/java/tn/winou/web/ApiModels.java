@@ -18,6 +18,7 @@ import lombok.Getter;
 import tn.winou.domain.ApiEnum;
 import tn.winou.domain.Condition;
 import tn.winou.domain.GeoPoint;
+import tn.winou.domain.MatchSource;
 import tn.winou.domain.MatchStatus;
 import tn.winou.domain.PhotoStatus;
 import tn.winou.domain.RequestStatus;
@@ -159,7 +160,8 @@ public final class ApiModels {
             @NotNull @PastOrPresent OffsetDateTime seenAt,
             Condition condition,
             @Size(max = 1000) String note,
-            Boolean isStray) {}
+            Boolean isStray,
+            UUID lostReportId) {} // "I saw this pet": the lost report it's about, matched at once
 
     /** Null fields are left unchanged. */
     public record SightingUpdate(
@@ -219,7 +221,8 @@ public final class ApiModels {
             UUID id,
             UUID lostReportId,
             String lostReportName,
-            double score,
+            double score, // 0 for a finder's match the model hasn't scored
+            MatchSource source,
             MatchStatus status,
             SightingOut sighting,
             String lostPhotoUrl,

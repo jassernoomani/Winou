@@ -28,6 +28,9 @@ public class Match extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MatchStatus status = MatchStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    private MatchSource source = MatchSource.MODEL;
+
     private OffsetDateTime notifiedAt;
     private OffsetDateTime createdAt;
 }

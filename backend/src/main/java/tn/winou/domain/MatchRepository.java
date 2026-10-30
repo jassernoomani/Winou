@@ -18,7 +18,7 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
               and s.hiddenAt is null
               and m.status <> tn.winou.domain.MatchStatus.REJECTED
               and (r.status = tn.winou.domain.ReportStatus.OPEN or m.status = tn.winou.domain.MatchStatus.CONFIRMED)
-            order by m.score desc""")
+            order by case when m.source = tn.winou.domain.MatchSource.FINDER then 0 else 1 end, m.score desc""")
     List<Match> findForOwner(UUID ownerId);
 
     List<Match> findByLostReportIdAndStatus(UUID lostReportId, MatchStatus status);

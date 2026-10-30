@@ -744,5 +744,66 @@
   "emailNotConfirmed": "Email not confirmed",
   "errorWrongCode": "This code isn't right.",
   "errorCodeExpired": "This code expired or was tried too many times. Ask for a new one.",
-  "errorTooManyCodes": "We already sent several codes. Check your spam, or try again in an hour."
+  "errorTooManyCodes": "We already sent several codes. Check your spam, or try again in an hour.",
+  "sharePosterButton": "Share a poster",
+  "helpByShaRing": "Help by sharing",
+  "sawThisPet": "I saw {name}",
+  "@sawThisPet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTitle": "Share {name}",
+  "@shareTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareHelp": "Post it in neighbourhood groups, send it on WhatsApp, or print it. The QR code opens the pet's page.",
+  "sharePoster": "Share the poster",
+  "shareLink": "Share link",
+  "copyLink": "Copy link",
+  "linkCopied": "Link copied.",
+  "shareLostText": "Have you seen {name}? Lost {species}: see the photos and tell the owner on Winou. {link}",
+  "@shareLostText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "species": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "posterLostCat": "LOST CAT",
+  "posterLostDog": "LOST DOG",
+  "posterLostPet": "LOST PET",
+  "posterSeenIt": "Seen this pet?",
+  "posterScan": "Scan the code to see the photos and tell the owner, for free.",
+  "sightingAboutPet": "About {name}: the owner hears about it at once.",
+  "@sightingAboutPet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finderMatchTitle": "Someone says they saw {name}",
+  "@finderMatchTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finderMatchBody": "They recognised your pet from your report. Compare the photos, then write to them.",
+  "seenByFinder": "Seen by someone",
+  "finderMatchTip": "Look closely at markings and features before writing to them: people can be mistaken."
 }

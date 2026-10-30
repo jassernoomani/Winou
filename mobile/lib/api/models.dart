@@ -264,6 +264,7 @@ class Match {
       lostReportId = json['lost_report_id'],
       lostReportName = json['lost_report_name'],
       score = (json['score'] as num).toDouble(),
+      byFinder = json['source'] == 'FINDER',
       status = _enum(MatchStatus.values, json['status']),
       sighting = Sighting.fromJson(json['sighting']),
       lostPhotoUrl = absoluteUrl(json['lost_photo_url']),
@@ -275,7 +276,8 @@ class Match {
   final String id;
   final String lostReportId;
   final String lostReportName;
-  final double score;
+  final double score; // 0 while a finder's match has no score
+  final bool byFinder; // "I saw this pet": the finder said it's this pet
   final MatchStatus status;
   final Sighting sighting;
   final String? lostPhotoUrl;

@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,12 @@ import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
 import tn.winou.config.WinouProperties;
 import tn.winou.domain.Condition;
+import tn.winou.domain.LostReport;
+import tn.winou.domain.LostReportRepository;
+import tn.winou.domain.Match;
+import tn.winou.domain.MatchRepository;
+import tn.winou.domain.MatchSource;
+import tn.winou.domain.ReportStatus;
 import tn.winou.domain.PhotoRepository;
 import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
@@ -36,8 +43,14 @@ public class SightingService {
     private final AssociationService associations;
     private final Notifications notifications;
 
+    private final LostReportRepository reports;
+    private final MatchRepository matches;
+
     public SightingService(SightingRepository sightings, PhotoRepository photos, Records records, Views views,
-            WinouProperties properties, AssociationService associations, Notifications notifications) {
+            WinouProperties properties, AssociationService associations, Notifications notifications,
+            LostReportRepository reports, MatchRepository matches) {
+        this.reports = reports;
+        this.matches = matches;
         this.sightings = sightings;
         this.photos = photos;
         this.records = records;
@@ -72,9 +85,39 @@ public class SightingService {
         sighting.setCondition(body.condition() != null ? body.condition() : Condition.HEALTHY);
         sighting.setNote(body.note());
         sighting.setStray(Boolean.TRUE.equals(body.isStray()));
+        LostReport report = body.lostReportId() == null ? null : seenPet(body.lostReportId(), user);
         sightings.save(sighting);
         alertIfUrgent(sighting);
+        if (report != null) {
+            matchToReport(report, sighting);
+        }
         return views.sighting(sighting, user);
+    }
+
+    /** "I saw this pet": an open report the user can see, and not their own. */
+    private LostReport seenPet(UUID reportId, User user) {
+        LostReport report = reports.findById(reportId)
+                .filter(r -> views.canSee(r.getOwnerId(), r.getHiddenAt(), user))
+                .orElseThrow(() -> ApiException.notFound("Lost report"));
+        if (report.getOwnerId().equals(user.getId())) {
+            throw ApiException.coded(HttpStatus.UNPROCESSABLE_CONTENT, "own_report", "This is your own lost pet.");
+        }
+        if (report.getStatus() != ReportStatus.OPEN) {
+            throw ApiException.coded(HttpStatus.CONFLICT, "report_closed", "This pet isn't missing anymore.");
+        }
+        return report;
+    }
+
+    /** The finder says it's this pet: the owner hears about it now, photos or not. */
+    private void matchToReport(LostReport report, Sighting sighting) {
+        Match match = new Match();
+        match.setLostReportId(report.getId());
+        match.setSightingId(sighting.getId());
+        match.setSource(MatchSource.FINDER);
+        match.setNotifiedAt(OffsetDateTime.now());
+        match.setCreatedAt(OffsetDateTime.now());
+        matches.save(match);
+        notifications.send(n -> n.matchFound(match));
     }
 
     @Transactional(readOnly = true)

@@ -242,10 +242,12 @@ class WinouApi {
     required Condition condition,
     required bool isStray,
     String? note,
+    String? lostReportId,
   }) => _call(
     () => _dio.post(
       '/sightings',
       data: {
+        'lost_report_id': ?lostReportId,
         'species': species.api,
         'location': locationJson(location),
         'seen_at': seenAt.toUtc().toIso8601String(),

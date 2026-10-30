@@ -2215,6 +2215,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We already sent several codes. Check your spam, or try again in an hour.'**
   String get errorTooManyCodes;
+
+  /// No description provided for @sharePosterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a poster'**
+  String get sharePosterButton;
+
+  /// No description provided for @helpByShaRing.
+  ///
+  /// In en, this message translates to:
+  /// **'Help by sharing'**
+  String get helpByShaRing;
+
+  /// No description provided for @sawThisPet.
+  ///
+  /// In en, this message translates to:
+  /// **'I saw {name}'**
+  String sawThisPet(String name);
+
+  /// No description provided for @shareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share {name}'**
+  String shareTitle(String name);
+
+  /// No description provided for @shareHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Post it in neighbourhood groups, send it on WhatsApp, or print it. The QR code opens the pet\'s page.'**
+  String get shareHelp;
+
+  /// No description provided for @sharePoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the poster'**
+  String get sharePoster;
+
+  /// No description provided for @shareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get shareLink;
+
+  /// No description provided for @copyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied.'**
+  String get linkCopied;
+
+  /// No description provided for @shareLostText.
+  ///
+  /// In en, this message translates to:
+  /// **'Have you seen {name}? Lost {species}: see the photos and tell the owner on Winou. {link}'**
+  String shareLostText(String name, String species, String link);
+
+  /// No description provided for @posterLostCat.
+  ///
+  /// In en, this message translates to:
+  /// **'LOST CAT'**
+  String get posterLostCat;
+
+  /// No description provided for @posterLostDog.
+  ///
+  /// In en, this message translates to:
+  /// **'LOST DOG'**
+  String get posterLostDog;
+
+  /// No description provided for @posterLostPet.
+  ///
+  /// In en, this message translates to:
+  /// **'LOST PET'**
+  String get posterLostPet;
+
+  /// No description provided for @posterSeenIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen this pet?'**
+  String get posterSeenIt;
+
+  /// No description provided for @posterScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the code to see the photos and tell the owner, for free.'**
+  String get posterScan;
+
+  /// No description provided for @sightingAboutPet.
+  ///
+  /// In en, this message translates to:
+  /// **'About {name}: the owner hears about it at once.'**
+  String sightingAboutPet(String name);
+
+  /// No description provided for @finderMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone says they saw {name}'**
+  String finderMatchTitle(String name);
+
+  /// No description provided for @finderMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They recognised your pet from your report. Compare the photos, then write to them.'**
+  String get finderMatchBody;
+
+  /// No description provided for @seenByFinder.
+  ///
+  /// In en, this message translates to:
+  /// **'Seen by someone'**
+  String get seenByFinder;
+
+  /// No description provided for @finderMatchTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Look closely at markings and features before writing to them: people can be mistaken.'**
+  String get finderMatchTip;
 }
 
 class _AppLocalizationsDelegate

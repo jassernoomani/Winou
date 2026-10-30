@@ -26,7 +26,8 @@ public record WinouProperties(
         Moderation moderation,
         Admin admin,
         Auth auth,
-        Google google) {
+        Google google,
+        Share share) {
 
     public record Jwt(String secret, Duration expiry) {}
 
@@ -90,6 +91,9 @@ public record WinouProperties(
             int loginAttemptsPerIp,
             Duration loginAttemptWindow,
             int registrationsPerIpPerHour) {}
+
+    /** Shared links open the app: Android Digital Asset Links for this package and signing key. */
+    public record Share(String androidPackage, String androidCertSha256) {}
 
     /** Web client IDs whose Google ID tokens are accepted; empty: no Google sign-in. */
     public record Google(List<String> clientIds) {

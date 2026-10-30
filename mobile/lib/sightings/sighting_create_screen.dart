@@ -8,6 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
+import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/photo_upload.dart';
@@ -18,7 +19,10 @@ const _maxPhotos = 3;
 /// Gallery photos are allowed too, but then "when" and "where" come from the photo (or the
 /// user), never from "now, here": the photo may have been taken days ago, elsewhere.
 class SightingCreateScreen extends ConsumerStatefulWidget {
-  const SightingCreateScreen({super.key});
+  const SightingCreateScreen({super.key, this.about});
+
+  /// "I saw this pet": the lost report it's about; its owner is told at once.
+  final LostReport? about;
 
   @override
   ConsumerState<SightingCreateScreen> createState() => _SightingCreateScreenState();
@@ -28,7 +32,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   final _note = TextEditingController();
   final DateTime _openedAt = DateTime.now();
   List<PickedPhoto> _photos = [];
-  Species _species = Species.cat;
+  late Species _species = widget.about?.species ?? Species.cat;
   Condition _condition = Condition.healthy;
   bool _isStray = false;
   LatLng? _gps; // the phone's position now
@@ -124,6 +128,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
         condition: _condition,
         isStray: _isStray,
         note: _note.text.trim(),
+        lostReportId: widget.about?.id,
       );
       if (!mounted) return;
       await uploadPhotos(
@@ -154,6 +159,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
           children: [
+            if (widget.about case final pet?) ...[_AboutPet(pet), const SizedBox(height: 12)],
             if (_photos.length == 1) ...[
               _BigPhoto(_photos.single, onRetake: _firstPhoto),
               Align(
@@ -291,4 +297,35 @@ class _Row extends StatelessWidget {
     subtitle: subtitle == null ? null : Text(subtitle!),
     trailing: TextButton(onPressed: onPressed, child: Text(action)),
   );
+}
+
+/// Which lost pet this sighting is about, with its photo to compare with.
+class _AboutPet extends StatelessWidget {
+  const _AboutPet(this.pet);
+
+  final LostReport pet;
+
+  @override
+  Widget build(BuildContext context) {
+    final (background, foreground) = context.tokens.tone(Tone.info);
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
+      child: Row(
+        spacing: 12,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: SizedBox.square(dimension: 52, child: NetworkPhoto(pet.photos.firstOrNull?.url)),
+          ),
+          Expanded(
+            child: Text(
+              context.l10n.sightingAboutPet(pet.name),
+              style: TextStyle(color: foreground, fontWeight: FontWeight.w700, height: 1.3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -92,6 +92,8 @@ class MyActivityScreen extends ConsumerWidget {
                         )
                       else if (m.status == MatchStatus.confirmed)
                         StatusPill(l10n.matchStatusConfirmed, tone: Tone.found, icon: LucideIcons.check)
+                      else if (m.byFinder)
+                        StatusPill(l10n.seenByFinder, tone: Tone.found, icon: LucideIcons.eye)
                       else
                         StatusPill('${(m.score * 100).round()}%', tone: Tone.info, icon: LucideIcons.eye),
                       const SizedBox(width: 8),

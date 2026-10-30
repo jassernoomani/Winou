@@ -1260,4 +1260,78 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get errorTooManyCodes =>
       'Nous avons déjà envoyé plusieurs codes. Regardez les spams, ou réessayez dans une heure.';
+
+  @override
+  String get sharePosterButton => 'Partager une affiche';
+
+  @override
+  String get helpByShaRing => 'Aider en partageant';
+
+  @override
+  String sawThisPet(String name) {
+    return 'J\'ai vu $name';
+  }
+
+  @override
+  String shareTitle(String name) {
+    return 'Partager $name';
+  }
+
+  @override
+  String get shareHelp =>
+      'Publiez-la dans les groupes du quartier, envoyez-la sur WhatsApp, ou imprimez-la. Le QR code ouvre la page de l\'animal.';
+
+  @override
+  String get sharePoster => 'Partager l\'affiche';
+
+  @override
+  String get shareLink => 'Partager';
+
+  @override
+  String get copyLink => 'Copier';
+
+  @override
+  String get linkCopied => 'Lien copié.';
+
+  @override
+  String shareLostText(String name, String species, String link) {
+    return 'Avez-vous vu $name ? $species perdu : voyez les photos et prévenez le propriétaire sur Winou. $link';
+  }
+
+  @override
+  String get posterLostCat => 'CHAT PERDU';
+
+  @override
+  String get posterLostDog => 'CHIEN PERDU';
+
+  @override
+  String get posterLostPet => 'ANIMAL PERDU';
+
+  @override
+  String get posterSeenIt => 'Vous l\'avez vu ?';
+
+  @override
+  String get posterScan =>
+      'Scannez le code pour voir les photos et prévenir le propriétaire, gratuitement.';
+
+  @override
+  String sightingAboutPet(String name) {
+    return 'Pour $name : le propriétaire est prévenu tout de suite.';
+  }
+
+  @override
+  String finderMatchTitle(String name) {
+    return 'Quelqu\'un dit avoir vu $name';
+  }
+
+  @override
+  String get finderMatchBody =>
+      'Cette personne a reconnu votre animal grâce à votre avis. Comparez les photos, puis écrivez-lui.';
+
+  @override
+  String get seenByFinder => 'Vu par quelqu\'un';
+
+  @override
+  String get finderMatchTip =>
+      'Regardez bien les marques et les détails avant d\'écrire : on peut se tromper.';
 }

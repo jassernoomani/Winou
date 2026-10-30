@@ -48,6 +48,8 @@ public class SecurityConfig {
             post("/auth/logout"),
             get("/health"),
             get("/map"),
+            get("/lost/{id}"),                    // the page a shared link opens without the app
+            get("/.well-known/assetlinks.json"),  // lets those links open the app instead
             get("/photos/{id}/image"),
             get("/photos/{id}/crop"),
             get("/docs"),

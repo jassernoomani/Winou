@@ -12,6 +12,7 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/report_sheet.dart';
+import 'share_poster.dart';
 
 /// Matches the API's LOCATION_FUZZ_M: how far the public position may be from the real one.
 const _fuzzRadiusM = 300.0;
@@ -159,14 +160,46 @@ class LostReportDetailScreen extends ConsumerWidget {
                         const SizedBox(height: 12),
                         FadeSlideIn(
                           index: 2,
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              style: FilledButton.styleFrom(backgroundColor: Brand.green, foregroundColor: Brand.ink),
-                              onPressed: () => _act(context, ref, value, 'found'),
-                              icon: const Icon(LucideIcons.house),
-                              label: Text(l10n.gotPetBack(value.name)),
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            spacing: 8,
+                            children: [
+                              FilledButton.icon(
+                                style: FilledButton.styleFrom(backgroundColor: Brand.green, foregroundColor: Brand.ink),
+                                onPressed: () => _act(context, ref, value, 'found'),
+                                icon: const Icon(LucideIcons.house),
+                                label: Text(l10n.gotPetBack(value.name)),
+                              ),
+                              // The more people see it, the more likely someone recognises the pet
+                              OutlinedButton.icon(
+                                onPressed: () => shareLostPet(context, value),
+                                icon: const Icon(LucideIcons.share2),
+                                label: Text(l10n.sharePosterButton),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      if (!value.isMine && value.status == ReportStatus.open) ...[
+                        const SizedBox(height: 12),
+                        FadeSlideIn(
+                          index: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            spacing: 8,
+                            children: [
+                              GradientFab(
+                                gradient: Brand.sightingGradient,
+                                icon: LucideIcons.eye,
+                                label: l10n.sawThisPet(value.name),
+                                onPressed: () => pushChain(context, '/sightings/new', extra: value),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () => shareLostPet(context, value),
+                                icon: const Icon(LucideIcons.share2),
+                                label: Text(l10n.helpByShaRing),
+                              ),
+                            ],
                           ),
                         ),
                       ],

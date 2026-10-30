@@ -24,6 +24,7 @@ import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
 import tn.winou.domain.MatchRepository;
 import tn.winou.domain.MatchStatus;
+import tn.winou.domain.PhotoRepository;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
 import tn.winou.infra.Notifications;
@@ -44,9 +45,11 @@ public class MatchController {
     private final ConversationRepository conversations;
     private final Views views;
     private final Notifications notifications;
+    private final PhotoRepository photos;
 
     public MatchController(MatchRepository matches, LostReportRepository reports, SightingRepository sightings,
-            ConversationRepository conversations, Views views, Notifications notifications) {
+            ConversationRepository conversations, Views views, Notifications notifications, PhotoRepository photos) {
+        this.photos = photos;
         this.matches = matches;
         this.reports = reports;
         this.sightings = sightings;
@@ -89,12 +92,20 @@ public class MatchController {
                 .stream().collect(Collectors.toMap(SightingOut::id, Function.identity()));
         Map<UUID, UUID> conversationByMatch = conversations.findByMatchIdIn(found.stream().map(Match::getId).toList())
                 .stream().collect(Collectors.toMap(Conversation::getMatchId, Conversation::getId));
+        // A finder's match has no matched photos until the model scores it: show the first ones
+        Map<UUID, UUID> firstLostPhoto = new java.util.HashMap<>();
+        photos.findByLostReportIdInOrderByCreatedAt(reportsById.keySet().stream().toList())
+                .forEach(p -> firstLostPhoto.putIfAbsent(p.getLostReportId(), p.getId()));
         return found.stream().map(m -> {
             LostReport report = reportsById.get(m.getLostReportId());
-            return new MatchOut(m.getId(), m.getLostReportId(), report.getName(), m.getScore(), m.getStatus(),
-                    sightingsById.get(m.getSightingId()), Views.imageUrl(m.getLostPhotoId()),
-                    Views.imageUrl(m.getSightingPhotoId()), report.getStatus(), conversationByMatch.get(m.getId()),
-                    m.getCreatedAt());
+            SightingOut sighting = sightingsById.get(m.getSightingId());
+            String lostPhoto = Views.imageUrl(m.getLostPhotoId() != null ? m.getLostPhotoId()
+                    : firstLostPhoto.get(report.getId()));
+            String sightingPhoto = m.getSightingPhotoId() != null ? Views.imageUrl(m.getSightingPhotoId())
+                    : sighting.photos().isEmpty() ? null : sighting.photos().getFirst().url();
+            return new MatchOut(m.getId(), m.getLostReportId(), report.getName(), m.getScore(), m.getSource(),
+                    m.getStatus(), sighting, lostPhoto, sightingPhoto, report.getStatus(),
+                    conversationByMatch.get(m.getId()), m.getCreatedAt());
         }).toList();
     }
 }

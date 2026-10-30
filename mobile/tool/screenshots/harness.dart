@@ -291,11 +291,13 @@ Map<String, dynamic> matchJson({
   String species = 'cat',
   String? conversation,
   Duration seen = const Duration(hours: 2),
+  bool byFinder = false,
 }) => {
   'id': id,
   'lost_report_id': name.toLowerCase(),
   'lost_report_name': name,
   'score': score,
+  'source': byFinder ? 'FINDER' : 'MODEL',
   'status': status,
   'sighting': sightingJson(species: species, seen: seen),
   'lost_photo_url': '/files/$species-lost.jpg',

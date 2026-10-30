@@ -1247,4 +1247,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorTooManyCodes =>
       'We already sent several codes. Check your spam, or try again in an hour.';
+
+  @override
+  String get sharePosterButton => 'Share a poster';
+
+  @override
+  String get helpByShaRing => 'Help by sharing';
+
+  @override
+  String sawThisPet(String name) {
+    return 'I saw $name';
+  }
+
+  @override
+  String shareTitle(String name) {
+    return 'Share $name';
+  }
+
+  @override
+  String get shareHelp =>
+      'Post it in neighbourhood groups, send it on WhatsApp, or print it. The QR code opens the pet\'s page.';
+
+  @override
+  String get sharePoster => 'Share the poster';
+
+  @override
+  String get shareLink => 'Share link';
+
+  @override
+  String get copyLink => 'Copy link';
+
+  @override
+  String get linkCopied => 'Link copied.';
+
+  @override
+  String shareLostText(String name, String species, String link) {
+    return 'Have you seen $name? Lost $species: see the photos and tell the owner on Winou. $link';
+  }
+
+  @override
+  String get posterLostCat => 'LOST CAT';
+
+  @override
+  String get posterLostDog => 'LOST DOG';
+
+  @override
+  String get posterLostPet => 'LOST PET';
+
+  @override
+  String get posterSeenIt => 'Seen this pet?';
+
+  @override
+  String get posterScan =>
+      'Scan the code to see the photos and tell the owner, for free.';
+
+  @override
+  String sightingAboutPet(String name) {
+    return 'About $name: the owner hears about it at once.';
+  }
+
+  @override
+  String finderMatchTitle(String name) {
+    return 'Someone says they saw $name';
+  }
+
+  @override
+  String get finderMatchBody =>
+      'They recognised your pet from your report. Compare the photos, then write to them.';
+
+  @override
+  String get seenByFinder => 'Seen by someone';
+
+  @override
+  String get finderMatchTip =>
+      'Look closely at markings and features before writing to them: people can be mistaken.';
 }
