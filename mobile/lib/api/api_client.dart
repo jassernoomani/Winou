@@ -33,11 +33,16 @@ class WinouApi {
     required Future<bool> Function() renew,
     required void Function() onUnauthorized,
     required void Function(Ban ban) onBanned,
+    void Function(bool answered)? onServer,
   }) : _dio = Dio(_options),
        _plain = Dio(_options) {
     _plain.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) => handler.next(_toServer(options))));
     _dio.interceptors.add(
       InterceptorsWrapper(
+        onResponse: (response, handler) {
+          onServer?.call(true);
+          handler.next(response);
+        },
         onRequest: (options, handler) {
           _toServer(options);
           final value = token();
@@ -45,6 +50,7 @@ class WinouApi {
           handler.next(options);
         },
         onError: (error, handler) async {
+          onServer?.call(error.response != null); // no answer at all: the server can't be reached
           final request = error.requestOptions;
           if (error.response?.statusCode == 401 && token() != null) {
             // The access token expired: renew it once, then send the request again

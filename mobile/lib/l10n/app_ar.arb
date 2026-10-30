@@ -404,5 +404,15 @@
   "permissionsLater": "يمكنك تغيير ذلك لاحقًا في الإعدادات.",
   "allow": "السماح",
   "allowed": "مسموح",
-  "notAllowed": "غير مسموح"
+  "notAllowed": "غير مسموح",
+  "offlineBanner": "لا يوجد اتصال بالإنترنت",
+  "serverDownBanner": "تعذّر الوصول إلى Winou حاليًا",
+  "photosUploading": "{count, plural, =1{جارٍ إرسال صورة واحدة…} =2{جارٍ إرسال صورتين…} few{جارٍ إرسال {count} صور…} other{جارٍ إرسال {count} صورة…}}",
+  "photosWaiting": "{count} في الانتظار",
+  "photosQueued": "{count, plural, =1{ستُرسل صورة واحدة عند عودة الاتصال.} =2{ستُرسل صورتان عند عودة الاتصال.} few{ستُرسل {count} صور عند عودة الاتصال.} other{ستُرسل {count} صورة عند عودة الاتصال.}}",
+  "reunionTitle": "مرحبًا بعودتك إلى البيت يا {name}!",
+  "reunionBody": "شكرًا لأنك لم تستسلم. أُبلغ كل من ساعد بالخبر السار.",
+  "reunionShareText": "خبر سار: عاد {name} إلى البيت! شكرًا لكل من شارك وبحث. عُثر عليه بفضل Winou.",
+  "shareGoodNews": "شارك الخبر السار",
+  "done": "تم"
 }

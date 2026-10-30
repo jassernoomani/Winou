@@ -404,5 +404,15 @@
   "permissionsLater": "Vous pourrez changer cela dans les paramètres.",
   "allow": "Autoriser",
   "allowed": "Autorisé",
-  "notAllowed": "Non autorisé"
+  "notAllowed": "Non autorisé",
+  "offlineBanner": "Pas de connexion Internet",
+  "serverDownBanner": "Winou est injoignable pour le moment",
+  "photosUploading": "{count, plural, =1{Envoi d'1 photo…} other{Envoi de {count} photos…}}",
+  "photosWaiting": "{count} en attente",
+  "photosQueued": "{count, plural, =1{1 photo sera envoyée quand la connexion reviendra.} other{{count} photos seront envoyées quand la connexion reviendra.}}",
+  "reunionTitle": "Bon retour à la maison, {name} !",
+  "reunionBody": "Merci de ne pas avoir abandonné. Tous ceux qui ont aidé ont appris la bonne nouvelle.",
+  "reunionShareText": "Bonne nouvelle : {name} est rentré à la maison ! Merci à tous ceux qui ont partagé et cherché. Retrouvé avec Winou.",
+  "shareGoodNews": "Partager la bonne nouvelle",
+  "done": "Terminé"
 }

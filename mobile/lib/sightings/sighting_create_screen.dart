@@ -9,6 +9,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
 import '../theme.dart';
+import '../uploads.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/photo_upload.dart';
@@ -134,6 +135,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
       await uploadPhotos(
         context,
         api,
+        ref.read(uploadQueueProvider.notifier),
         '/sightings/${sighting.id}',
         _photos,
         onProgress: (p) => setState(() => _progress = p),

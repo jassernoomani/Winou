@@ -837,5 +837,53 @@
   "permissionsLater": "You can change this later in Settings.",
   "allow": "Allow",
   "allowed": "Allowed",
-  "notAllowed": "Not allowed"
+  "notAllowed": "Not allowed",
+  "offlineBanner": "No internet connection",
+  "serverDownBanner": "Can't reach Winou right now",
+  "photosUploading": "{count, plural, =1{Sending 1 photo…} other{Sending {count} photos…}}",
+  "@photosUploading": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photosWaiting": "{count} waiting",
+  "@photosWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photosQueued": "{count, plural, =1{1 photo will be sent when the connection is back.} other{{count} photos will be sent when the connection is back.}}",
+  "@photosQueued": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reunionTitle": "Welcome home, {name}!",
+  "@reunionTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reunionBody": "Thank you for not giving up. Everyone who helped has been told the good news.",
+  "reunionShareText": "Good news: {name} is back home! Thank you to everyone who shared and looked. Found with Winou.",
+  "@reunionShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "species": {
+        "type": "String"
+      }
+    }
+  },
+  "shareGoodNews": "Share the good news",
+  "done": "Done"
 }

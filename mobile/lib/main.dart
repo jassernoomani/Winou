@@ -13,6 +13,8 @@ import 'l10n/app_localizations.dart';
 import 'home_shell.dart' show tabRoots;
 import 'preferences.dart';
 import 'push.dart';
+import 'uploads.dart';
+import 'widgets/connection_banner.dart';
 import 'router.dart';
 import 'theme.dart';
 import 'widgets/common.dart';
@@ -21,7 +23,11 @@ import 'widgets/server_settings.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // config from android/app/google-services.json
-  await (loadServerAddress(), loadPreferences(), initDates()).wait; // the server and the theme and language chosen in the app
+  await (
+    loadServerAddress(),
+    loadPreferences(),
+    initDates(),
+  ).wait; // the server and the theme and language chosen in the app
   LicenseRegistry.addLicense(() async* {
     yield LicenseEntryWithLineBreaks(['Nunito'], await rootBundle.loadString('assets/fonts/OFL.txt'));
     yield LicenseEntryWithLineBreaks(['Tajawal'], await rootBundle.loadString('assets/fonts/OFL-Tajawal.txt'));
@@ -45,6 +51,7 @@ class _WinouAppState extends ConsumerState<WinouApp> {
   void initState() {
     super.initState();
     ref.read(pushProvider); // starts listening for this phone's registration
+    ref.read(uploadQueueProvider); // photos left waiting last time go now
     _subscriptions
       ..add(FirebaseMessaging.onMessage.listen(_showInApp))
       ..add(FirebaseMessaging.onMessageOpenedApp.listen(_open));
@@ -127,7 +134,10 @@ class _WinouAppState extends ConsumerState<WinouApp> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(authProvider, (_, _) => _openPending());
+    ref.listen(authProvider, (_, next) {
+      _openPending();
+      if (next.signedIn) ref.read(uploadQueueProvider.notifier).send();
+    });
     final prefs = ref.watch(preferencesProvider);
     return MaterialApp.router(
       title: 'Winou',
@@ -139,6 +149,7 @@ class _WinouAppState extends ConsumerState<WinouApp> {
       darkTheme: winouTheme(Brightness.dark),
       themeMode: prefs.themeMode,
       locale: prefs.locale,
+      builder: (_, child) => ConnectionBanner(child: child!),
     );
   }
 }

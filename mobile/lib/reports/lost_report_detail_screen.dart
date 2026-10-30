@@ -63,6 +63,7 @@ class LostReportDetailScreen extends ConsumerWidget {
       ref
         ..invalidate(lostReportProvider(id))
         ..invalidate(myMatchesProvider);
+      if (action == 'found' && context.mounted) context.push('/lost/${report.id}/reunited'); // celebrate
     } catch (e) {
       if (context.mounted) showError(context, e);
     }

@@ -1466,4 +1466,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notAllowed => 'غير مسموح';
+
+  @override
+  String get offlineBanner => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get serverDownBanner => 'تعذّر الوصول إلى Winou حاليًا';
+
+  @override
+  String photosUploading(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'جارٍ إرسال $count صورة…',
+      few: 'جارٍ إرسال $count صور…',
+      two: 'جارٍ إرسال صورتين…',
+      one: 'جارٍ إرسال صورة واحدة…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String photosWaiting(int count) {
+    return '$count في الانتظار';
+  }
+
+  @override
+  String photosQueued(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ستُرسل $count صورة عند عودة الاتصال.',
+      few: 'ستُرسل $count صور عند عودة الاتصال.',
+      two: 'ستُرسل صورتان عند عودة الاتصال.',
+      one: 'ستُرسل صورة واحدة عند عودة الاتصال.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reunionTitle(String name) {
+    return 'مرحبًا بعودتك إلى البيت يا $name!';
+  }
+
+  @override
+  String get reunionBody =>
+      'شكرًا لأنك لم تستسلم. أُبلغ كل من ساعد بالخبر السار.';
+
+  @override
+  String reunionShareText(String name, String species) {
+    return 'خبر سار: عاد $name إلى البيت! شكرًا لكل من شارك وبحث. عُثر عليه بفضل Winou.';
+  }
+
+  @override
+  String get shareGoodNews => 'شارك الخبر السار';
+
+  @override
+  String get done => 'تم';
 }

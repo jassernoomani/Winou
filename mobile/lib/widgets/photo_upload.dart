@@ -9,6 +9,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
+import '../uploads.dart';
 import 'common.dart';
 
 final _picker = ImagePicker();
@@ -99,19 +100,38 @@ LatLng? exifLocation(Map<String, IfdTag> tags) {
 
 /// Uploads the photos, then waits for the matcher to process them all at once. For each photo
 /// where no animal is found, offers to retake it with the camera. Reports progress as "i/n".
+/// When the connection drops, the photos left wait in [queue] and go once it's back.
 Future<void> uploadPhotos(
   BuildContext context,
   WinouApi api,
+  UploadQueue queue,
   String ownerPath,
   List<PickedPhoto> photos, {
   required void Function(String progress) onProgress,
 }) async {
+  final sent = <PickedPhoto>[];
   final uploaded = <String>[];
+  var waiting = 0;
   for (var i = 0; i < photos.length; i++) {
     onProgress('${i + 1}/${photos.length}');
-    uploaded.add((await api.uploadPhoto(ownerPath, photos[i].file.path, photos[i].source)).id);
+    if (waiting == 0) {
+      try {
+        uploaded.add((await _upload(api, ownerPath, photos[i])).id);
+        sent.add(photos[i]);
+        continue;
+      } on ApiException catch (e) {
+        if (e.code != 'network') rethrow;
+      }
+    }
+    await queue.add(ownerPath, photos[i].file.path, photos[i].source);
+    waiting++;
   }
+  if (waiting > 0 && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.photosQueued(waiting))));
+  }
+  if (uploaded.isEmpty) return;
   final processed = await Future.wait(uploaded.map(api.waitForPhoto));
+  photos = sent;
   for (var i = 0; i < photos.length; i++) {
     var photo = processed[i];
     while (photo.status == 'NO_ANIMAL' && context.mounted && await _askRetake(context, photos[i].file)) {
@@ -121,6 +141,19 @@ Future<void> uploadPhotos(
       photo = await api.waitForPhoto((await api.uploadPhoto(ownerPath, retaken.file.path, retaken.source)).id);
     }
   }
+}
+
+/// A weak connection often fails once and works the next time: two quick retries before queueing.
+Future<Photo> _upload(WinouApi api, String ownerPath, PickedPhoto photo) async {
+  for (final wait in const [Duration(seconds: 1), Duration(seconds: 3)]) {
+    try {
+      return await api.uploadPhoto(ownerPath, photo.file.path, photo.source);
+    } on ApiException catch (e) {
+      if (e.code != 'network') rethrow;
+      await Future.delayed(wait);
+    }
+  }
+  return api.uploadPhoto(ownerPath, photo.file.path, photo.source);
 }
 
 Future<bool> _askRetake(BuildContext context, XFile file) async {

@@ -2529,6 +2529,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not allowed'**
   String get notAllowed;
+
+  /// No description provided for @offlineBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get offlineBanner;
+
+  /// No description provided for @serverDownBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach Winou right now'**
+  String get serverDownBanner;
+
+  /// No description provided for @photosUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Sending 1 photo…} other{Sending {count} photos…}}'**
+  String photosUploading(int count);
+
+  /// No description provided for @photosWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} waiting'**
+  String photosWaiting(int count);
+
+  /// No description provided for @photosQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo will be sent when the connection is back.} other{{count} photos will be sent when the connection is back.}}'**
+  String photosQueued(int count);
+
+  /// No description provided for @reunionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome home, {name}!'**
+  String reunionTitle(String name);
+
+  /// No description provided for @reunionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for not giving up. Everyone who helped has been told the good news.'**
+  String get reunionBody;
+
+  /// No description provided for @reunionShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Good news: {name} is back home! Thank you to everyone who shared and looked. Found with Winou.'**
+  String reunionShareText(String name, String species);
+
+  /// No description provided for @shareGoodNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the good news'**
+  String get shareGoodNews;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
 }
 
 class _AppLocalizationsDelegate

@@ -17,6 +17,7 @@ import 'package:winou/auth/auth_screens.dart';
 import 'package:winou/auth/forgot_password_screen.dart';
 import 'package:winou/auth/suspended_screen.dart';
 import 'package:winou/auth/welcome_screen.dart';
+import 'package:winou/connection.dart';
 import 'package:winou/home_shell.dart';
 import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
@@ -34,10 +35,13 @@ import 'package:winou/me/my_activity_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
+import 'package:winou/reports/reunion_screen.dart';
 import 'package:winou/sightings/sighting_create_screen.dart';
 import 'package:winou/sightings/sighting_detail_screen.dart';
 import 'package:winou/sightings/sighting_thanks_screen.dart';
 import 'package:winou/splash_screen.dart';
+import 'package:winou/uploads.dart';
+import 'package:winou/widgets/connection_banner.dart';
 import 'package:winou/widgets/common.dart' show initDates;
 
 import 'harness.dart';
@@ -287,6 +291,16 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('62_settings', () => const SettingsScreen(), () => FakeApi(role: 'ADMIN'), null),
   ('63_welcome', () => const WelcomeScreen(), FakeApi.new, null),
   ('64_welcome_permissions', () => const WelcomeScreen(), FakeApi.new, (tester) => _tap(tester, find.text(_l10n.skip))),
+  ('65_reunion', () => const ReunionScreen(id: 'luna'), FakeApi.new, null),
+  (
+    '66_offline_banner',
+    () => ProviderScope(
+      overrides: [connectionProvider.overrideWith(_Offline.new), uploadQueueProvider.overrideWith(_TwoWaiting.new)],
+      child: const ConnectionBanner(child: LostFeedScreen()),
+    ),
+    FakeApi.new,
+    null,
+  ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 
@@ -340,4 +354,17 @@ abstract final class HttpOverridesScope {
     HttpOverrides.global = _http;
     await HttpOverrides.runWithHttpOverrides(body, _http);
   }
+}
+
+class _Offline extends ConnectionController {
+  @override
+  Connection build() => const Connection(online: false);
+}
+
+class _TwoWaiting extends UploadQueue {
+  @override
+  List<PendingUpload> build() => [
+    for (final id in ['1', '2'])
+      PendingUpload(id: id, ownerPath: '/sightings/s1', file: 'x.jpg', source: PhotoSource.camera),
+  ];
 }

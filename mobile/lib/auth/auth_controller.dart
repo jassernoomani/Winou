@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../api/api_client.dart';
 import '../api/models.dart';
 import '../config.dart';
+import '../connection.dart';
 import '../push.dart';
 
 const _tokenKey = 'access_token';
@@ -154,5 +155,6 @@ final apiProvider = Provider<WinouApi>(
     renew: () => ref.read(authProvider.notifier).renew(),
     onUnauthorized: () => ref.read(authProvider.notifier).sessionEnded(), // signed out elsewhere, or too long ago
     onBanned: (ban) => ref.read(authProvider.notifier).banned(ban),
+    onServer: (answered) => ref.read(connectionProvider.notifier).serverAnswered(answered),
   ),
 );

@@ -24,6 +24,7 @@ import 'preferences.dart';
 import 'reports/lost_feed_screen.dart';
 import 'reports/lost_report_create_screen.dart';
 import 'reports/lost_report_detail_screen.dart';
+import 'reports/reunion_screen.dart';
 import 'sightings/sighting_create_screen.dart';
 import 'sightings/sighting_detail_screen.dart';
 import 'sightings/sighting_thanks_screen.dart';
@@ -108,6 +109,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => AdminUserScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
+      GoRoute(
+        path: '/lost/:id/reunited',
+        builder: (_, state) => ReunionScreen(id: state.pathParameters['id']!),
+      ),
       GoRoute(
         path: '/lost/:id',
         builder: (_, state) =>

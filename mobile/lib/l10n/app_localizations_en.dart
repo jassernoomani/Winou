@@ -1423,4 +1423,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAllowed => 'Not allowed';
+
+  @override
+  String get offlineBanner => 'No internet connection';
+
+  @override
+  String get serverDownBanner => 'Can\'t reach Winou right now';
+
+  @override
+  String photosUploading(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Sending $count photos…',
+      one: 'Sending 1 photo…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String photosWaiting(int count) {
+    return '$count waiting';
+  }
+
+  @override
+  String photosQueued(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos will be sent when the connection is back.',
+      one: '1 photo will be sent when the connection is back.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reunionTitle(String name) {
+    return 'Welcome home, $name!';
+  }
+
+  @override
+  String get reunionBody =>
+      'Thank you for not giving up. Everyone who helped has been told the good news.';
+
+  @override
+  String reunionShareText(String name, String species) {
+    return 'Good news: $name is back home! Thank you to everyone who shared and looked. Found with Winou.';
+  }
+
+  @override
+  String get shareGoodNews => 'Share the good news';
+
+  @override
+  String get done => 'Done';
 }

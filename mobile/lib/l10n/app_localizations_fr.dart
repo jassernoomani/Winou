@@ -1438,4 +1438,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notAllowed => 'Non autorisé';
+
+  @override
+  String get offlineBanner => 'Pas de connexion Internet';
+
+  @override
+  String get serverDownBanner => 'Winou est injoignable pour le moment';
+
+  @override
+  String photosUploading(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Envoi de $count photos…',
+      one: 'Envoi d\'1 photo…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String photosWaiting(int count) {
+    return '$count en attente';
+  }
+
+  @override
+  String photosQueued(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos seront envoyées quand la connexion reviendra.',
+      one: '1 photo sera envoyée quand la connexion reviendra.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reunionTitle(String name) {
+    return 'Bon retour à la maison, $name !';
+  }
+
+  @override
+  String get reunionBody =>
+      'Merci de ne pas avoir abandonné. Tous ceux qui ont aidé ont appris la bonne nouvelle.';
+
+  @override
+  String reunionShareText(String name, String species) {
+    return 'Bonne nouvelle : $name est rentré à la maison ! Merci à tous ceux qui ont partagé et cherché. Retrouvé avec Winou.';
+  }
+
+  @override
+  String get shareGoodNews => 'Partager la bonne nouvelle';
+
+  @override
+  String get done => 'Terminé';
 }
