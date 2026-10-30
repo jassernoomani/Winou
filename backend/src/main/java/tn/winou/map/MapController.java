@@ -96,14 +96,14 @@ public class MapController {
             GeoPoint shown = views.publicPosition(id, new GeoPoint(rs.getDouble("lat"), rs.getDouble("lon")));
             return new MapItem(MapType.LOST, id, SPECIES.convertToEntityAttribute(rs.getString("species")),
                     Location.of(shown), rs.getObject("date", OffsetDateTime.class), rs.getString("name"), null,
-                    Views.imageUrl(rs.getObject("photo_id", UUID.class)));
+                    Views.imageUrl(rs.getObject("photo_id", UUID.class)), false);
         }).list();
     }
 
     /** stray: null for both kinds, true for strays only, false for loose animals only. */
     private List<MapItem> sightings(Filters f, Boolean stray) {
         var sql = new StringBuilder("""
-                SELECT s.id, s.species, s.condition, s.is_stray, s.seen_at AS date,
+                SELECT s.id, s.species, s.condition, s.is_stray, s.in_care, s.seen_at AS date,
                        ST_Y(s.point::geometry) AS lat, ST_X(s.point::geometry) AS lon,
                        (SELECT p.id FROM photos p WHERE p.sighting_id = s.id ORDER BY p.created_at LIMIT 1) AS photo_id
                 FROM sightings s
@@ -123,7 +123,8 @@ public class MapController {
                 rs.getObject("date", OffsetDateTime.class),
                 null,
                 Condition.valueOf(rs.getString("condition")),
-                Views.imageUrl(rs.getObject("photo_id", UUID.class)))).list();
+                Views.imageUrl(rs.getObject("photo_id", UUID.class)),
+                rs.getBoolean("in_care"))).list();
     }
 
     /** Appends the shared filters, the ordering and the limit; returns the parameters. */

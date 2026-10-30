@@ -223,7 +223,8 @@ class Sighting {
       isMine = json['mine'],
       photos = [for (final p in json['photos']) Photo.fromJson(p)],
       hidden = json['hidden'] ?? false,
-      authorId = json['author_id'];
+      authorId = json['author_id'],
+      inCare = json['in_care'] ?? false;
 
   final String id;
   final Species species;
@@ -239,6 +240,7 @@ class Sighting {
   final List<Photo> photos;
   final bool hidden;
   final String? authorId; // sent to admins only
+  final bool inCare; // the finder has the animal with them
 
   bool get needsHelp => condition != Condition.healthy;
 }
@@ -252,7 +254,8 @@ class MapItem {
       date = _date(json['date']),
       name = json['name'],
       condition = json['condition'] == null ? null : _enum(Condition.values, json['condition']),
-      photoUrl = absoluteUrl(json['photo_url']);
+      photoUrl = absoluteUrl(json['photo_url']),
+      inCare = json['in_care'] ?? false;
 
   final MapItemType type;
   final String id;
@@ -262,6 +265,7 @@ class MapItem {
   final String? name;
   final Condition? condition;
   final String? photoUrl;
+  final bool inCare; // a sighting whose finder keeps the animal safe
 }
 
 class Match {
@@ -392,6 +396,28 @@ class HiddenItem {
   final String? authorId;
   final String? authorName;
   final DateTime? lastReportedAt;
+}
+
+/// A pet as its owner described it, ready to be marked lost in one step.
+class Pet {
+  Pet.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      name = json['name'],
+      species = _enum(Species.values, json['species']),
+      description = json['description'],
+      microchipped = json['microchipped'],
+      photos = [for (final p in json['photos']) Photo.fromJson(p)],
+      openReportId = json['open_report_id'];
+
+  final String id;
+  final String name;
+  final Species species;
+  final String? description;
+  final bool? microchipped;
+  final List<Photo> photos;
+  final String? openReportId; // missing now: its lost report
+
+  bool get lost => openReportId != null;
 }
 
 /// A notification as it was pushed: keys and args the app turns into text, data saying what it's about.

@@ -134,6 +134,7 @@ class _MatchDetailScreenState extends ConsumerState<MatchDetailScreen> {
                               m.byFinder ? l10n.finderMatchBody : l10n.notConfirmedIdentity,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
+                            if (m.sighting.inCare) StatusPill(l10n.keptSafe, tone: Tone.found, icon: LucideIcons.house),
                           ],
                         ),
                       ),

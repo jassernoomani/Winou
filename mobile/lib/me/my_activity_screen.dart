@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../api/models.dart';
 import '../api/providers.dart';
 import '../theme.dart';
+import '../pets/pets_tab.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 
@@ -19,7 +20,7 @@ class MyActivityScreen extends ConsumerWidget {
     final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false;
     final waiting = isAdmin ? ref.watch(adminSummaryProvider).value?.total ?? 0 : 0;
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.myActivity),
@@ -31,7 +32,10 @@ class MyActivityScreen extends ConsumerWidget {
             ),
           ],
           bottom: TabBar(
+            isScrollable: true, // four tabs, longer in French and Arabic
+            tabAlignment: TabAlignment.start,
             tabs: [
+              Tab(text: l10n.tabMyPets),
               Tab(text: l10n.tabMatches),
               Tab(text: l10n.tabMyLostPets),
               Tab(text: l10n.tabMySightings),
@@ -40,6 +44,7 @@ class MyActivityScreen extends ConsumerWidget {
         ),
         body: TabBarView(
           children: [
+            const PetsTab(),
             _AsyncList<Match>(
               provider: myMatchesProvider,
               empty: l10n.noMatches,

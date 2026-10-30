@@ -36,6 +36,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   late Species _species = widget.about?.species ?? Species.cat;
   Condition _condition = Condition.healthy;
   bool _isStray = false;
+  bool _inCare = false; // the finder took the animal in
   LatLng? _gps; // the phone's position now
   double? _gpsAccuracyM;
   bool _locating = true;
@@ -130,6 +131,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
         isStray: _isStray,
         note: _note.text.trim(),
         lostReportId: widget.about?.id,
+        inCare: _inCare,
       );
       if (!mounted) return;
       await uploadPhotos(
@@ -207,6 +209,13 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
               subtitle: Text(l10n.isStrayHelp),
               value: _isStray,
               onChanged: (v) => setState(() => _isStray = v),
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.inCare, style: Theme.of(context).textTheme.titleMedium),
+              subtitle: Text(l10n.inCareHelp),
+              value: _inCare,
+              onChanged: (v) => setState(() => _inCare = v),
             ),
             FieldLabel(l10n.noteOptional),
             TextField(

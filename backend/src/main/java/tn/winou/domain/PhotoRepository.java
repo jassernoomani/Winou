@@ -19,6 +19,10 @@ public interface PhotoRepository extends JpaRepository<Photo, UUID> {
 
     long countBySightingId(UUID sightingId);
 
+    List<Photo> findByPetIdInOrderByCreatedAt(Collection<UUID> petIds);
+
+    long countByPetId(UUID petId);
+
     long countByUploaderIdAndCreatedAtGreaterThanEqual(UUID uploaderId, OffsetDateTime since);
 
     /** Queues processed photos again: the worker reuses their vectors and searches with new filters. */

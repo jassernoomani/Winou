@@ -217,7 +217,9 @@ Map<String, dynamic> sightingJson({
   String strayStatus = 'AROUND',
   String? helpedBy,
   bool hidden = false,
+  bool inCare = false,
 }) => {
+  'in_care': inCare,
   'id': id,
   'species': species,
   'location': {'lat': Config.defaultLat + 0.002, 'lon': Config.defaultLon + 0.003},
@@ -232,6 +234,27 @@ Map<String, dynamic> sightingJson({
   'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
   'hidden': hidden,
 };
+
+final samplePets = [
+  {
+    'id': 'luna',
+    'name': 'Luna',
+    'species': 'cat',
+    'description': 'Shy grey tabby, green eyes, small notch in the left ear.',
+    'microchipped': true,
+    'photos': [_photo('cat'), _photo('cat')],
+    'open_report_id': null,
+  },
+  {
+    'id': 'rocky',
+    'name': 'Rocky',
+    'species': 'dog',
+    'description': 'Sandy terrier mix, red collar.',
+    'microchipped': false,
+    'photos': [_photo('dog')],
+    'open_report_id': 'rocky',
+  },
+];
 
 Map<String, dynamic> adminUserJson({
   String id = 'u1',
@@ -639,6 +662,9 @@ class FakeApi implements WinouApi {
       ],
     }),
   );
+
+  @override
+  Future<List<Pet>> myPets() => _answer(() => [for (final p in samplePets) Pet.fromJson(p)]);
 
   @override
   Future<Inbox> notifications() => _answer(

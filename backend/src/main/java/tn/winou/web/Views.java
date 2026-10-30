@@ -116,7 +116,7 @@ public class Views {
                 s.getStrayStatus() == StrayStatus.HELPED ? helpers.get(s.getStrayStatusBy()) : null,
                 viewer != null && viewer.getId().equals(s.getReporterId()),
                 photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt(),
-                isAdmin(viewer) ? s.getReporterId() : null)).toList();
+                isAdmin(viewer) ? s.getReporterId() : null, s.isInCare())).toList();
     }
 
     private static List<PhotoOut> photoList(List<Photo> photos) {

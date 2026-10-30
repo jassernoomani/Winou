@@ -11,4 +11,6 @@ public interface LostReportRepository extends JpaRepository<LostReport, UUID> {
     List<LostReport> findByOwnerIdOrderByCreatedAtDesc(UUID ownerId);
 
     long countByOwnerIdAndCreatedAtGreaterThanEqual(UUID ownerId, OffsetDateTime since);
+
+    java.util.Optional<LostReport> findFirstByPetIdAndStatusOrderByCreatedAtDesc(UUID petId, ReportStatus status);
 }

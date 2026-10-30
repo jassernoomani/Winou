@@ -176,7 +176,8 @@ public final class ApiModels {
             Condition condition,
             @Size(max = 1000) String note,
             Boolean isStray,
-            UUID lostReportId) {} // "I saw this pet": the lost report it's about, matched at once
+            UUID lostReportId, // "I saw this pet": the lost report it's about, matched at once
+            Boolean inCare) {} // "I found it and I'm keeping it safe"
 
     /** Null fields are left unchanged. */
     public record SightingUpdate(
@@ -185,7 +186,8 @@ public final class ApiModels {
             @PastOrPresent OffsetDateTime seenAt,
             Condition condition,
             @Size(max = 1000) String note,
-            Boolean isStray) {}
+            Boolean isStray,
+            Boolean inCare) {}
 
     public record SightingOut(
             UUID id,
@@ -202,7 +204,8 @@ public final class ApiModels {
             List<PhotoOut> photos,
             boolean hidden,
             OffsetDateTime createdAt,
-            UUID authorId) {} // for admins only: the reporter is never shown to others
+            UUID authorId, // for admins only: the reporter is never shown to others
+            boolean inCare) {} // the finder has the animal with them
 
     /** AROUND also says "seen again today": it keeps the stray on the map. */
     public record StrayStatusUpdate(@NotNull StrayStatus status) {}
@@ -226,7 +229,8 @@ public final class ApiModels {
             OffsetDateTime date, // last seen (lost) or seen (sighting/stray)
             String name,
             Condition condition,
-            String photoUrl) {}
+            String photoUrl,
+            boolean inCare) {} // a sighting whose finder has the animal with them
 
     public record MapOut(List<MapItem> items, boolean truncated) {} // truncated: more than MAP_MAX_RESULTS, zoom in
 
@@ -301,6 +305,35 @@ public final class ApiModels {
             boolean read) {}
 
     public record InboxOut(List<NotificationOut> items, long unread) {}
+
+    // --- pets ---
+
+    /** Create: name and species needed. Update: null fields are left unchanged. */
+    public record PetIn(
+            @Size(min = 1, max = 80) String name,
+            Species species,
+            @Size(max = 2000) String description,
+            Boolean microchipped) {}
+
+    /** open_report_id: the pet's open lost report, if it's missing now. */
+    public record PetOut(
+            UUID id,
+            String name,
+            Species species,
+            String description,
+            Boolean microchipped,
+            List<PhotoOut> photos,
+            UUID openReportId,
+            OffsetDateTime createdAt) {}
+
+    /** Where and when it went missing; the rest comes from the pet's profile. */
+    public record PetLostIn(
+            @NotNull @Valid Location lastSeen,
+            @NotNull @PastOrPresent OffsetDateTime lastSeenAt,
+            @Size(max = 2000) String description,
+            @Min(1) @Max(100000) Integer rewardTnd,
+            @Pattern(regexp = "^([+0-9 ()-]{6,20})?$", message = "a phone number: digits, spaces, + ( ) -")
+            String contactPhone) {}
 
     // --- alert areas ---
 

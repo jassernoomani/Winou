@@ -161,6 +161,53 @@ class WinouApi {
 
   Future<void> updateMe({String? fcmToken}) => _call(() => _dio.patch('/me', data: {'fcm_token': fcmToken}), (_) {});
 
+  // --- pets ---
+
+  Future<List<Pet>> myPets() => _call(() => _dio.get('/me/pets'), (data) => [for (final p in data) Pet.fromJson(p)]);
+
+  Future<Pet> savePet({
+    String? id,
+    required String name,
+    required Species species,
+    String? description,
+    bool? microchipped,
+  }) => _call(
+    () => id == null
+        ? _dio.post(
+            '/me/pets',
+            data: {'name': name, 'species': species.api, 'description': ?description, 'microchipped': ?microchipped},
+          )
+        : _dio.patch(
+            '/pets/$id',
+            data: {'name': name, 'species': species.api, 'description': ?description, 'microchipped': ?microchipped},
+          ),
+    (data) => Pet.fromJson(data),
+  );
+
+  Future<void> deletePet(String id) => _call(() => _dio.delete('/pets/$id'), (_) {});
+
+  /// The pet is missing: a lost report from its profile, with its photos.
+  Future<LostReport> markPetLost(
+    String id, {
+    required LatLng lastSeen,
+    required DateTime lastSeenAt,
+    String? description,
+    int? rewardTnd,
+    String? contactPhone,
+  }) => _call(
+    () => _dio.post(
+      '/pets/$id/lost',
+      data: {
+        'last_seen': locationJson(lastSeen),
+        'last_seen_at': lastSeenAt.toUtc().toIso8601String(),
+        if (description != null && description.isNotEmpty) 'description': description,
+        'reward_tnd': ?rewardTnd,
+        if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
+      },
+    ),
+    (data) => LostReport.fromJson(data),
+  );
+
   // --- notifications ---
 
   Future<Inbox> notifications() => _call(() => _dio.get('/me/notifications'), (data) => Inbox.fromJson(data));
@@ -310,11 +357,13 @@ class WinouApi {
     required bool isStray,
     String? note,
     String? lostReportId,
+    bool inCare = false,
   }) => _call(
     () => _dio.post(
       '/sightings',
       data: {
         'lost_report_id': ?lostReportId,
+        'in_care': inCare,
         'species': species.api,
         'location': locationJson(location),
         'seen_at': seenAt.toUtc().toIso8601String(),

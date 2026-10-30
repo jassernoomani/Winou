@@ -22,6 +22,7 @@ public class Photo extends BaseEntity {
     private UUID uploaderId;
     private UUID lostReportId;
     private UUID sightingId;
+    private UUID petId; // a pet's profile photo: kept, not matched
     private String originalKey; // as uploaded, may hold GPS EXIF: never served
     private String publicKey;   // re-encoded JPEG without EXIF
     private String cropKey;

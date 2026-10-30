@@ -1765,4 +1765,75 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get call => 'اتصال';
+
+  @override
+  String get tabMyPets => 'حيواناتي';
+
+  @override
+  String get addPet => 'إضافة حيوان';
+
+  @override
+  String get noPetsYet =>
+      'أضف حيواناتك الآن مع بضع صور واضحة. إذا ضاع أحدها، تُبلغ عنه بلمسة واحدة.';
+
+  @override
+  String get petProfileIntro =>
+      'لا يراه أحد غيرك. إذا ضاع حيوانك، تُنشئ هذه الصور والتفاصيل البلاغ بلمسة واحدة.';
+
+  @override
+  String photosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صورة',
+      few: '$count صور',
+      two: 'صورتان',
+      one: 'صورة واحدة',
+      zero: 'لا صور',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addPhotoToMarkLost => 'أضف صورة لتكون مستعدًا';
+
+  @override
+  String get markLost => 'الإبلاغ عن ضياعه';
+
+  @override
+  String get seeReport => 'عرض البلاغ';
+
+  @override
+  String deletePetQuestion(String name) {
+    return 'إزالة $name من حيواناتك؟';
+  }
+
+  @override
+  String markNamedLost(String name) {
+    return '$name مفقود';
+  }
+
+  @override
+  String markLostIntro(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'يُنشأ البلاغ من ملفه و$count صور. حدّد فقط متى وأين.',
+      two: 'يُنشأ البلاغ من ملفه وصورتيه. حدّد فقط متى وأين.',
+      one: 'يُنشأ البلاغ من ملفه وصورته. حدّد فقط متى وأين.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inCare => 'إنه معي';
+
+  @override
+  String get inCareHelp => 'أخذته معك وتحافظ عليه إلى أن يُعثر على صاحبه';
+
+  @override
+  String get keptSafe => 'في أمان';
+
+  @override
+  String get keptSafeNote => 'الشخص الذي وجده يحتفظ به ويحافظ عليه.';
 }

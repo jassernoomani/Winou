@@ -35,6 +35,8 @@ import 'package:winou/me/match_detail_screen.dart';
 import 'package:winou/me/settings_screen.dart';
 import 'package:winou/me/my_activity_screen.dart';
 import 'package:winou/me/notifications_screen.dart';
+import 'package:winou/pets/mark_lost_screen.dart';
+import 'package:winou/pets/pet_form_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
@@ -385,6 +387,14 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
       editing: LostReport.fromJson(lostJson(mine: true, reward: 150, microchipped: false, phone: '20 123 456')),
     ),
     FakeApi.new,
+    null,
+  ),
+  ('75_pet_form', () => PetFormScreen(editing: Pet.fromJson(samplePets.first)), FakeApi.new, null),
+  ('76_mark_lost', () => MarkLostScreen(pet: Pet.fromJson(samplePets.first)), FakeApi.new, null),
+  (
+    '77_kept_safe',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(sighting: sightingJson(species: 'dog', inCare: true)),
     null,
   ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),

@@ -41,6 +41,9 @@ public class Sighting extends BaseEntity {
     @Column(name = "is_stray")
     private boolean stray;
 
+    /** "I found it and I'm keeping it safe": the finder has the animal with them. */
+    private boolean inCare;
+
     @Enumerated(EnumType.STRING)
     private StrayStatus strayStatus = StrayStatus.AROUND;
 

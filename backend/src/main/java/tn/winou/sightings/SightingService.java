@@ -88,6 +88,7 @@ public class SightingService {
         sighting.setCondition(body.condition() != null ? body.condition() : Condition.HEALTHY);
         sighting.setNote(body.note());
         sighting.setStray(Boolean.TRUE.equals(body.isStray()));
+        sighting.setInCare(Boolean.TRUE.equals(body.inCare()));
         LostReport report = body.lostReportId() == null ? null : seenPet(body.lostReportId(), user);
         sightings.save(sighting);
         alertIfUrgent(sighting);
@@ -157,6 +158,9 @@ public class SightingService {
         }
         if (body.isStray() != null) {
             sighting.setStray(body.isStray());
+        }
+        if (body.inCare() != null) {
+            sighting.setInCare(body.inCare());
         }
         if (rematch) {
             records.rematch(sighting.getId(), sighting.getSpecies(), Records.payload(sighting));

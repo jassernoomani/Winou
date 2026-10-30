@@ -83,6 +83,10 @@ class SightingDetailScreen extends ConsumerWidget {
                 Note(l10n.hiddenNotice, tone: Tone.neutral, icon: LucideIcons.eyeOff),
                 const SizedBox(height: 12),
               ],
+              if (value.inCare) ...[
+                Note(l10n.keptSafeNote, tone: Tone.found, icon: LucideIcons.house),
+                const SizedBox(height: 12),
+              ],
               if (value.needsHelp) ...[
                 Note(
                   value.condition == Condition.injured ? l10n.injuredBanner : l10n.needsHelpBanner,

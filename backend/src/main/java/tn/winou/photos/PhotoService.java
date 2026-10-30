@@ -21,6 +21,7 @@ import tn.winou.config.WinouProperties;
 import tn.winou.domain.Photo;
 import tn.winou.domain.PhotoRepository;
 import tn.winou.domain.PhotoSource;
+import tn.winou.domain.PhotoStatus;
 import tn.winou.domain.User;
 import tn.winou.infra.Storage;
 import tn.winou.infra.VectorIndex;
@@ -32,7 +33,8 @@ public class PhotoService {
 
     public enum Owner {
         LOST_REPORT(5),
-        SIGHTING(3);
+        SIGHTING(3),
+        PET(5);
 
         final int maxPhotos;
 
@@ -62,7 +64,11 @@ public class PhotoService {
     /** Validates and stores an upload, then queues it for the worker (embedding + matching). */
     @Transactional
     public PhotoOut add(User user, Owner owner, UUID recordId, MultipartFile file, PhotoSource source) {
-        long count = owner == Owner.LOST_REPORT ? photos.countByLostReportId(recordId) : photos.countBySightingId(recordId);
+        long count = switch (owner) {
+            case LOST_REPORT -> photos.countByLostReportId(recordId);
+            case SIGHTING -> photos.countBySightingId(recordId);
+            case PET -> photos.countByPetId(recordId);
+        };
         if (count >= owner.maxPhotos) {
             throw ApiException.coded(HttpStatus.CONFLICT, "too_many_photos", "At most " + owner.maxPhotos + " photos.");
         }
@@ -76,14 +82,31 @@ public class PhotoService {
         photo.setSource(source);
         photo.setOriginalKey("originals/" + photo.getId() + "." + ORIGINAL_EXTENSIONS.get(copy.originalType()));
         photo.setPublicKey("public/" + photo.getId() + ".jpg");
-        if (owner == Owner.LOST_REPORT) {
-            photo.setLostReportId(recordId);
-        } else {
-            photo.setSightingId(recordId);
+        switch (owner) {
+            case LOST_REPORT -> photo.setLostReportId(recordId);
+            case SIGHTING -> photo.setSightingId(recordId);
+            case PET -> {
+                photo.setPetId(recordId);
+                photo.setStatus(PhotoStatus.SKIPPED); // matched only once the pet is lost, as copies
+            }
         }
         storage.put(photo.getOriginalKey(), data, copy.originalType());
         storage.put(photo.getPublicKey(), copy.jpeg(), "image/jpeg");
         return Views.photo(photos.save(photo));
+    }
+
+    /** A pet's photo into its lost report: new files and a new row, which the worker matches. */
+    public Photo copyTo(Photo source, UUID lostReportId, User user) {
+        Photo photo = new Photo();
+        photo.setUploaderId(user.getId());
+        photo.setSource(source.getSource());
+        String extension = source.getOriginalKey().substring(source.getOriginalKey().lastIndexOf('.'));
+        photo.setOriginalKey("originals/" + photo.getId() + extension);
+        photo.setPublicKey("public/" + photo.getId() + ".jpg");
+        photo.setLostReportId(lostReportId);
+        storage.put(photo.getOriginalKey(), storage.get(source.getOriginalKey()), "application/octet-stream");
+        storage.put(photo.getPublicKey(), storage.get(source.getPublicKey()), "image/jpeg");
+        return photos.save(photo);
     }
 
     public Photo get(UUID photoId) {

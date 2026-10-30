@@ -479,5 +479,20 @@
   "rewardPill": "Récompense {tnd} DT",
   "microchipped": "Pucé",
   "notMicrochipped": "Non pucé",
-  "call": "Appeler"
+  "call": "Appeler",
+  "tabMyPets": "Mes animaux",
+  "addPet": "Ajouter un animal",
+  "noPetsYet": "Ajoutez vos animaux dès maintenant, avec quelques photos nettes. Si l'un disparaît, vous le signalez en un geste.",
+  "petProfileIntro": "Vous seul le voyez. Si votre animal disparaît, ces photos et détails font l'avis en un geste.",
+  "photosCount": "{count, plural, =0{aucune photo} =1{1 photo} other{{count} photos}}",
+  "addPhotoToMarkLost": "Ajoutez une photo pour être prêt",
+  "markLost": "Signaler perdu",
+  "seeReport": "Voir l'avis",
+  "deletePetQuestion": "Retirer {name} de vos animaux ?",
+  "markNamedLost": "{name} a disparu",
+  "markLostIntro": "{count, plural, =1{Son profil et sa photo font l'avis. Dites juste quand et où.} other{Son profil et ses {count} photos font l'avis. Dites juste quand et où.}}",
+  "inCare": "Je l'ai avec moi",
+  "inCareHelp": "Vous l'avez recueilli et le gardez en sécurité en attendant son propriétaire",
+  "keptSafe": "En sécurité",
+  "keptSafeNote": "La personne qui l'a trouvé l'a avec elle et le garde en sécurité."
 }

@@ -332,8 +332,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           Row(
             spacing: 6,
             children: [
-              _Dot(markerStyle(item.type).$1),
-              Text(_typeLabel(l10n, item.type), style: Theme.of(context).textTheme.labelMedium),
+              _Dot(item.inCare ? Brand.green : markerStyle(item.type).$1),
+              Text(
+                item.inCare ? l10n.keptSafe : _typeLabel(l10n, item.type),
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
             ],
           ),
           Text(switch (item.type) {
@@ -413,7 +416,11 @@ class _MarkerIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final injured = item.condition == Condition.injured;
-    final (color, icon) = injured ? (Brand.red, LucideIcons.plus) : markerStyle(item.type);
+    final (color, icon) = injured
+        ? (Brand.red, LucideIcons.plus)
+        : item.inCare
+        ? (Brand.green, LucideIcons.house)
+        : markerStyle(item.type);
     final dot = Container(
       width: 34,
       height: 34,

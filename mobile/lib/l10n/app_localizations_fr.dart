@@ -1735,4 +1735,75 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get call => 'Appeler';
+
+  @override
+  String get tabMyPets => 'Mes animaux';
+
+  @override
+  String get addPet => 'Ajouter un animal';
+
+  @override
+  String get noPetsYet =>
+      'Ajoutez vos animaux dès maintenant, avec quelques photos nettes. Si l\'un disparaît, vous le signalez en un geste.';
+
+  @override
+  String get petProfileIntro =>
+      'Vous seul le voyez. Si votre animal disparaît, ces photos et détails font l\'avis en un geste.';
+
+  @override
+  String photosCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count photos',
+      one: '1 photo',
+      zero: 'aucune photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get addPhotoToMarkLost => 'Ajoutez une photo pour être prêt';
+
+  @override
+  String get markLost => 'Signaler perdu';
+
+  @override
+  String get seeReport => 'Voir l\'avis';
+
+  @override
+  String deletePetQuestion(String name) {
+    return 'Retirer $name de vos animaux ?';
+  }
+
+  @override
+  String markNamedLost(String name) {
+    return '$name a disparu';
+  }
+
+  @override
+  String markLostIntro(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Son profil et ses $count photos font l\'avis. Dites juste quand et où.',
+      one: 'Son profil et sa photo font l\'avis. Dites juste quand et où.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get inCare => 'Je l\'ai avec moi';
+
+  @override
+  String get inCareHelp =>
+      'Vous l\'avez recueilli et le gardez en sécurité en attendant son propriétaire';
+
+  @override
+  String get keptSafe => 'En sécurité';
+
+  @override
+  String get keptSafeNote =>
+      'La personne qui l\'a trouvé l\'a avec elle et le garde en sécurité.';
 }

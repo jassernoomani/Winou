@@ -39,11 +39,13 @@ public class AccountService {
     private final SightingRepository sightings;
     private final LostReportService reportService;
     private final SightingService sightingService;
+    private final tn.winou.pets.PetService petService;
     private final WinouProperties.Auth settings;
 
     public AccountService(UserRepository users, Passwords passwords, Sessions sessions, AttemptLimiter limiter,
             LostReportRepository reports, SightingRepository sightings, LostReportService reportService,
-            SightingService sightingService, WinouProperties properties) {
+            SightingService sightingService, tn.winou.pets.PetService petService, WinouProperties properties) {
+        this.petService = petService;
         this.users = users;
         this.passwords = passwords;
         this.sessions = sessions;
@@ -79,6 +81,7 @@ public class AccountService {
         for (Sighting sighting : sightings.findByReporterIdOrderByCreatedAtDesc(user.getId())) {
             sightingService.delete(sighting.getId(), user);
         }
+        petService.deleteAll(user); // their photos' files go too
         users.delete(user); // sessions, matches, conversations and reports cascade in Postgres
         log.info("user {} deleted their account", user.getId());
     }

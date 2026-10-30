@@ -2979,6 +2979,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call'**
   String get call;
+
+  /// No description provided for @tabMyPets.
+  ///
+  /// In en, this message translates to:
+  /// **'My pets'**
+  String get tabMyPets;
+
+  /// No description provided for @addPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet'**
+  String get addPet;
+
+  /// No description provided for @noPetsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your pets now, with a few clear photos. If one ever goes missing, you report it in one tap.'**
+  String get noPetsYet;
+
+  /// No description provided for @petProfileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you see this. If your pet goes missing, these photos and details make the report in one tap.'**
+  String get petProfileIntro;
+
+  /// No description provided for @photosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{no photo} =1{1 photo} other{{count} photos}}'**
+  String photosCount(int count);
+
+  /// No description provided for @addPhotoToMarkLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo to be ready'**
+  String get addPhotoToMarkLost;
+
+  /// No description provided for @markLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as lost'**
+  String get markLost;
+
+  /// No description provided for @seeReport.
+  ///
+  /// In en, this message translates to:
+  /// **'See the report'**
+  String get seeReport;
+
+  /// No description provided for @deletePetQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from your pets?'**
+  String deletePetQuestion(String name);
+
+  /// No description provided for @markNamedLost.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is missing'**
+  String markNamedLost(String name);
+
+  /// No description provided for @markLostIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Its profile and photo make the report. Just say when and where.} other{Its profile and {count} photos make the report. Just say when and where.}}'**
+  String markLostIntro(int count);
+
+  /// No description provided for @inCare.
+  ///
+  /// In en, this message translates to:
+  /// **'I have it with me'**
+  String get inCare;
+
+  /// No description provided for @inCareHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'You took it in and keep it safe until its owner is found'**
+  String get inCareHelp;
+
+  /// No description provided for @keptSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept safe'**
+  String get keptSafe;
+
+  /// No description provided for @keptSafeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The person who found it has it with them and is keeping it safe.'**
+  String get keptSafeNote;
 }
 
 class _AppLocalizationsDelegate
