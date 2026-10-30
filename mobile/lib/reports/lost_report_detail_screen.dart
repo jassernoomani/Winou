@@ -14,6 +14,7 @@ import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/report_sheet.dart';
 import 'share_poster.dart';
+import 'trail_map.dart';
 
 /// Matches the API's LOCATION_FUZZ_M: how far the public position may be from the real one.
 const _fuzzRadiusM = 300.0;
@@ -68,6 +69,7 @@ class LostReportDetailScreen extends ConsumerWidget {
       await api.setReportStatus(report.id, ReportStatus.values.byName(action));
       ref
         ..invalidate(lostReportProvider(id))
+        ..invalidate(trailProvider(id))
         ..invalidate(myMatchesProvider);
       if (action == 'found' && context.mounted) context.push('/lost/${report.id}/reunited'); // celebrate
     } catch (e) {
@@ -116,7 +118,10 @@ class LostReportDetailScreen extends ConsumerWidget {
       ),
       body: switch ((report, async)) {
         (final LostReport value, _) => RefreshIndicator(
-          onRefresh: () => ref.refresh(lostReportProvider(id).future),
+          onRefresh: () {
+            ref.invalidate(trailProvider(id));
+            return ref.refresh(lostReportProvider(id).future);
+          },
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -234,6 +239,7 @@ class LostReportDetailScreen extends ConsumerWidget {
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(l10n.approximateArea, style: Theme.of(context).textTheme.bodySmall),
                         ),
+                      if (value.isMine) FadeSlideIn(index: 4, child: TrailSection(value)),
                     ],
                   ),
                 ),

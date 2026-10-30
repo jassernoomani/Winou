@@ -10,6 +10,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
@@ -27,9 +28,14 @@ import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 import tn.winou.infra.Notifications;
+import tn.winou.infra.Storage;
+import tn.winou.photos.Images;
+import tn.winou.photos.PhotoService;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.ConversationOut;
 import tn.winou.web.ApiModels.ConversationRole;
+import tn.winou.web.ApiModels.Location;
+import tn.winou.web.ApiModels.MessageIn;
 import tn.winou.web.ApiModels.MessageOut;
 import tn.winou.web.Views;
 
@@ -50,11 +56,18 @@ public class ChatService {
     private final Notifications notifications;
     private final WinouProperties properties;
     private final JdbcClient jdbc;
+    private final PhotoService photos;
+    private final Images images;
+    private final Storage storage;
 
     public ChatService(ConversationRepository conversations, ChatMessageRepository messages, MatchRepository matches,
             LostReportRepository reports, SightingRepository sightings, UserRepository users,
-            Notifications notifications, WinouProperties properties, JdbcClient jdbc) {
+            Notifications notifications, WinouProperties properties, JdbcClient jdbc, PhotoService photos,
+            Images images, Storage storage) {
         this.jdbc = jdbc;
+        this.photos = photos;
+        this.images = images;
+        this.storage = storage;
         this.conversations = conversations;
         this.messages = messages;
         this.matches = matches;
@@ -117,11 +130,46 @@ public class ChatService {
     }
 
     @Transactional
-    public MessageOut send(UUID id, String body, User user) {
+    public MessageOut send(UUID id, MessageIn body, User user) {
+        String text = body.body() == null || body.body().isBlank() ? null : body.body().strip();
+        if (text == null && body.location() == null) {
+            throw ApiException.invalid("A message needs words or a place");
+        }
+        return deliver(id, user, message -> {
+            message.setLocation(body.location() == null ? null : body.location().toPoint());
+        }, text);
+    }
+
+    /** A photo, as a message of its own (re-encoded without EXIF: no hidden GPS). */
+    @Transactional
+    public MessageOut sendPhoto(UUID id, MultipartFile file, User user) {
+        participantOf(id, user);
+        byte[] jpeg = images.publicCopy(photos.bytes(file)).jpeg();
+        return deliver(id, user, message -> {
+            message.setPhotoKey("chat/" + message.getId() + ".jpg");
+            storage.put(message.getPhotoKey(), jpeg, "image/jpeg");
+        }, null);
+    }
+
+    /** A message's photo, for the two participants; not once the recipient reported it. */
+    @Transactional(readOnly = true)
+    public byte[] photo(UUID messageId, User user) {
+        ChatMessage message = messages.findById(messageId)
+                .filter(m -> m.getPhotoKey() != null)
+                .filter(m -> conversations.findById(m.getConversationId()).filter(c -> c.hasParticipant(user.getId()))
+                        .isPresent())
+                .filter(m -> m.getHiddenAt() == null || m.getSenderId().equals(user.getId()))
+                .orElseThrow(() -> ApiException.notFound("Photo"));
+        return storage.get(message.getPhotoKey());
+    }
+
+    private MessageOut deliver(UUID id, User user, java.util.function.Consumer<ChatMessage> fill, String text) {
         Conversation conversation = participantOf(id, user);
         RateLimits.check(messages.countBySenderIdAndCreatedAtGreaterThanEqual(user.getId(),
                 OffsetDateTime.now().minusHours(1)), properties.rateLimits().messagesPerHour(), "messages");
-        ChatMessage message = messages.save(new ChatMessage(id, user.getId(), body.strip()));
+        ChatMessage built = new ChatMessage(id, user.getId(), text);
+        fill.accept(built);
+        ChatMessage message = messages.save(built);
         conversation.setLastMessageAt(message.getCreatedAt());
         conversation.markRead(user.getId(), message.getCreatedAt());
         conversations.save(conversation);
@@ -157,6 +205,7 @@ public class ChatService {
 
     private static MessageOut out(ChatMessage m, User viewer) {
         return new MessageOut(m.getId(), m.getBody(), m.getSenderId().equals(viewer.getId()), m.getHiddenAt() != null,
-                m.getCreatedAt());
+                m.getCreatedAt(), m.getPhotoKey() == null ? null : "/messages/" + m.getId() + "/photo",
+                m.getLocation() == null ? null : Location.of(m.getLocation()));
     }
 }

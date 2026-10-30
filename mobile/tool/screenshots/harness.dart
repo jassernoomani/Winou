@@ -338,11 +338,45 @@ Map<String, dynamic> matchJson({
 
 Map<String, dynamic> messageJson(
   String id,
-  String body, {
+  String? body, {
   required bool mine,
   required Duration ago,
   bool hidden = false,
-}) => {'id': id, 'body': body, 'mine': mine, 'hidden': hidden, 'created_at': _ago(ago)};
+  bool photo = false,
+  bool place = false,
+}) => {
+  'id': id,
+  'body': body,
+  'mine': mine,
+  'hidden': hidden,
+  'created_at': _ago(ago),
+  'photo_url': photo ? '/messages/$id/photo' : null,
+  'location': place ? {'lat': Config.defaultLat + 0.011, 'lon': Config.defaultLon - 0.002} : null,
+};
+
+/// Where Luna may have been seen: a similar photo, then a finder who has her with them.
+final sampleTrail = [
+  {
+    'match_id': 'm1',
+    'sighting_id': 's1',
+    'location': {'lat': Config.defaultLat + 0.009, 'lon': Config.defaultLon - 0.001},
+    'seen_at': _ago(const Duration(hours: 1, minutes: 20)),
+    'status': 'PENDING',
+    'by_finder': false,
+    'in_care': false,
+    'photo_url': '/photos/cat/image',
+  },
+  {
+    'match_id': 'm2',
+    'sighting_id': 's2',
+    'location': {'lat': Config.defaultLat + 0.013, 'lon': Config.defaultLon + 0.006},
+    'seen_at': _ago(const Duration(minutes: 25)),
+    'status': 'CONFIRMED',
+    'by_finder': true,
+    'in_care': true,
+    'photo_url': '/photos/cat/image',
+  },
+];
 
 Map<String, dynamic> conversationJson({
   String id = 'c1',
@@ -800,6 +834,13 @@ class FakeApi implements WinouApi {
   @override
   Future<List<ChatMessage>> messages(String conversationId, {DateTime? before}) =>
       _answer(() => before != null ? [] : [for (final m in chatMessages) ChatMessage.fromJson(m)]);
+
+  @override
+  Future<Uint8List> messagePhoto(String path) => _answer(() => File('../design/img/cat.png').readAsBytesSync());
+
+  @override
+  Future<List<TrailPoint>> trail(String reportId) =>
+      _answer(() => [for (final p in sampleTrail) TrailPoint.fromJson(p)]);
 
   @override
   Future<List<MapItem>> map({

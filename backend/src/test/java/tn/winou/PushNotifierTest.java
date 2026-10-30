@@ -123,6 +123,13 @@ class PushNotifierTest extends ApiTestBase {
         assertThat(sent.push().titleArgs()).containsExactly("finder", "Mimi");
         assertThat(sent.push().body()).isEqualTo("I saw it near the souk");
         assertThat(sent.push().data()).containsEntry("type", "message").containsEntry("conversation_id", conversationId);
+
+        // A place alone: the phone writes what it is, in its own language
+        postJson("/conversations/" + conversationId + "/messages", finder, Map.of("location", TUNIS));
+        var place = messageRows.findAll().stream().filter(m -> m.getBody() == null).findFirst().orElseThrow();
+        notifier().newMessage(conversation, place);
+        assertThat(sender.sent.getLast().push().body()).isNull();
+        assertThat(sender.sent.getLast().push().bodyKey()).isEqualTo("message_place_body");
     }
 
     @Test
@@ -241,7 +248,7 @@ class PushNotifierTest extends ApiTestBase {
                     "association_rejected_body", "admin_hidden_title", "admin_hidden_lost_body",
                     "admin_hidden_sighting_body", "admin_hidden_message_body", "admin_request_title",
                     "admin_request_body", "nearby_lost_title", "nearby_lost_cat_body", "nearby_lost_dog_body",
-                    "nearby_lost_pet_body")) {
+                    "nearby_lost_pet_body", "message_photo_body", "message_place_body")) {
                 assertThat(strings).as(values + ": " + key).contains("name=\"" + key + "\"");
             }
         }

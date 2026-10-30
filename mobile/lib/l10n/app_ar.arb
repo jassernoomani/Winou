@@ -494,5 +494,18 @@
   "inCare": "إنه معي",
   "inCareHelp": "أخذته معك وتحافظ عليه إلى أن يُعثر على صاحبه",
   "keptSafe": "في أمان",
-  "keptSafeNote": "الشخص الذي وجده يحتفظ به ويحافظ عليه."
+  "keptSafeNote": "الشخص الذي وجده يحتفظ به ويحافظ عليه.",
+  "pushMessagePhotoBody": "📷 أرسل صورة",
+  "pushMessagePlaceBody": "📍 شارك موقعًا",
+  "chatAttach": "إرسال صورة أو موقع",
+  "sharePlace": "مشاركة موقع",
+  "sharePlaceHelp": "مكان الحيوان الآن",
+  "chatPhotoPreview": "📷 صورة",
+  "chatPlacePreview": "📍 موقع",
+  "openInMaps": "فتح في الخرائط",
+  "trailTitle": "أين شوهد {name}",
+  "trailHint": "مشاهدات قد تخص {name}، من الأقدم إلى الأحدث. العلم يشير إلى المكان الذي اختفى فيه {name}.",
+  "trailConfirmed": "تعرّفت على حيوانك",
+  "trailReportedAsYours": "أُبلغ عنه على أنه حيوانك",
+  "trailSimilar": "يشبه حيوانك"
 }

@@ -1836,4 +1836,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get keptSafeNote => 'الشخص الذي وجده يحتفظ به ويحافظ عليه.';
+
+  @override
+  String get pushMessagePhotoBody => '📷 أرسل صورة';
+
+  @override
+  String get pushMessagePlaceBody => '📍 شارك موقعًا';
+
+  @override
+  String get chatAttach => 'إرسال صورة أو موقع';
+
+  @override
+  String get sharePlace => 'مشاركة موقع';
+
+  @override
+  String get sharePlaceHelp => 'مكان الحيوان الآن';
+
+  @override
+  String get chatPhotoPreview => '📷 صورة';
+
+  @override
+  String get chatPlacePreview => '📍 موقع';
+
+  @override
+  String get openInMaps => 'فتح في الخرائط';
+
+  @override
+  String trailTitle(String name) {
+    return 'أين شوهد $name';
+  }
+
+  @override
+  String trailHint(String name) {
+    return 'مشاهدات قد تخص $name، من الأقدم إلى الأحدث. العلم يشير إلى المكان الذي اختفى فيه $name.';
+  }
+
+  @override
+  String get trailConfirmed => 'تعرّفت على حيوانك';
+
+  @override
+  String get trailReportedAsYours => 'أُبلغ عنه على أنه حيوانك';
+
+  @override
+  String get trailSimilar => 'يشبه حيوانك';
 }

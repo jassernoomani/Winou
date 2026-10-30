@@ -8,6 +8,8 @@
     <string name="found_title">%1$s is back home!</string>
     <string name="found_body">Thank you for helping %1$s find their way home.</string>
     <string name="message_title">%1$s · about %2$s</string>
+    <string name="message_photo_body">📷 Sent a photo</string>
+    <string name="message_place_body">📍 Shared a place</string>
     <string name="help_title">An animal needs help near you</string>
     <string name="help_injured_body">Someone reported an injured animal nearby. Tap to see where.</string>
     <string name="help_needs_help_body">Someone reported an animal in need of help nearby. Tap to see where.</string>

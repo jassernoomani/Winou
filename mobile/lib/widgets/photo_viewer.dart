@@ -7,19 +7,23 @@ import 'common.dart';
 /// Opens [urls] full screen at [initial]: the whole photo on black, pinch or double-tap to zoom,
 /// swipe between photos, swipe down or tap ✕ to close.
 Future<void> openPhotoViewer(BuildContext context, List<String> urls, {int initial = 0}) =>
+    openImageViewer(context, [for (final url in urls) NetworkImage(url)], initial: initial);
+
+/// The same, for images that aren't public URLs (a chat photo, loaded with the user's token).
+Future<void> openImageViewer(BuildContext context, List<ImageProvider> images, {int initial = 0}) =>
     Navigator.of(context, rootNavigator: true).push(
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black,
-        pageBuilder: (_, _, _) => PhotoViewer(urls: urls, initial: initial),
+        pageBuilder: (_, _, _) => PhotoViewer(images: images, initial: initial),
         transitionsBuilder: (_, animation, _, child) => FadeTransition(opacity: animation, child: child),
       ),
     );
 
 class PhotoViewer extends StatefulWidget {
-  const PhotoViewer({super.key, required this.urls, this.initial = 0});
+  const PhotoViewer({super.key, required this.images, this.initial = 0});
 
-  final List<String> urls;
+  final List<ImageProvider> images;
   final int initial;
 
   @override
@@ -65,10 +69,12 @@ class _PhotoViewerState extends State<PhotoViewer> {
                 child: PageView.builder(
                   controller: _pages,
                   physics: _zoomed ? const NeverScrollableScrollPhysics() : null,
-                  itemCount: widget.urls.length,
+                  itemCount: widget.images.length,
                   onPageChanged: (page) => setState(() => _page = page),
-                  itemBuilder: (_, i) =>
-                      _ZoomablePhoto(url: widget.urls[i], onZoomChanged: (zoomed) => setState(() => _zoomed = zoomed)),
+                  itemBuilder: (_, i) => _ZoomablePhoto(
+                    image: widget.images[i],
+                    onZoomChanged: (zoomed) => setState(() => _zoomed = zoomed),
+                  ),
                 ),
               ),
             ),
@@ -85,12 +91,12 @@ class _PhotoViewerState extends State<PhotoViewer> {
                       icon: const Icon(LucideIcons.x),
                     ),
                     const Spacer(),
-                    if (widget.urls.length > 1)
+                    if (widget.images.length > 1)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(16)),
                         child: Text(
-                          '${_page + 1} / ${widget.urls.length}',
+                          '${_page + 1} / ${widget.images.length}',
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
                         ),
                       ),
@@ -107,9 +113,9 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
 /// One photo, fitted whole; pinch to zoom up to 5x, double-tap to zoom in or back out.
 class _ZoomablePhoto extends StatefulWidget {
-  const _ZoomablePhoto({required this.url, required this.onZoomChanged});
+  const _ZoomablePhoto({required this.image, required this.onZoomChanged});
 
-  final String url;
+  final ImageProvider image;
   final ValueChanged<bool> onZoomChanged;
 
   @override
@@ -170,8 +176,8 @@ class _ZoomablePhotoState extends State<_ZoomablePhoto> with SingleTickerProvide
       maxScale: 5,
       child: SizedBox.expand(
         // Not NetworkPhoto: its placeholder would show around the photo on black
-        child: Image.network(
-          widget.url,
+        child: Image(
+          image: widget.image,
           fit: BoxFit.contain,
           loadingBuilder: (_, child, progress) =>
               progress == null ? child : const Center(child: CircularProgressIndicator(color: Colors.white)),

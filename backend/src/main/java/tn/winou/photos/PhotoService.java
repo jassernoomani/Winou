@@ -131,7 +131,8 @@ public class PhotoService {
         }
     }
 
-    private byte[] bytes(MultipartFile file) {
+    /** The upload's bytes, within the size limit. */
+    public byte[] bytes(MultipartFile file) {
         long max = properties.uploads().maxBytes();
         if (file.getSize() > max) {
             throw ApiException.coded(HttpStatus.CONTENT_TOO_LARGE, "file_too_large",

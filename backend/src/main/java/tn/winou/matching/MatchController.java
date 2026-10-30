@@ -25,13 +25,16 @@ import tn.winou.domain.Match;
 import tn.winou.domain.MatchRepository;
 import tn.winou.domain.MatchStatus;
 import tn.winou.domain.PhotoRepository;
+import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
 import tn.winou.infra.Notifications;
 import tn.winou.security.CurrentUser;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.MatchOut;
+import tn.winou.web.ApiModels.Location;
 import tn.winou.web.ApiModels.MatchUpdate;
+import tn.winou.web.ApiModels.TrailPoint;
 import tn.winou.web.ApiModels.SightingOut;
 import tn.winou.web.Views;
 
@@ -56,6 +59,28 @@ public class MatchController {
         this.conversations = conversations;
         this.views = views;
         this.notifications = notifications;
+    }
+
+    @GetMapping("/lost-reports/{id}/trail")
+    @Transactional(readOnly = true)
+    @Operation(summary = "Where the pet was seen: its matched sightings (not rejected), oldest first (owner only)")
+    public List<TrailPoint> trail(@PathVariable UUID id, @CurrentUser User user) {
+        LostReport report = reports.findById(id).orElseThrow(() -> ApiException.notFound("Lost report"));
+        CurrentUserResolver.requireOwnerOrAdmin(user, report.getOwnerId());
+        List<Match> found = matches.findByLostReportId(id).stream()
+                .filter(m -> m.getStatus() != MatchStatus.REJECTED).toList();
+        Map<UUID, Sighting> seen = sightings.findAllById(found.stream().map(Match::getSightingId).toList()).stream()
+                .filter(s -> views.canSee(s.getReporterId(), s.getHiddenAt(), user))
+                .collect(Collectors.toMap(Sighting::getId, Function.identity()));
+        Map<UUID, UUID> firstPhoto = new java.util.HashMap<>();
+        photos.findBySightingIdInOrderByCreatedAt(seen.keySet().stream().toList())
+                .forEach(p -> firstPhoto.putIfAbsent(p.getSightingId(), p.getId()));
+        return found.stream().filter(m -> seen.containsKey(m.getSightingId())).map(m -> {
+            Sighting s = seen.get(m.getSightingId());
+            return new TrailPoint(m.getId(), s.getId(), Location.of(s.getLocation()), s.getSeenAt(), m.getStatus(),
+                    m.getSource() == tn.winou.domain.MatchSource.FINDER, s.isInCare(),
+                    Views.imageUrl(m.getSightingPhotoId() != null ? m.getSightingPhotoId() : firstPhoto.get(s.getId())));
+        }).sorted(java.util.Comparator.comparing(TrailPoint::seenAt)).toList();
     }
 
     @GetMapping("/me/matches")

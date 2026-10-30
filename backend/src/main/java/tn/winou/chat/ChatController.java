@@ -6,7 +6,12 @@ import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +71,20 @@ public class ChatController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Send a message; the other participant gets a push notification")
     public MessageOut send(@PathVariable UUID id, @Valid @RequestBody MessageIn body, @CurrentUser User user) {
-        return chat.send(id, body.body(), user);
+        return chat.send(id, body, user);
+    }
+
+    @PostMapping(value = "/conversations/{id}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Send a photo (EXIF removed); the other participant gets a push notification")
+    public MessageOut sendPhoto(@PathVariable UUID id, @RequestPart MultipartFile file, @CurrentUser User user) {
+        return chat.sendPhoto(id, file, user);
+    }
+
+    @GetMapping(value = "/messages/{id}/photo", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "A chat photo, for the two participants only")
+    public ResponseEntity<byte[]> photo(@PathVariable UUID id, @CurrentUser User user) {
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(java.time.Duration.ofDays(7)).cachePrivate())
+                .body(chat.photo(id, user));
     }
 }

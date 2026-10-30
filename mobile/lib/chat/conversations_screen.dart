@@ -55,6 +55,9 @@ class _ConversationTile extends ConsumerWidget {
     final l10n = context.l10n;
     final c = conversation;
     final last = c.lastMessage;
+    final preview = last == null
+        ? null
+        : last.body ?? (last.photoPath != null ? l10n.chatPhotoPreview : l10n.chatPlacePreview);
     final unread = c.unread > 0;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -76,8 +79,8 @@ class _ConversationTile extends ConsumerWidget {
         ],
       ),
       subtitle: Text(
-        last == null ? l10n.aboutPet(c.petName) : (last.mine ? l10n.youSaid(last.body) : last.body),
-        textDirection: last == null || last.mine ? null : textDirectionOf(last.body),
+        last == null ? l10n.aboutPet(c.petName) : (last.mine ? l10n.youSaid(preview!) : preview!),
+        textDirection: last == null || last.mine ? null : textDirectionOf(preview!),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

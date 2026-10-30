@@ -494,5 +494,18 @@
   "inCare": "Je l'ai avec moi",
   "inCareHelp": "Vous l'avez recueilli et le gardez en sécurité en attendant son propriétaire",
   "keptSafe": "En sécurité",
-  "keptSafeNote": "La personne qui l'a trouvé l'a avec elle et le garde en sécurité."
+  "keptSafeNote": "La personne qui l'a trouvé l'a avec elle et le garde en sécurité.",
+  "pushMessagePhotoBody": "📷 A envoyé une photo",
+  "pushMessagePlaceBody": "📍 A partagé un lieu",
+  "chatAttach": "Envoyer une photo ou un lieu",
+  "sharePlace": "Partager un lieu",
+  "sharePlaceHelp": "Là où se trouve l'animal en ce moment",
+  "chatPhotoPreview": "📷 Photo",
+  "chatPlacePreview": "📍 Lieu",
+  "openInMaps": "Ouvrir dans Maps",
+  "trailTitle": "Où {name} a été vu",
+  "trailHint": "Les signalements qui pourraient être {name}, du plus ancien au plus récent. Le drapeau marque l'endroit où {name} a disparu.",
+  "trailConfirmed": "Vous avez reconnu votre animal",
+  "trailReportedAsYours": "Signalé comme votre animal",
+  "trailSimilar": "Ressemble à votre animal"
 }

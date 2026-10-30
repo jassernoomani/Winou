@@ -1101,5 +1101,32 @@
   "inCare": "I have it with me",
   "inCareHelp": "You took it in and keep it safe until its owner is found",
   "keptSafe": "Kept safe",
-  "keptSafeNote": "The person who found it has it with them and is keeping it safe."
+  "keptSafeNote": "The person who found it has it with them and is keeping it safe.",
+  "pushMessagePhotoBody": "📷 Sent a photo",
+  "pushMessagePlaceBody": "📍 Shared a place",
+  "chatAttach": "Send a photo or a place",
+  "sharePlace": "Share a place",
+  "sharePlaceHelp": "Where the animal is right now",
+  "chatPhotoPreview": "📷 Photo",
+  "chatPlacePreview": "📍 Place",
+  "openInMaps": "Open in Maps",
+  "trailTitle": "Where {name} was seen",
+  "@trailTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trailHint": "Sightings that may be {name}, oldest first. The flag marks where {name} went missing.",
+  "@trailHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trailConfirmed": "You recognised your pet",
+  "trailReportedAsYours": "Reported as your pet",
+  "trailSimilar": "Looks similar"
 }

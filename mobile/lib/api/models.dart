@@ -303,13 +303,39 @@ class ChatMessage {
       body = json['body'],
       mine = json['mine'],
       hidden = json['hidden'] ?? false,
-      createdAt = _date(json['created_at']);
+      createdAt = _date(json['created_at']),
+      photoPath = json['photo_url'],
+      location = json['location'] == null ? null : _location(json['location']);
 
   final String id;
-  final String body;
+  final String? body; // null for a photo or a place alone
   final bool mine;
   final bool hidden; // reported: the other person no longer sees it
   final DateTime createdAt;
+  final String? photoPath; // private to the two participants: load it with WinouApi.messagePhoto
+  final LatLng? location; // a place shared in the chat
+}
+
+/// A sighting matched to the owner's lost pet, on the map of where it was seen.
+class TrailPoint {
+  TrailPoint.fromJson(Map<String, dynamic> json)
+    : matchId = json['match_id'],
+      sightingId = json['sighting_id'],
+      location = _location(json['location']),
+      seenAt = _date(json['seen_at']),
+      status = _enum(MatchStatus.values, json['status']),
+      byFinder = json['by_finder'] ?? false,
+      inCare = json['in_care'] ?? false,
+      photoUrl = absoluteUrl(json['photo_url']);
+
+  final String matchId;
+  final String sightingId;
+  final LatLng location;
+  final DateTime seenAt;
+  final MatchStatus status;
+  final bool byFinder; // the finder said "this is your pet", not only a similar photo
+  final bool inCare;
+  final String? photoUrl;
 }
 
 /// A conversation as one participant sees it: [otherName] is the person they talk to.

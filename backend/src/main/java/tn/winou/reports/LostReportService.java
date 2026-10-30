@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.chat.ChatPhotos;
 import tn.winou.common.ApiException;
 import tn.winou.common.Geo;
 import tn.winou.common.RateLimits;
@@ -50,10 +51,12 @@ public class LostReportService {
     private final SightingRepository sightings;
     private final Notifications notifications;
     private final AlertAreas areas;
+    private final ChatPhotos chatPhotos;
 
     public LostReportService(LostReportRepository reports, PhotoRepository photos, JdbcClient jdbc, Records records,
             Views views, WinouProperties properties, MatchRepository matches, SightingRepository sightings,
-            Notifications notifications, AlertAreas areas) {
+            Notifications notifications, AlertAreas areas, ChatPhotos chatPhotos) {
+        this.chatPhotos = chatPhotos;
         this.areas = areas;
         this.matches = matches;
         this.sightings = sightings;
@@ -223,6 +226,7 @@ public class LostReportService {
         LostReport report = get(id);
         CurrentUserResolver.requireOwnerOrAdmin(user, report.getOwnerId());
         records.deleted(report.getId(), photos.findByLostReportIdInOrderByCreatedAt(List.of(report.getId())));
+        chatPhotos.reportDeleted(report.getId());
         reports.deleteById(report.getId()); // photos and matches cascade in Postgres
     }
 }

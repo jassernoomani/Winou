@@ -56,7 +56,7 @@ public class Views {
         return viewer != null && viewer.getRole() == Role.ADMIN;
     }
 
-        public static String imageUrl(UUID photoId) {
+    public static String imageUrl(UUID photoId) {
         return photoId == null ? null : "/photos/" + photoId + "/image";
     }
 

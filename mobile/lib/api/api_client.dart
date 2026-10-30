@@ -1,7 +1,7 @@
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show Uint8List, visibleForTesting;
 import 'package:latlong2/latlong.dart';
 
 import '../config.dart';
@@ -442,10 +442,33 @@ class WinouApi {
     (data) => [for (final m in data) ChatMessage.fromJson(m)],
   );
 
-  Future<ChatMessage> sendMessage(String conversationId, String body) => _call(
-    () => _dio.post('/conversations/$conversationId/messages', data: {'body': body}),
+  /// Words, a place, or both.
+  Future<ChatMessage> sendMessage(String conversationId, {String? body, LatLng? location}) => _call(
+    () => _dio.post(
+      '/conversations/$conversationId/messages',
+      data: {'body': ?body, if (location != null) 'location': locationJson(location)},
+    ),
     (data) => ChatMessage.fromJson(data),
   );
+
+  /// The API removes the photo's EXIF (no hidden GPS) before the other person sees it.
+  Future<ChatMessage> sendChatPhoto(String conversationId, String filePath) => _call(
+    () async => _dio.post(
+      '/conversations/$conversationId/photos',
+      data: FormData.fromMap({'file': await MultipartFile.fromFile(filePath)}),
+    ),
+    (data) => ChatMessage.fromJson(data),
+  );
+
+  /// A chat photo: only the two participants may see it, so it comes through the signed-in client.
+  Future<Uint8List> messagePhoto(String path) => _call(
+    () => _dio.get<List<int>>(path, options: Options(responseType: ResponseType.bytes)),
+    (data) => Uint8List.fromList(data),
+  );
+
+  /// The owner's map of where their lost pet was seen, oldest first.
+  Future<List<TrailPoint>> trail(String reportId) =>
+      _call(() => _dio.get('/lost-reports/$reportId/trail'), (data) => [for (final p in data) TrailPoint.fromJson(p)]);
 
   // --- associations ---
 

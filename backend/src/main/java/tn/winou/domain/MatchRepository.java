@@ -22,4 +22,6 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
     List<Match> findForOwner(UUID ownerId);
 
     List<Match> findByLostReportIdAndStatus(UUID lostReportId, MatchStatus status);
+
+    List<Match> findByLostReportId(UUID lostReportId);
 }

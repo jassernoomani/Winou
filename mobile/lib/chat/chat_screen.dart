@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
+import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -13,6 +15,9 @@ import '../push.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/location.dart';
+import '../widgets/photo_upload.dart' show pickFromGallery, takePhoto;
+import '../widgets/photo_viewer.dart';
 import '../widgets/report_sheet.dart';
 
 /// Messages between a pet's owner and a finder. New messages arrive by push while the screen is
@@ -109,11 +114,58 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _send() async {
     final text = _input.text.trim();
-    if (text.isEmpty || _sending) return;
+    if (text.isEmpty) return;
+    await _deliver(() => ref.read(apiProvider).sendMessage(widget.id, body: text), clearInput: true);
+  }
+
+  /// Camera, gallery, or "share a place" (where the animal is right now).
+  Future<void> _attach() async {
+    final l10n = context.l10n;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.camera),
+              title: Text(l10n.camera),
+              onTap: () => Navigator.pop(context, 'camera'),
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.images),
+              title: Text(l10n.gallery),
+              onTap: () => Navigator.pop(context, 'gallery'),
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.mapPin),
+              title: Text(l10n.sharePlace),
+              subtitle: Text(l10n.sharePlaceHelp),
+              onTap: () => Navigator.pop(context, 'place'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || choice == null) return;
+    final api = ref.read(apiProvider);
+    if (choice == 'place') {
+      final here = await currentPosition();
+      if (!mounted) return;
+      final place = await context.push<LatLng>('/pick-location', extra: here == null ? null : toLatLng(here));
+      if (place != null) await _deliver(() => api.sendMessage(widget.id, location: place));
+      return;
+    }
+    final photo = choice == 'camera' ? await takePhoto() : (await pickFromGallery(1)).firstOrNull;
+    if (photo != null) await _deliver(() => api.sendChatPhoto(widget.id, photo.file.path));
+  }
+
+  Future<void> _deliver(Future<ChatMessage> Function() send, {bool clearInput = false}) async {
+    if (_sending) return;
     setState(() => _sending = true);
     try {
-      final sent = await ref.read(apiProvider).sendMessage(widget.id, text);
-      _input.clear();
+      final sent = await send();
+      if (clearInput) _input.clear();
       if (mounted) {
         setState(() {
           _arrived.add(sent.id);
@@ -178,7 +230,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: Note(l10n.caseClosedChat(conversation.petName), tone: Tone.found, icon: LucideIcons.house),
             ),
           Expanded(child: _body(context)),
-          _Composer(controller: _input, sending: _sending, onSend: _send),
+          _Composer(controller: _input, sending: _sending, onSend: _send, onAttach: _attach),
         ],
       ),
     );
@@ -222,6 +274,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 class _Bubble extends StatelessWidget {
   const _Bubble(this.message, {this.onReport});
 
+  static const _mediaWidth = 220.0;
+
   final ChatMessage message;
   final VoidCallback? onReport; // the other person's messages: long press to report
 
@@ -229,13 +283,14 @@ class _Bubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final mine = message.mine;
     final time = DateFormat.Hm(dateLocale(context)).format(message.createdAt.toLocal());
+    final media = message.photoPath != null || message.location != null;
     final bubble = Align(
       alignment: mine ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 3),
-          padding: const EdgeInsets.fromLTRB(14, 9, 14, 7),
+          padding: media ? const EdgeInsets.fromLTRB(5, 5, 5, 7) : const EdgeInsets.fromLTRB(14, 9, 14, 7),
           decoration: BoxDecoration(
             color: mine ? Brand.blue : context.tokens.card,
             borderRadius: BorderRadius.only(
@@ -251,20 +306,28 @@ class _Bubble extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              if (message.photoPath case final path?) _ChatPhoto(path, width: _mediaWidth),
+              if (message.location case final place?) _Place(place, width: _mediaWidth, mine: mine),
               // The other person's messages answer a long press with "Report" instead of selecting text
-              if (onReport == null)
-                SelectableText(
-                  message.body,
-                  textDirection: textDirectionOf(message.body),
-                  style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15),
-                )
-              else
-                Text(message.body, textDirection: textDirectionOf(message.body), style: const TextStyle(fontSize: 15)),
+              if (message.body case final body?)
+                Padding(
+                  padding: media ? const EdgeInsets.fromLTRB(9, 6, 9, 0) : EdgeInsets.zero,
+                  child: onReport == null
+                      ? SelectableText(
+                          body,
+                          textDirection: textDirectionOf(body),
+                          style: TextStyle(color: mine ? Brand.ink : null, fontSize: 15),
+                        )
+                      : Text(body, textDirection: textDirectionOf(body), style: const TextStyle(fontSize: 15)),
+                ),
               const SizedBox(height: 2),
-              Text(
-                time,
-                style: Theme.of(context).textTheme.labelSmall
-                    ?.copyWith(color: mine ? Brand.ink.withValues(alpha: 0.7) : null),
+              Padding(
+                padding: media ? const EdgeInsetsDirectional.only(end: 9) : EdgeInsets.zero,
+                child: Text(
+                  time,
+                  style: Theme.of(context).textTheme.labelSmall
+                      ?.copyWith(color: mine ? Brand.ink.withValues(alpha: 0.7) : null),
+                ),
               ),
             ],
           ),
@@ -291,11 +354,12 @@ class _Bubble extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-  const _Composer({required this.controller, required this.sending, required this.onSend});
+  const _Composer({required this.controller, required this.sending, required this.onSend, required this.onAttach});
 
   final TextEditingController controller;
   final bool sending;
   final VoidCallback onSend;
+  final VoidCallback onAttach;
 
   @override
   Widget build(BuildContext context) {
@@ -303,9 +367,14 @@ class _Composer extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 4, 4, 8),
+        padding: const EdgeInsetsDirectional.fromSTEB(4, 4, 4, 8),
         child: Row(
           children: [
+            IconButton(
+              tooltip: l10n.chatAttach,
+              onPressed: sending ? null : onAttach,
+              icon: const Icon(LucideIcons.circlePlus),
+            ),
             Expanded(
               child: TextField(
                 controller: controller,
@@ -347,6 +416,67 @@ class _Composer extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// A chat photo, loaded with the user's token (only the two participants may see it). Tap: full screen.
+class _ChatPhoto extends ConsumerWidget {
+  const _ChatPhoto(this.path, {required this.width});
+
+  final String path;
+  final double width;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bytes = ref.watch(messagePhotoProvider(path));
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: width,
+        height: width * 1.15,
+        child: switch (bytes) {
+          AsyncData(:final value) => GestureDetector(
+            onTap: () => openImageViewer(context, [MemoryImage(value)]),
+            child: Image.memory(value, fit: BoxFit.cover, gaplessPlayback: true),
+          ),
+          AsyncError() => const NetworkPhoto(null),
+          _ => ColoredBox(
+            color: Colors.black12,
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+        },
+      ),
+    );
+  }
+}
+
+/// A place shared in the chat: a small map, and a button to open it in the phone's maps app.
+class _Place extends StatelessWidget {
+  const _Place(this.point, {required this.width, required this.mine});
+
+  final LatLng point;
+  final double width;
+  final bool mine;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final at = '${point.latitude},${point.longitude}';
+    return SizedBox(
+      width: width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          IgnorePointer(child: LocationPreview(point, height: 130)),
+          TextButton.icon(
+            style: TextButton.styleFrom(foregroundColor: mine ? Brand.ink : null),
+            onPressed: () => launchUrl(Uri.parse('geo:$at?q=$at'), mode: LaunchMode.externalApplication),
+            icon: const Icon(LucideIcons.map, size: 18),
+            label: Text(l10n.openInMaps),
+          ),
+        ],
       ),
     );
   }

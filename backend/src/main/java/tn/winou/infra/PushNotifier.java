@@ -74,11 +74,12 @@ public class PushNotifier implements Notifier {
     public void newMessage(Conversation conversation, ChatMessage message) {
         String pet = reports.findById(conversation.getLostReportId()).map(LostReport::getName).orElse("");
         String sender = users.findById(message.getSenderId()).map(User::getDisplayName).orElse("");
-        String body = message.getBody().length() > PREVIEW_CHARS
-                ? message.getBody().substring(0, PREVIEW_CHARS) + "…"
-                : message.getBody();
+        String text = message.getBody();
+        String body = text == null ? null : text.length() > PREVIEW_CHARS ? text.substring(0, PREVIEW_CHARS) + "…" : text;
+        // A photo or a place alone: a text in the phone's language says what it is
+        String bodyKey = body != null ? null : message.getPhotoKey() != null ? "message_photo_body" : "message_place_body";
         push(conversation.otherParticipant(message.getSenderId()),
-                new Push("message_title", List.of(sender, pet), null, List.of(), body,
+                new Push("message_title", List.of(sender, pet), bodyKey, List.of(), body,
                         "conversation-" + conversation.getId(), Map.of("type", "message",
                                 "conversation_id", conversation.getId().toString(), "sender_name", sender,
                                 "pet_name", pet)));

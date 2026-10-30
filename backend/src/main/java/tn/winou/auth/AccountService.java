@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.chat.ChatPhotos;
 import tn.winou.common.ApiException;
 import tn.winou.config.WinouProperties;
 import tn.winou.domain.LostReport;
@@ -41,10 +42,12 @@ public class AccountService {
     private final SightingService sightingService;
     private final tn.winou.pets.PetService petService;
     private final WinouProperties.Auth settings;
+    private final ChatPhotos chatPhotos;
 
     public AccountService(UserRepository users, Passwords passwords, Sessions sessions, AttemptLimiter limiter,
             LostReportRepository reports, SightingRepository sightings, LostReportService reportService,
-            SightingService sightingService, tn.winou.pets.PetService petService, WinouProperties properties) {
+            SightingService sightingService, tn.winou.pets.PetService petService, WinouProperties properties, ChatPhotos chatPhotos) {
+        this.chatPhotos = chatPhotos;
         this.petService = petService;
         this.users = users;
         this.passwords = passwords;
@@ -82,6 +85,7 @@ public class AccountService {
             sightingService.delete(sighting.getId(), user);
         }
         petService.deleteAll(user); // their photos' files go too
+        chatPhotos.userDeleted(user.getId());
         users.delete(user); // sessions, matches, conversations and reports cascade in Postgres
         log.info("user {} deleted their account", user.getId());
     }

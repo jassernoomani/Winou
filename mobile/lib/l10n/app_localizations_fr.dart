@@ -1806,4 +1806,47 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get keptSafeNote =>
       'La personne qui l\'a trouvé l\'a avec elle et le garde en sécurité.';
+
+  @override
+  String get pushMessagePhotoBody => '📷 A envoyé une photo';
+
+  @override
+  String get pushMessagePlaceBody => '📍 A partagé un lieu';
+
+  @override
+  String get chatAttach => 'Envoyer une photo ou un lieu';
+
+  @override
+  String get sharePlace => 'Partager un lieu';
+
+  @override
+  String get sharePlaceHelp => 'Là où se trouve l\'animal en ce moment';
+
+  @override
+  String get chatPhotoPreview => '📷 Photo';
+
+  @override
+  String get chatPlacePreview => '📍 Lieu';
+
+  @override
+  String get openInMaps => 'Ouvrir dans Maps';
+
+  @override
+  String trailTitle(String name) {
+    return 'Où $name a été vu';
+  }
+
+  @override
+  String trailHint(String name) {
+    return 'Les signalements qui pourraient être $name, du plus ancien au plus récent. Le drapeau marque l\'endroit où $name a disparu.';
+  }
+
+  @override
+  String get trailConfirmed => 'Vous avez reconnu votre animal';
+
+  @override
+  String get trailReportedAsYours => 'Signalé comme votre animal';
+
+  @override
+  String get trailSimilar => 'Ressemble à votre animal';
 }

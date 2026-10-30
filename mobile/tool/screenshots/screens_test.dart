@@ -398,6 +398,28 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     null,
   ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '78_chat_media',
+    () => const ChatScreen(id: 'c1'),
+    () => FakeApi(
+      messages: [
+        ...sampleChat.take(2),
+        messageJson('5', null, mine: false, ago: const Duration(minutes: 35), photo: true),
+        messageJson('6', "She's right here, by the bakery", mine: false, ago: const Duration(minutes: 34), place: true),
+        messageJson('7', "That's her! On my way.", mine: true, ago: const Duration(minutes: 33)),
+      ],
+    ),
+    null,
+  ),
+  (
+    '79_trail',
+    () => const LostReportDetailScreen(id: 'luna'),
+    () => FakeApi(lost: [lostJson(mine: true)]),
+    (tester) async {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -900));
+      await tester.pumpAndSettle();
+    },
+  ),
 ];
 
 void main() {

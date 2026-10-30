@@ -13,6 +13,8 @@ String? pushText(AppLocalizations l10n, String? key, List<String> args) {
     'found_title' => l10n.pushFoundTitle(arg(0)),
     'found_body' => l10n.pushFoundBody(arg(0)),
     'message_title' => l10n.pushMessageTitle(arg(0), arg(1)),
+    'message_photo_body' => l10n.pushMessagePhotoBody,
+    'message_place_body' => l10n.pushMessagePlaceBody,
     'help_title' => l10n.pushHelpTitle,
     'help_injured_body' => l10n.pushHelpInjuredBody,
     'help_needs_help_body' => l10n.pushHelpNeedsHelpBody,

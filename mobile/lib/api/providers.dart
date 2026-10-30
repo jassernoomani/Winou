@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show Uint8List;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_controller.dart';
@@ -60,6 +61,11 @@ final adminStatsProvider = FutureProvider.autoDispose<AdminStats>((ref) => ref.w
 
 final adminActionsProvider = FutureProvider.autoDispose<List<AdminActionEntry>>(
   (ref) => ref.watch(apiProvider).adminActions(),
+);
+
+/// A chat photo's bytes, kept for the session: each message's photo never changes.
+final messagePhotoProvider = FutureProvider.family<Uint8List, String>(
+  (ref, path) => ref.watch(apiProvider).messagePhoto(path),
 );
 
 final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(

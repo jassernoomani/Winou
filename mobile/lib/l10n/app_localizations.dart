@@ -3069,6 +3069,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The person who found it has it with them and is keeping it safe.'**
   String get keptSafeNote;
+
+  /// No description provided for @pushMessagePhotoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'📷 Sent a photo'**
+  String get pushMessagePhotoBody;
+
+  /// No description provided for @pushMessagePlaceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'📍 Shared a place'**
+  String get pushMessagePlaceBody;
+
+  /// No description provided for @chatAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a photo or a place'**
+  String get chatAttach;
+
+  /// No description provided for @sharePlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a place'**
+  String get sharePlace;
+
+  /// No description provided for @sharePlaceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the animal is right now'**
+  String get sharePlaceHelp;
+
+  /// No description provided for @chatPhotoPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'📷 Photo'**
+  String get chatPhotoPreview;
+
+  /// No description provided for @chatPlacePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'📍 Place'**
+  String get chatPlacePreview;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
+
+  /// No description provided for @trailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where {name} was seen'**
+  String trailTitle(String name);
+
+  /// No description provided for @trailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sightings that may be {name}, oldest first. The flag marks where {name} went missing.'**
+  String trailHint(String name);
+
+  /// No description provided for @trailConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'You recognised your pet'**
+  String get trailConfirmed;
+
+  /// No description provided for @trailReportedAsYours.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported as your pet'**
+  String get trailReportedAsYours;
+
+  /// No description provided for @trailSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks similar'**
+  String get trailSimilar;
 }
 
 class _AppLocalizationsDelegate

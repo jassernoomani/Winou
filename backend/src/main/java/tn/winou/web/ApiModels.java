@@ -270,10 +270,30 @@ public final class ApiModels {
         }
     }
 
-    public record MessageIn(@NotBlank @Size(max = 2000) String body) {}
+    /** Words, a place, or both. */
+    public record MessageIn(@Size(max = 2000) String body, @Valid Location location) {}
 
     /** hidden: reported, so the other participant no longer sees it (sent only to its author). */
-    public record MessageOut(UUID id, String body, boolean mine, boolean hidden, OffsetDateTime createdAt) {}
+    /** photo_url needs the user's token (participants only); body is null for a photo or place alone. */
+    public record MessageOut(
+            UUID id,
+            String body,
+            boolean mine,
+            boolean hidden,
+            OffsetDateTime createdAt,
+            String photoUrl,
+            Location location) {}
+
+    /** A sighting matched to a lost pet, for the owner's map of where it was seen. */
+    public record TrailPoint(
+            UUID matchId,
+            UUID sightingId,
+            Location location,
+            OffsetDateTime seenAt,
+            MatchStatus status,
+            boolean byFinder,
+            boolean inCare,
+            String photoUrl) {}
 
     /** Seen by one participant: "other" is the person they talk to (display name only, never an email). */
     public record ConversationOut(

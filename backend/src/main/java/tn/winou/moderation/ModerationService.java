@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.chat.ChatPhotos;
 import tn.winou.admin.AdminLog;
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
@@ -49,10 +50,12 @@ public class ModerationService {
     private final AdminLog log;
     private final Notifications notifications;
     private final WinouProperties.Moderation settings;
+    private final ChatPhotos chatPhotos;
 
     public ModerationService(JdbcClient jdbc, LostReportService reports, SightingService sightings,
             ChatMessageRepository messages, ConversationRepository conversations, AdminLog log,
-            Notifications notifications, WinouProperties properties) {
+            Notifications notifications, WinouProperties properties, ChatPhotos chatPhotos) {
+        this.chatPhotos = chatPhotos;
         this.log = log;
         this.notifications = notifications;
         this.jdbc = jdbc;
@@ -249,7 +252,11 @@ public class ModerationService {
         switch (type) {
             case LOST_REPORT -> reports.delete(id, admin);
             case SIGHTING -> sightings.delete(id, admin);
-            case MESSAGE -> messages.delete(messages.findById(id).orElseThrow(() -> ApiException.notFound("Message")));
+            case MESSAGE -> {
+                ChatMessage message = messages.findById(id).orElseThrow(() -> ApiException.notFound("Message"));
+                chatPhotos.messageDeleted(message.getPhotoKey());
+                messages.delete(message);
+            }
         }
         log.record(admin, AdminAction.DELETE_CONTENT, type.name(), id, author, null);
         forgetReports(type, id);
