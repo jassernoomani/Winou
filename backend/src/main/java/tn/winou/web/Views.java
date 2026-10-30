@@ -39,10 +39,17 @@ public class Views {
         this.privacy = properties.privacy();
     }
 
-    /** Hidden content is shown to its author and to admins only. */
-    public static boolean canSee(UUID authorId, java.time.OffsetDateTime hiddenAt, User viewer) {
-        return hiddenAt == null
-                || viewer != null && (viewer.getId().equals(authorId) || viewer.getRole() == Role.ADMIN);
+    /** Hidden content, and content by a banned user, is shown to its author and to admins only. */
+    public boolean canSee(UUID authorId, java.time.OffsetDateTime hiddenAt, User viewer) {
+        if (viewer != null && (viewer.getId().equals(authorId) || viewer.getRole() == Role.ADMIN)) {
+            return true;
+        }
+        return hiddenAt == null && !users.existsByIdAndBannedUntilAfter(authorId, java.time.OffsetDateTime.now());
+    }
+
+    /** SQL condition: the user in [column] isn't banned, so their content can be listed. */
+    public static String notBanned(String column) {
+        return "NOT EXISTS (SELECT 1 FROM users banned WHERE banned.id = " + column + " AND banned.banned_until > now())";
     }
 
     public static String imageUrl(UUID photoId) {

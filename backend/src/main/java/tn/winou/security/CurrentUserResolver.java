@@ -16,7 +16,7 @@ import tn.winou.common.ApiException;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 
-/** Loads the user named by the token. A valid token for a deleted account is rejected too. */
+/** Loads the user named by the token. A valid token for a deleted or banned account is rejected too. */
 @Component
 public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
@@ -38,11 +38,21 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
         if (!(auth instanceof JwtAuthenticationToken token)) {
             throw ApiException.unauthorized("Not authenticated");
         }
+        User user;
         try {
-            return users.findById(UUID.fromString(token.getName()))
+            user = users.findById(UUID.fromString(token.getName()))
                     .orElseThrow(() -> ApiException.unauthorized("Invalid or expired token"));
         } catch (IllegalArgumentException e) {
             throw ApiException.unauthorized("Invalid or expired token");
+        }
+        requireNotBanned(user);
+        return user;
+    }
+
+    /** A ban takes effect at once, on tokens issued before it too. */
+    public static void requireNotBanned(User user) {
+        if (user.isBanned()) {
+            throw ApiException.banned(user.getBannedUntil(), user.getBanReason());
         }
     }
 

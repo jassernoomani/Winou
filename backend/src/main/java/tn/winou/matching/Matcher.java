@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -112,7 +113,9 @@ public class Matcher {
 
     /** A lost report's photo: search sightings from shortly before it was lost onwards. */
     private List<Match> matchReport(Photo photo, LostReport report, List<Double> vector) {
-        if (report.getStatus() != ReportStatus.OPEN || report.getHiddenAt() != null) {
+        Set<UUID> banned = bannedUsers();
+        if (report.getStatus() != ReportStatus.OPEN || report.getHiddenAt() != null
+                || banned.contains(report.getOwnerId())) {
             return List.of();
         }
         OffsetDateTime since = report.getLastSeenAt().minusDays(settings.sightingGraceDays());
@@ -124,7 +127,8 @@ public class Matcher {
         }
         // Not the owner's own sightings of their animal
         List<Sighting> others = sightings.findAllById(best.keySet()).stream()
-                .filter(s -> !s.getReporterId().equals(report.getOwnerId()) && s.getHiddenAt() == null)
+                .filter(s -> !s.getReporterId().equals(report.getOwnerId()) && s.getHiddenAt() == null
+                        && !banned.contains(s.getReporterId()))
                 .toList();
         List<Match> created = new ArrayList<>();
         for (Sighting other : others) {
@@ -136,7 +140,8 @@ public class Matcher {
 
     /** A sighting's photo: search lost reports from the last weeks, still open. */
     private List<Match> matchSighting(Photo photo, Sighting sighting, List<Double> vector) {
-        if (sighting.getHiddenAt() != null) {
+        Set<UUID> banned = bannedUsers();
+        if (sighting.getHiddenAt() != null || banned.contains(sighting.getReporterId())) {
             return List.of();
         }
         List<Hit> hits = index.search(vector, sighting.getSpecies(), "lost", sighting.getLocation(),
@@ -148,7 +153,7 @@ public class Matcher {
         }
         List<LostReport> others = reports.findAllById(best.keySet()).stream()
                 .filter(r -> r.getStatus() == ReportStatus.OPEN && r.getHiddenAt() == null
-                        && !r.getOwnerId().equals(sighting.getReporterId()))
+                        && !r.getOwnerId().equals(sighting.getReporterId()) && !banned.contains(r.getOwnerId()))
                 .toList();
         List<Match> created = new ArrayList<>();
         for (LostReport other : others) {
@@ -158,7 +163,12 @@ public class Matcher {
         return sorted(created);
     }
 
-    /** The best score per (report, sighting) pair, above the species threshold. */
+    /** Their content isn't matched while they're banned (it's hidden from everyone else). */
+    private Set<UUID> bannedUsers() {
+        return jdbc.sql("SELECT id FROM users WHERE banned_until > now()").query(UUID.class).set();
+    }
+
+        /** The best score per (report, sighting) pair, above the species threshold. */
     private Map<UUID, Hit> bestPerRecord(List<Hit> hits, Photo photo, Species species) {
         double threshold = settings.threshold(species);
         Map<UUID, Hit> best = new LinkedHashMap<>();

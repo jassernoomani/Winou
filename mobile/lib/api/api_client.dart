@@ -6,11 +6,12 @@ import 'models.dart';
 
 /// An API error with the message to show the user.
 class ApiException implements Exception {
-  ApiException(this.message, {this.code, this.status});
+  ApiException(this.message, {this.code, this.status, this.detail});
 
   final String message;
   final String? code; // e.g. "no_animal_detected", "rate_limited"
   final int? status;
+  final Map<String, dynamic>? detail; // the whole error, for codes with more fields (e.g. "banned")
 
   @override
   String toString() => message;
@@ -18,15 +19,18 @@ class ApiException implements Exception {
 
 /// Thin wrapper over the Winou API. One method per endpoint.
 class WinouApi {
-  WinouApi({required String? Function() token, required void Function() onUnauthorized})
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: Config.apiUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 60),
-          listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
-        ),
-      ) {
+  WinouApi({
+    required String? Function() token,
+    required void Function() onUnauthorized,
+    required void Function(Ban ban) onBanned,
+  }) : _dio = Dio(
+         BaseOptions(
+           baseUrl: Config.apiUrl,
+           connectTimeout: const Duration(seconds: 10),
+           receiveTimeout: const Duration(seconds: 60),
+           listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
+         ),
+       ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -37,7 +41,10 @@ class WinouApi {
         },
         onError: (error, handler) {
           if (error.response?.statusCode == 401 && token() != null) onUnauthorized();
-          handler.reject(error.copyWith(error: _toApiException(error)));
+          final exception = _toApiException(error);
+          // Banned by an admin: on any request, or when signing in
+          if (exception.code == 'banned') onBanned(Ban.fromJson(exception.detail!));
+          handler.reject(error.copyWith(error: exception));
         },
       ),
     );
@@ -309,6 +316,27 @@ class WinouApi {
 
   Future<void> deleteHidden(ReportTarget type, String id) =>
       _call(() => _dio.delete('/admin/hidden/${type.api}/$id'), (_) {});
+
+  Future<List<AdminUser>> adminUsers({String query = '', bool bannedOnly = false}) => _call(
+    () => _dio.get('/admin/users', queryParameters: {'q': query, 'banned': bannedOnly, 'limit': 100}),
+    (data) => [for (final u in data) AdminUser.fromJson(u)],
+  );
+
+  Future<AdminUserDetail> adminUser(String id) =>
+      _call(() => _dio.get('/admin/users/$id'), (data) => AdminUserDetail.fromJson(data));
+
+  /// No [days]: for good.
+  Future<void> banUser(String id, {int? days, String? reason}) => _call(
+    () => _dio.post(
+      '/admin/users/$id/ban',
+      data: {'days': days, if (reason != null && reason.isNotEmpty) 'reason': reason},
+    ),
+    (_) {},
+  );
+
+  Future<void> unbanUser(String id) => _call(() => _dio.post('/admin/users/$id/unban'), (_) {});
+
+  Future<void> revokeAssociation(String id) => _call(() => _dio.delete('/admin/users/$id/association'), (_) {});
 }
 
 ApiException _toApiException(DioException error) {
@@ -318,7 +346,12 @@ ApiException _toApiException(DioException error) {
   }
   final detail = response.data is Map ? response.data['detail'] : null;
   return switch (detail) {
-    {'message': String message, 'code': String code} => ApiException(message, code: code, status: response.statusCode),
+    {'message': String message, 'code': String code} => ApiException(
+      message,
+      code: code,
+      status: response.statusCode,
+      detail: Map<String, dynamic>.from(detail),
+    ),
     String message => ApiException(message, status: response.statusCode),
     // Validation errors: a list of {loc, msg}
     [{'msg': String message}, ...] => ApiException(message, code: 'validation', status: response.statusCode),

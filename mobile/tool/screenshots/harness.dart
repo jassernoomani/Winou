@@ -137,6 +137,11 @@ void mockPlugins() {
   final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final cache = Directory.systemTemp.createTempSync('winou-screens').path; // the map's tile cache
   messenger.setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (_) async => cache);
+  // No stored sign-in: screens that read the auth state see a signed-out user
+  messenger.setMockMethodCallHandler(
+    const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+    (_) async => null,
+  );
   messenger.setMockMethodCallHandler(
     const MethodChannel('flutter.baseflow.com/geolocator'),
     (call) async => switch (call.method) {
@@ -220,6 +225,61 @@ Map<String, dynamic> sightingJson({
   'photos': [_photo(species == 'dog' ? 'dog' : 'cat')],
   'hidden': hidden,
 };
+
+Map<String, dynamic> adminUserJson({
+  String id = 'u1',
+  String name = 'Karim',
+  String email = 'karim.b@example.com',
+  String role = 'USER',
+  String? association,
+  Duration? bannedFor,
+  String? banReason,
+  int lost = 0,
+  int sightings = 0,
+  int reports = 0,
+  Duration joined = const Duration(days: 40),
+}) => {
+  'id': id,
+  'email': email,
+  'display_name': name,
+  'role': role,
+  'association_name': association,
+  'created_at': _ago(joined),
+  'banned_until': bannedFor == null ? null : DateTime.now().add(bannedFor).toUtc().toIso8601String(),
+  'ban_reason': banReason,
+  'lost_reports': lost,
+  'sightings': sightings,
+  'reports_received': reports,
+};
+
+final sampleUsers = [
+  adminUserJson(
+    name: 'Karim',
+    bannedFor: const Duration(days: 6, hours: 20),
+    banReason: 'Selling animals in sightings',
+    sightings: 4,
+    reports: 7,
+  ),
+  adminUserJson(
+    id: 'u2',
+    name: 'Yasmine',
+    email: 'yasmine@demo.winou',
+    role: 'ADMIN',
+    lost: 1,
+    joined: Duration(days: 90),
+  ),
+  adminUserJson(
+    id: 'u3',
+    name: 'Refuge de Tunis',
+    email: 'contact@refuge-tunis.tn',
+    role: 'ASSOCIATION',
+    association: 'Refuge de Tunis',
+    sightings: 12,
+    joined: Duration(days: 30),
+  ),
+  adminUserJson(id: 'u4', name: 'Amira', email: 'amira.k@example.com', lost: 2, sightings: 3, reports: 1),
+  adminUserJson(id: 'u5', name: 'Sami', email: 'sami@example.com', lost: 1, sightings: 1, joined: Duration(days: 2)),
+];
 
 Map<String, dynamic> matchJson({
   String id = 'm1',
@@ -489,6 +549,48 @@ class FakeApi implements WinouApi {
         'notes': [],
       }),
     ],
+  );
+
+  @override
+  Future<List<AdminUser>> adminUsers({String query = '', bool bannedOnly = false}) => _answer(
+    () => [
+      for (final u in sampleUsers)
+        if (!bannedOnly || u['banned_until'] != null) AdminUser.fromJson(u),
+    ],
+  );
+
+  @override
+  Future<AdminUserDetail> adminUser(String id) => _answer(
+    () => AdminUserDetail.fromJson({
+      'user': sampleUsers.firstWhere((u) => u['id'] == id),
+      'lost_reports': [],
+      'sightings': [
+        sightingJson(species: 'dog', hidden: true, seen: const Duration(hours: 5)),
+        sightingJson(id: 's2', species: 'dog', seen: const Duration(days: 2)),
+      ],
+      'history': [
+        {
+          'id': 'a1',
+          'action': 'BAN_USER',
+          'target_type': 'USER',
+          'target_id': id,
+          'admin_name': 'Yasmine',
+          'user_name': 'Karim',
+          'note': '7 days: Selling animals in sightings',
+          'created_at': _ago(const Duration(hours: 4)),
+        },
+        {
+          'id': 'a2',
+          'action': 'DELETE_CONTENT',
+          'target_type': 'SIGHTING',
+          'target_id': 's0',
+          'admin_name': 'Yasmine',
+          'user_name': 'Karim',
+          'note': null,
+          'created_at': _ago(const Duration(hours: 4, minutes: 2)),
+        },
+      ],
+    }),
   );
 
   @override

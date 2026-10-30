@@ -20,6 +20,7 @@ import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 import tn.winou.security.Admins;
 import tn.winou.security.CurrentUser;
+import tn.winou.security.CurrentUserResolver;
 import tn.winou.security.Passwords;
 import tn.winou.security.Tokens;
 import tn.winou.web.ApiModels.RegisterIn;
@@ -67,6 +68,7 @@ public class AuthController {
         if (!passwords.verify(user != null ? user.getPasswordHash() : null, password)) {
             throw ApiException.unauthorized("Wrong email or password");
         }
+        CurrentUserResolver.requireNotBanned(user);
         return TokenOut.bearer(tokens.issue(user.getId()));
     }
 

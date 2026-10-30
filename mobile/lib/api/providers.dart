@@ -41,3 +41,12 @@ final hiddenContentProvider = FutureProvider.autoDispose<List<HiddenItem>>(
 final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(
   (ref, id) => ref.watch(apiProvider).conversation(id),
 );
+
+/// Admin search: (query, banned only).
+final adminUsersProvider = FutureProvider.autoDispose.family<List<AdminUser>, (String, bool)>(
+  (ref, filter) => ref.watch(apiProvider).adminUsers(query: filter.$1, bannedOnly: filter.$2),
+);
+
+final adminUserProvider = FutureProvider.autoDispose.family<AdminUserDetail, String>(
+  (ref, id) => ref.watch(apiProvider).adminUser(id),
+);

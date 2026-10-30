@@ -8,12 +8,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:winou/api/models.dart';
+import 'package:winou/auth/auth_controller.dart';
 import 'package:winou/auth/auth_screens.dart';
+import 'package:winou/auth/suspended_screen.dart';
 import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
 import 'package:winou/l10n/app_localizations_en.dart';
 import 'package:winou/map/map_screen.dart';
 import 'package:winou/me/admin_screen.dart';
+import 'package:winou/me/admin_user_screen.dart';
 import 'package:winou/me/association_screen.dart';
 import 'package:winou/me/match_detail_screen.dart';
 import 'package:winou/me/my_activity_screen.dart';
@@ -129,7 +134,12 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     () => FakeApi(role: 'ASSOCIATION', associationName: 'Refuge de Tunis'),
     null,
   ),
-  ('36_admin_requests', () => const AdminScreen(), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '36_admin_requests',
+    () => const AdminScreen(),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.text(_l10n.adminRequests)),
+  ),
   (
     '37_admin_hidden',
     () => const AdminScreen(),
@@ -147,6 +157,30 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
       ],
     ),
     null,
+  ),
+  ('40_admin_users', () => const AdminScreen(), () => FakeApi(role: 'ADMIN'), null),
+  ('41_admin_user_banned', () => const AdminUserScreen(id: 'u1'), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '42_admin_suspend_sheet',
+    () => const AdminUserScreen(id: 'u4'),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) => _tap(tester, find.text(_l10n.suspend)),
+  ),
+  (
+    '43_suspended',
+    () => const SuspendedScreen(),
+    FakeApi.new,
+    (tester) async {
+      ProviderScope.containerOf(tester.element(find.byType(SuspendedScreen)))
+          .read(authProvider.notifier)
+          .banned(
+            Ban.fromJson({
+              'until': DateTime.now().add(const Duration(days: 6, hours: 20)).toUtc().toIso8601String(),
+              'reason': 'Selling animals in sightings',
+            }),
+          );
+      await settle(tester);
+    },
   ),
   (
     '39_activity_menu',

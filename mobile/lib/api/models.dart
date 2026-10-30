@@ -369,3 +369,88 @@ class HiddenItem {
   final List<ReportReason> reasons;
   final List<String> notes;
 }
+
+/// Why and until when an account is suspended, from a 403 with code "banned".
+class Ban {
+  Ban.fromJson(Map<String, dynamic> json) : until = _optionalDate(json['until']), reason = json['reason'];
+
+  final DateTime? until;
+  final String? reason;
+
+  /// Banned without an end date (the API sends 9999-12-31).
+  bool get permanent => until == null || until!.year >= 9999;
+}
+
+/// Something an admin did, as shown in a user's history.
+enum AdminAction with ApiEnum {
+  approveAssociation('APPROVE_ASSOCIATION'),
+  rejectAssociation('REJECT_ASSOCIATION'),
+  revokeAssociation('REVOKE_ASSOCIATION'),
+  restoreContent('RESTORE_CONTENT'),
+  deleteContent('DELETE_CONTENT'),
+  banUser('BAN_USER'),
+  unbanUser('UNBAN_USER');
+
+  const AdminAction(this.api);
+  @override
+  final String api;
+}
+
+/// An account as admins see it, with how much they posted and how often it was reported.
+class AdminUser {
+  AdminUser.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      email = json['email'],
+      displayName = json['display_name'],
+      role = _enum(Role.values, json['role']),
+      associationName = json['association_name'],
+      createdAt = _date(json['created_at']),
+      bannedUntil = _optionalDate(json['banned_until']),
+      banReason = json['ban_reason'],
+      lostReports = json['lost_reports'],
+      sightings = json['sightings'],
+      reportsReceived = json['reports_received'];
+
+  final String id;
+  final String email;
+  final String displayName;
+  final Role role;
+  final String? associationName;
+  final DateTime createdAt;
+  final DateTime? bannedUntil; // null unless banned now
+  final String? banReason;
+  final int lostReports;
+  final int sightings;
+  final int reportsReceived; // reports on their posts and messages
+
+  bool get banned => bannedUntil != null;
+  bool get bannedForever => bannedUntil != null && bannedUntil!.year >= 9999;
+}
+
+class AdminActionEntry {
+  AdminActionEntry.fromJson(Map<String, dynamic> json)
+    : action = _enum(AdminAction.values, json['action']),
+      targetType = json['target_type'],
+      adminName = json['admin_name'],
+      note = json['note'],
+      createdAt = _date(json['created_at']);
+
+  final AdminAction action;
+  final String targetType; // USER, ASSOCIATION_REQUEST, LOST_REPORT, SIGHTING or MESSAGE
+  final String? adminName; // null if that admin's account was deleted
+  final String? note;
+  final DateTime createdAt;
+}
+
+class AdminUserDetail {
+  AdminUserDetail.fromJson(Map<String, dynamic> json)
+    : user = AdminUser.fromJson(json['user']),
+      lostReports = [for (final r in json['lost_reports']) LostReport.fromJson(r)],
+      sightings = [for (final s in json['sightings']) Sighting.fromJson(s)],
+      history = [for (final a in json['history']) AdminActionEntry.fromJson(a)];
+
+  final AdminUser user;
+  final List<LostReport> lostReports;
+  final List<Sighting> sightings;
+  final List<AdminActionEntry> history;
+}

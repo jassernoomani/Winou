@@ -54,6 +54,7 @@ String errorMessage(BuildContext context, Object error) {
       'invalid_image' || 'unsupported_format' => l10n.errorInvalidImage,
       'file_too_large' || 'image_too_large' => l10n.errorImageTooLarge,
       'email_taken' => l10n.errorEmailTaken,
+      'banned' => l10n.errorBanned,
       _ => error.status == 401 ? l10n.errorWrongCredentials : error.message,
     };
   }

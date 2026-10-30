@@ -51,10 +51,10 @@ public class SightingService {
         return sightings.findById(id).orElseThrow(() -> ApiException.notFound("Sighting"));
     }
 
-    /** As get(), but hidden sightings exist only for their reporter and admins. */
+    /** As get(), but hidden sightings, and those of banned users, exist only for their reporter and admins. */
     public Sighting visible(UUID id, User viewer) {
         Sighting sighting = get(id);
-        if (!Views.canSee(sighting.getReporterId(), sighting.getHiddenAt(), viewer)) {
+        if (!views.canSee(sighting.getReporterId(), sighting.getHiddenAt(), viewer)) {
             throw ApiException.notFound("Sighting");
         }
         return sighting;

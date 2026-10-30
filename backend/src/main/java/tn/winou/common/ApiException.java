@@ -1,5 +1,7 @@
 package tn.winou.common;
 
+import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,17 @@ public class ApiException extends RuntimeException {
 
     public static ApiException unauthorized(String message) {
         return of(HttpStatus.UNAUTHORIZED, message);
+    }
+
+    /** The app shows until when, and why. */
+    public static ApiException banned(OffsetDateTime until, String reason) {
+        String message = "This account is suspended.";
+        Map<String, Object> detail = new LinkedHashMap<>();
+        detail.put("code", "banned");
+        detail.put("message", message);
+        detail.put("until", until);
+        detail.put("reason", reason);
+        return new ApiException(HttpStatus.FORBIDDEN, message, detail);
     }
 
     public static ApiException invalid(String message) {

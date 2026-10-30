@@ -67,10 +67,10 @@ public class LostReportService {
         return reports.findById(id).orElseThrow(() -> ApiException.notFound("Lost report"));
     }
 
-    /** As get(), but hidden reports exist only for their owner and admins. */
+    /** As get(), but hidden reports, and those of banned users, exist only for their owner and admins. */
     public LostReport visible(UUID id, User viewer) {
         LostReport report = get(id);
-        if (!Views.canSee(report.getOwnerId(), report.getHiddenAt(), viewer)) {
+        if (!views.canSee(report.getOwnerId(), report.getHiddenAt(), viewer)) {
             throw ApiException.notFound("Lost report");
         }
         return report;
@@ -105,7 +105,7 @@ public class LostReportService {
             int offset) {
         StringBuilder sql = new StringBuilder("""
                 SELECT id, owner_id, ST_Y(last_seen_point::geometry) AS lat, ST_X(last_seen_point::geometry) AS lon
-                FROM lost_reports WHERE status = 'OPEN' AND hidden_at IS NULL""");
+                FROM lost_reports WHERE status = 'OPEN' AND hidden_at IS NULL""" + " AND " + Views.notBanned("owner_id"));
         Map<String, Object> params = new HashMap<>();
         if (species != null && !species.isEmpty()) {
             sql.append(" AND species IN (:species)");

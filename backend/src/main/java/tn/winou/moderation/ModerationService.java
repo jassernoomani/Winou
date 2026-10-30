@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.admin.AdminLog;
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
 import tn.winou.config.WinouProperties;
@@ -22,6 +23,7 @@ import tn.winou.domain.User;
 import tn.winou.reports.LostReportService;
 import tn.winou.security.Admins;
 import tn.winou.sightings.SightingService;
+import tn.winou.web.ApiModels.AdminAction;
 import tn.winou.web.ApiModels.ContentReportIn;
 import tn.winou.web.ApiModels.ContentReportOut;
 import tn.winou.web.ApiModels.HiddenItemOut;
@@ -42,10 +44,13 @@ public class ModerationService {
     private final SightingService sightings;
     private final ChatMessageRepository messages;
     private final ConversationRepository conversations;
+    private final AdminLog log;
     private final WinouProperties.Moderation settings;
 
     public ModerationService(JdbcClient jdbc, LostReportService reports, SightingService sightings,
-            ChatMessageRepository messages, ConversationRepository conversations, WinouProperties properties) {
+            ChatMessageRepository messages, ConversationRepository conversations, AdminLog log,
+            WinouProperties properties) {
+        this.log = log;
         this.jdbc = jdbc;
         this.reports = reports;
         this.sightings = sightings;
@@ -168,21 +173,36 @@ public class ModerationService {
         if (restored == 0) {
             throw ApiException.notFound("Hidden content");
         }
+        log.record(admin, AdminAction.RESTORE_CONTENT, type.name(), id, authorId(type, id), null);
         forgetReports(type, id);
     }
 
     @Transactional
     public void delete(ReportTarget type, UUID id, User admin) {
         Admins.require(admin);
+        UUID author = authorId(type, id);
         switch (type) {
             case LOST_REPORT -> reports.delete(id, admin);
             case SIGHTING -> sightings.delete(id, admin);
             case MESSAGE -> messages.delete(messages.findById(id).orElseThrow(() -> ApiException.notFound("Message")));
         }
+        log.record(admin, AdminAction.DELETE_CONTENT, type.name(), id, author, null);
         forgetReports(type, id);
     }
 
-    private void forgetReports(ReportTarget type, UUID id) {
+    /** Who wrote it, null if it doesn't exist. */
+    private UUID authorId(ReportTarget type, UUID id) {
+        String column = switch (type) {
+            case LOST_REPORT -> "owner_id";
+            case SIGHTING -> "reporter_id";
+            case MESSAGE -> "sender_id";
+        };
+        return jdbc.sql("SELECT " + column + " FROM " + table(type) + " WHERE id = :id")
+                .param("id", id)
+                .query(UUID.class).optional().orElse(null);
+    }
+
+        private void forgetReports(ReportTarget type, UUID id) {
         jdbc.sql("DELETE FROM content_reports WHERE target_type = :type AND target_id = :id")
                 .param("type", type.name())
                 .param("id", id)

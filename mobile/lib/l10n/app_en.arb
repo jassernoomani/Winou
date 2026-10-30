@@ -460,5 +460,128 @@
   "testConnection": "Test",
   "serverOk": "Connected",
   "serverUnreachable": "Can't reach it. Same network? Is the laptop's firewall open?",
-  "save": "Save"
+  "save": "Save",
+  "errorBanned": "This account is suspended.",
+  "suspendedTitle": "Account suspended",
+  "suspendedUntil": "Until {date}",
+  "@suspendedUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "suspendedForGood": "For good",
+  "suspendedReason": "Reason: {reason}",
+  "@suspendedReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "suspendedHelp": "Your lost pets and sightings are hidden from others meanwhile. If you think this is a mistake, contact the Winou team.",
+  "checkAgain": "Check again",
+  "stillSuspended": "Still suspended.",
+  "adminUsers": "Users",
+  "searchUsers": "Name or email",
+  "bannedOnly": "Suspended only",
+  "noUsersFound": "No one found.",
+  "noBannedUsers": "No one is suspended.",
+  "banned": "Suspended",
+  "association": "Association",
+  "joinedOn": "Joined {date}",
+  "@joinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "statLostPets": "Lost pets",
+  "statSightings": "Sightings",
+  "statReports": "Reports",
+  "suspend": "Suspend",
+  "suspendWho": "Suspend {name}?",
+  "@suspendWho": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "suspendExplain": "They can't sign in or post, and what they posted is hidden from others until the suspension ends. They see the reason.",
+  "daysCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "forGood": "For good",
+  "suspendReasonHint": "Reason, shown to them (optional)",
+  "liftSuspension": "Lift suspension",
+  "liftSuspensionOf": "Let {name} use Winou again?",
+  "@liftSuspensionOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "revokeAssociation": "Remove association status",
+  "revokeAssociationQuestion": "Remove the association status of {name}? No more badge or injured-animal alerts. They can apply again.",
+  "@revokeAssociationQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "revoke": "Remove",
+  "userLostPets": "Lost pets ({count})",
+  "@userLostPets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "userSightings": "Sightings ({count})",
+  "@userSightings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiddenLabel": "Hidden",
+  "adminHistory": "Admin history",
+  "noAdminHistory": "No admin actions yet.",
+  "deletedAdmin": "A former admin",
+  "actionApprovedAssociation": "Association approved",
+  "actionRejectedAssociation": "Association request rejected",
+  "actionRevokedAssociation": "Association status removed",
+  "actionRestored": "{what} restored",
+  "@actionRestored": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "actionDeleted": "{what} deleted",
+  "@actionDeleted": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "actionBanned": "Suspended",
+  "actionUnbanned": "Suspension lifted",
+  "targetLostReport": "Lost pet report",
+  "targetSighting": "Sighting",
+  "targetMessage": "Message"
 }

@@ -1,6 +1,7 @@
 package tn.winou.domain;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import org.hibernate.annotations.ColumnTransformer;
 
@@ -21,6 +22,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class User extends BaseEntity {
 
+    /** banned_until for a ban without an end. */
+    public static final OffsetDateTime BANNED_FOREVER = OffsetDateTime.of(9999, 12, 31, 0, 0, 0, 0, ZoneOffset.UTC);
+
     private String email;
     private String passwordHash;
     private String displayName;
@@ -40,6 +44,10 @@ public class User extends BaseEntity {
     private String alertPoint;
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    /** Set by an admin; the ban is over once this has passed. */
+    private OffsetDateTime bannedUntil;
+    private String banReason;
+
     public User(String email, String passwordHash, String displayName) {
         this.email = email;
         this.passwordHash = passwordHash;
@@ -57,5 +65,9 @@ public class User extends BaseEntity {
 
     public boolean isAssociation() {
         return role == Role.ASSOCIATION && associationName != null;
+    }
+
+    public boolean isBanned() {
+        return bannedUntil != null && bannedUntil.isAfter(OffsetDateTime.now());
     }
 }

@@ -1435,6 +1435,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// No description provided for @errorBanned.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is suspended.'**
+  String get errorBanned;
+
+  /// No description provided for @suspendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account suspended'**
+  String get suspendedTitle;
+
+  /// No description provided for @suspendedUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Until {date}'**
+  String suspendedUntil(String date);
+
+  /// No description provided for @suspendedForGood.
+  ///
+  /// In en, this message translates to:
+  /// **'For good'**
+  String get suspendedForGood;
+
+  /// No description provided for @suspendedReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason: {reason}'**
+  String suspendedReason(String reason);
+
+  /// No description provided for @suspendedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your lost pets and sightings are hidden from others meanwhile. If you think this is a mistake, contact the Winou team.'**
+  String get suspendedHelp;
+
+  /// No description provided for @checkAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get checkAgain;
+
+  /// No description provided for @stillSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Still suspended.'**
+  String get stillSuspended;
+
+  /// No description provided for @adminUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get adminUsers;
+
+  /// No description provided for @searchUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Name or email'**
+  String get searchUsers;
+
+  /// No description provided for @bannedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended only'**
+  String get bannedOnly;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No one found.'**
+  String get noUsersFound;
+
+  /// No description provided for @noBannedUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'No one is suspended.'**
+  String get noBannedUsers;
+
+  /// No description provided for @banned.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get banned;
+
+  /// No description provided for @association.
+  ///
+  /// In en, this message translates to:
+  /// **'Association'**
+  String get association;
+
+  /// No description provided for @joinedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String joinedOn(String date);
+
+  /// No description provided for @statLostPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost pets'**
+  String get statLostPets;
+
+  /// No description provided for @statSightings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sightings'**
+  String get statSightings;
+
+  /// No description provided for @statReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get statReports;
+
+  /// No description provided for @suspend.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend'**
+  String get suspend;
+
+  /// No description provided for @suspendWho.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend {name}?'**
+  String suspendWho(String name);
+
+  /// No description provided for @suspendExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'They can\'t sign in or post, and what they posted is hidden from others until the suspension ends. They see the reason.'**
+  String get suspendExplain;
+
+  /// No description provided for @daysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String daysCount(int count);
+
+  /// No description provided for @forGood.
+  ///
+  /// In en, this message translates to:
+  /// **'For good'**
+  String get forGood;
+
+  /// No description provided for @suspendReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason, shown to them (optional)'**
+  String get suspendReasonHint;
+
+  /// No description provided for @liftSuspension.
+  ///
+  /// In en, this message translates to:
+  /// **'Lift suspension'**
+  String get liftSuspension;
+
+  /// No description provided for @liftSuspensionOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Let {name} use Winou again?'**
+  String liftSuspensionOf(String name);
+
+  /// No description provided for @revokeAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove association status'**
+  String get revokeAssociation;
+
+  /// No description provided for @revokeAssociationQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the association status of {name}? No more badge or injured-animal alerts. They can apply again.'**
+  String revokeAssociationQuestion(String name);
+
+  /// No description provided for @revoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get revoke;
+
+  /// No description provided for @userLostPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost pets ({count})'**
+  String userLostPets(int count);
+
+  /// No description provided for @userSightings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sightings ({count})'**
+  String userSightings(int count);
+
+  /// No description provided for @hiddenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get hiddenLabel;
+
+  /// No description provided for @adminHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin history'**
+  String get adminHistory;
+
+  /// No description provided for @noAdminHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin actions yet.'**
+  String get noAdminHistory;
+
+  /// No description provided for @deletedAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'A former admin'**
+  String get deletedAdmin;
+
+  /// No description provided for @actionApprovedAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Association approved'**
+  String get actionApprovedAssociation;
+
+  /// No description provided for @actionRejectedAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Association request rejected'**
+  String get actionRejectedAssociation;
+
+  /// No description provided for @actionRevokedAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'Association status removed'**
+  String get actionRevokedAssociation;
+
+  /// No description provided for @actionRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'{what} restored'**
+  String actionRestored(String what);
+
+  /// No description provided for @actionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{what} deleted'**
+  String actionDeleted(String what);
+
+  /// No description provided for @actionBanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get actionBanned;
+
+  /// No description provided for @actionUnbanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspension lifted'**
+  String get actionUnbanned;
+
+  /// No description provided for @targetLostReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost pet report'**
+  String get targetLostReport;
+
+  /// No description provided for @targetSighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sighting'**
+  String get targetSighting;
+
+  /// No description provided for @targetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get targetMessage;
 }
 
 class _AppLocalizationsDelegate

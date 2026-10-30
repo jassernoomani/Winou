@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -287,4 +289,45 @@ public final class ApiModels {
             long reports,
             List<ReportReason> reasons,
             List<String> notes) {}
+
+    // --- admin ---
+
+    /** banned_until is null unless a ban is running; 9999-12-31 means for good. */
+    public record AdminUserOut(
+            UUID id,
+            String email,
+            String displayName,
+            Role role,
+            String associationName,
+            OffsetDateTime createdAt,
+            OffsetDateTime bannedUntil,
+            String banReason,
+            long lostReports,
+            long sightings,
+            long reportsReceived) {}
+
+    /** What an admin did, and to whom. */
+    public record AdminActionOut(
+            UUID id,
+            AdminAction action,
+            String targetType,
+            UUID targetId,
+            String adminName,
+            String userName,
+            String note,
+            OffsetDateTime createdAt) {}
+
+    public record AdminUserDetailOut(
+            AdminUserOut user,
+            List<LostReportOut> lostReports,
+            List<SightingOut> sightings,
+            List<AdminActionOut> history) {}
+
+    /** days: how long; none for good. */
+    public record BanIn(@Min(1) @Max(3650) Integer days, @Size(max = 500) String reason) {}
+
+    public enum AdminAction {
+        APPROVE_ASSOCIATION, REJECT_ASSOCIATION, REVOKE_ASSOCIATION, RESTORE_CONTENT, DELETE_CONTENT, BAN_USER,
+        UNBAN_USER
+    }
 }

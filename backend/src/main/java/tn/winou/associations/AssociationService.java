@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tn.winou.admin.AdminLog;
 import tn.winou.common.ApiException;
 import tn.winou.config.WinouProperties;
 import tn.winou.domain.AssociationRequest;
@@ -24,6 +25,7 @@ import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 import tn.winou.infra.Notifications;
 import tn.winou.security.Admins;
+import tn.winou.web.ApiModels.AdminAction;
 import tn.winou.web.ApiModels.AssociationRequestIn;
 import tn.winou.web.ApiModels.AssociationRequestOut;
 import tn.winou.web.ApiModels.Location;
@@ -39,14 +41,16 @@ public class AssociationService {
     private final UserRepository users;
     private final JdbcClient jdbc;
     private final Notifications notifications;
+    private final AdminLog log;
     private final double alertRadiusM;
 
     public AssociationService(AssociationRequestRepository requests, UserRepository users, JdbcClient jdbc,
-            Notifications notifications, WinouProperties properties) {
+            Notifications notifications, AdminLog log, WinouProperties properties) {
         this.requests = requests;
         this.users = users;
         this.jdbc = jdbc;
         this.notifications = notifications;
+        this.log = log;
         this.alertRadiusM = properties.associations().alertRadiusKm() * 1000;
     }
 
@@ -108,6 +112,8 @@ public class AssociationService {
             user.setAlertLocation(request.getLocation());
             users.save(user);
         }
+        log.record(admin, approve ? AdminAction.APPROVE_ASSOCIATION : AdminAction.REJECT_ASSOCIATION,
+                "ASSOCIATION_REQUEST", request.getId(), user.getId(), request.getOrganisation());
         notifications.send(n -> n.associationDecided(request));
         return out(request, user);
     }

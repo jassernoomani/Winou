@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
@@ -11,7 +14,8 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/report_sheet.dart';
 
-/// For admins: association requests to approve or reject, and reported content to restore or delete.
+/// For admins: users to look up and ban, association requests to approve or reject, and reported
+/// content to restore or delete.
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 
@@ -19,19 +23,151 @@ class AdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.admin),
           bottom: TabBar(
             tabs: [
+              Tab(text: l10n.adminUsers),
               Tab(text: l10n.adminRequests),
               Tab(text: l10n.adminHidden),
             ],
           ),
         ),
-        body: const TabBarView(children: [_Requests(), _Hidden()]),
+        body: const TabBarView(children: [_Users(), _Requests(), _Hidden()]),
       ),
+    );
+  }
+}
+
+/// Search by name or email, newest accounts first.
+class _Users extends ConsumerStatefulWidget {
+  const _Users();
+
+  @override
+  ConsumerState<_Users> createState() => _UsersState();
+}
+
+class _UsersState extends ConsumerState<_Users> {
+  final _search = TextEditingController();
+  Timer? _debounce;
+  String _query = '';
+  bool _bannedOnly = false;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _onSearch(String text) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () => setState(() => _query = text.trim()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final provider = adminUsersProvider((_query, _bannedOnly));
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: TextField(
+            controller: _search,
+            onChanged: _onSearch,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(prefixIcon: const Icon(LucideIcons.search), hintText: l10n.searchUsers),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: FilterChip(
+              label: Text(l10n.bannedOnly),
+              avatar: const Icon(LucideIcons.shieldBan, size: 16),
+              selected: _bannedOnly,
+              onSelected: (value) => setState(() => _bannedOnly = value),
+            ),
+          ),
+        ),
+        Expanded(
+          child: _AdminList<AdminUser>(
+            provider: provider,
+            empty: _bannedOnly ? l10n.noBannedUsers : l10n.noUsersFound,
+            emptyIcon: LucideIcons.users,
+            item: (u) => Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                contentPadding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+                leading: UserAvatar(u.displayName),
+                title: Text(u.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 6,
+                  children: [
+                    Text(u.email, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    UserPills(u),
+                  ],
+                ),
+                trailing: const Icon(LucideIcons.chevronRight),
+                onTap: () async {
+                  await context.push('/admin/users/${u.id}');
+                  ref.invalidate(provider); // may have been banned since
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A round initial, for people without a photo.
+class UserAvatar extends StatelessWidget {
+  const UserAvatar(this.name, {super.key, this.radius = 22});
+
+  final String name;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: tokens.tonal,
+      child: Text(
+        name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+        style: TextStyle(color: tokens.accent, fontWeight: FontWeight.w800, fontSize: radius * 0.8),
+      ),
+    );
+  }
+}
+
+/// Role, ban and reports at a glance; nothing for a plain user in good standing.
+class UserPills extends StatelessWidget {
+  const UserPills(this.user, {super.key});
+
+  final AdminUser user;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: [
+        if (user.banned) StatusPill(l10n.banned, tone: Tone.lost, icon: LucideIcons.shieldBan),
+        if (user.role == Role.admin) StatusPill(l10n.admin, tone: Tone.info, icon: LucideIcons.shieldCheck),
+        if (user.associationName != null)
+          StatusPill(l10n.association, tone: Tone.found, icon: LucideIcons.heartHandshake),
+        if (user.reportsReceived > 0)
+          StatusPill(l10n.reportsCount(user.reportsReceived), tone: Tone.injured, icon: LucideIcons.flag),
+      ],
     );
   }
 }

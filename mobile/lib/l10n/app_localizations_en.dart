@@ -787,4 +787,172 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save => 'Save';
+
+  @override
+  String get errorBanned => 'This account is suspended.';
+
+  @override
+  String get suspendedTitle => 'Account suspended';
+
+  @override
+  String suspendedUntil(String date) {
+    return 'Until $date';
+  }
+
+  @override
+  String get suspendedForGood => 'For good';
+
+  @override
+  String suspendedReason(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get suspendedHelp =>
+      'Your lost pets and sightings are hidden from others meanwhile. If you think this is a mistake, contact the Winou team.';
+
+  @override
+  String get checkAgain => 'Check again';
+
+  @override
+  String get stillSuspended => 'Still suspended.';
+
+  @override
+  String get adminUsers => 'Users';
+
+  @override
+  String get searchUsers => 'Name or email';
+
+  @override
+  String get bannedOnly => 'Suspended only';
+
+  @override
+  String get noUsersFound => 'No one found.';
+
+  @override
+  String get noBannedUsers => 'No one is suspended.';
+
+  @override
+  String get banned => 'Suspended';
+
+  @override
+  String get association => 'Association';
+
+  @override
+  String joinedOn(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String get statLostPets => 'Lost pets';
+
+  @override
+  String get statSightings => 'Sightings';
+
+  @override
+  String get statReports => 'Reports';
+
+  @override
+  String get suspend => 'Suspend';
+
+  @override
+  String suspendWho(String name) {
+    return 'Suspend $name?';
+  }
+
+  @override
+  String get suspendExplain =>
+      'They can\'t sign in or post, and what they posted is hidden from others until the suspension ends. They see the reason.';
+
+  @override
+  String daysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get forGood => 'For good';
+
+  @override
+  String get suspendReasonHint => 'Reason, shown to them (optional)';
+
+  @override
+  String get liftSuspension => 'Lift suspension';
+
+  @override
+  String liftSuspensionOf(String name) {
+    return 'Let $name use Winou again?';
+  }
+
+  @override
+  String get revokeAssociation => 'Remove association status';
+
+  @override
+  String revokeAssociationQuestion(String name) {
+    return 'Remove the association status of $name? No more badge or injured-animal alerts. They can apply again.';
+  }
+
+  @override
+  String get revoke => 'Remove';
+
+  @override
+  String userLostPets(int count) {
+    return 'Lost pets ($count)';
+  }
+
+  @override
+  String userSightings(int count) {
+    return 'Sightings ($count)';
+  }
+
+  @override
+  String get hiddenLabel => 'Hidden';
+
+  @override
+  String get adminHistory => 'Admin history';
+
+  @override
+  String get noAdminHistory => 'No admin actions yet.';
+
+  @override
+  String get deletedAdmin => 'A former admin';
+
+  @override
+  String get actionApprovedAssociation => 'Association approved';
+
+  @override
+  String get actionRejectedAssociation => 'Association request rejected';
+
+  @override
+  String get actionRevokedAssociation => 'Association status removed';
+
+  @override
+  String actionRestored(String what) {
+    return '$what restored';
+  }
+
+  @override
+  String actionDeleted(String what) {
+    return '$what deleted';
+  }
+
+  @override
+  String get actionBanned => 'Suspended';
+
+  @override
+  String get actionUnbanned => 'Suspension lifted';
+
+  @override
+  String get targetLostReport => 'Lost pet report';
+
+  @override
+  String get targetSighting => 'Sighting';
+
+  @override
+  String get targetMessage => 'Message';
 }

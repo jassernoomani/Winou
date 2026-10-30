@@ -6,10 +6,12 @@ import 'package:latlong2/latlong.dart';
 import 'api/models.dart';
 import 'auth/auth_controller.dart';
 import 'auth/auth_screens.dart';
+import 'auth/suspended_screen.dart';
 import 'chat/chat_screen.dart';
 import 'chat/conversations_screen.dart';
 import 'map/map_screen.dart';
 import 'me/admin_screen.dart';
+import 'me/admin_user_screen.dart';
 import 'me/association_screen.dart';
 import 'me/match_detail_screen.dart';
 import 'me/my_activity_screen.dart';
@@ -36,6 +38,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final auth = authChanges.value;
       final path = state.matchedLocation;
       if (auth.loading) return path == '/splash' ? null : '/splash';
+      if (auth.ban != null) return path == '/suspended' ? null : '/suspended';
+      if (path == '/suspended') return auth.signedIn ? '/' : '/login';
       if (!auth.signedIn) return _publicPaths.contains(path) ? null : '/login';
       if (_publicPaths.contains(path) || path == '/splash') return '/';
       return null;
@@ -44,11 +48,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const LoginScreen(register: true)),
+      GoRoute(path: '/suspended', builder: (_, _) => const SuspendedScreen()),
       GoRoute(path: '/', builder: (_, _) => const LostFeedScreen()),
       GoRoute(path: '/map', builder: (_, _) => const MapScreen()),
       GoRoute(path: '/me', builder: (_, _) => const MyActivityScreen()),
       GoRoute(path: '/association', builder: (_, _) => const AssociationScreen()),
       GoRoute(path: '/admin', builder: (_, _) => const AdminScreen()),
+      GoRoute(
+        path: '/admin/users/:id',
+        builder: (_, state) => AdminUserScreen(id: state.pathParameters['id']!),
+      ),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
       GoRoute(
         path: '/lost/:id',
