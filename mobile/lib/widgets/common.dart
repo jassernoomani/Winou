@@ -59,6 +59,9 @@ String errorMessage(BuildContext context, Object error) {
       'too_many_attempts' => l10n.errorTooManyAttempts,
       'wrong_password' => l10n.errorWrongPassword,
       'session_expired' => l10n.errorSessionExpired,
+      'google_disabled' => l10n.errorGoogleDisabled,
+      'google_no_email' => l10n.errorGoogleNoEmail,
+      'google_invalid' || 'google_failed' => l10n.errorGoogleFailed,
       _ => error.status == 401 ? l10n.errorWrongCredentials : error.message,
     };
   }

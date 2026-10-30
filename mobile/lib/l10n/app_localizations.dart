@@ -2053,6 +2053,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account was deleted.'**
   String get accountDeleted;
+
+  /// No description provided for @or.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @signedInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Signs in with Google'**
+  String get signedInWithGoogle;
+
+  /// No description provided for @setPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a password'**
+  String get setPassword;
+
+  /// No description provided for @setPasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'To sign in with your email too, not only with Google'**
+  String get setPasswordHelp;
+
+  /// No description provided for @errorGoogleDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in isn\'t available on this server.'**
+  String get errorGoogleDisabled;
+
+  /// No description provided for @errorGoogleNoEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'This Google account has no verified email.'**
+  String get errorGoogleNoEmail;
+
+  /// No description provided for @errorGoogleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in didn\'t work. Try again.'**
+  String get errorGoogleFailed;
 }
 
 class _AppLocalizationsDelegate

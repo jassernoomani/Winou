@@ -61,15 +61,27 @@ public final class ApiModels {
 
     public record RefreshIn(@NotBlank @Size(max = 200) String refreshToken) {}
 
+    /** current_password: ignored for an account without one (made with Google). */
     public record PasswordChangeIn(
-            @NotNull @Size(max = 128) String currentPassword,
+            @Size(max = 128) String currentPassword,
             @NotNull @Size(min = 8, max = 128) String newPassword) {}
 
-    public record DeleteAccountIn(@NotNull @Size(max = 128) String password) {}
+    /** password: ignored for an account without one (made with Google). */
+    public record DeleteAccountIn(@Size(max = 128) String password) {}
 
     /** association_name: set for approved associations, shown with a badge. */
     public record UserOut(
-            UUID id, String email, String displayName, Role role, String associationName, OffsetDateTime createdAt) {}
+            UUID id,
+            String email,
+            String displayName,
+            Role role,
+            String associationName,
+            OffsetDateTime createdAt,
+            boolean hasPassword, // false for accounts made with Google, until they set one
+            boolean emailVerified,
+            boolean google) {}
+
+    public record GoogleIn(@NotBlank @Size(max = 4096) String idToken) {}
 
     /** fcm_token may be cleared with an explicit null; the name may not. */
     @Getter

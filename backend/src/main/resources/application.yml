@@ -105,6 +105,9 @@ winou:
     login-attempts-per-ip: ${LOGIN_ATTEMPTS_PER_IP:30}
     login-attempt-window: ${LOGIN_ATTEMPT_WINDOW_MINUTES:15}m
     registrations-per-ip-per-hour: ${REGISTRATIONS_PER_IP_PER_HOUR:10}
+  google:
+    # The project's Web client ID (Firebase console: Authentication > Google > Web SDK configuration)
+    client-ids: ${GOOGLE_CLIENT_IDS:}
   admin:
     # Comma-separated: these accounts review association requests and reported content in the app
     emails: ${ADMIN_EMAILS:}

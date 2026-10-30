@@ -25,7 +25,8 @@ public record WinouProperties(
         Associations associations,
         Moderation moderation,
         Admin admin,
-        Auth auth) {
+        Auth auth,
+        Google google) {
 
     public record Jwt(String secret, Duration expiry) {}
 
@@ -89,6 +90,15 @@ public record WinouProperties(
             int loginAttemptsPerIp,
             Duration loginAttemptWindow,
             int registrationsPerIpPerHour) {}
+
+    /** Web client IDs whose Google ID tokens are accepted; empty: no Google sign-in. */
+    public record Google(List<String> clientIds) {
+
+        public Google {
+            clientIds = clientIds == null ? List.of()
+                    : clientIds.stream().map(String::strip).filter(id -> !id.isEmpty()).toList();
+        }
+    }
 
     /** Accounts with these emails are admins (compared lowercase). */
     public record Admin(List<String> emails) {

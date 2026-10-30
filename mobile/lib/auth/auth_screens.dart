@@ -8,6 +8,7 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/server_settings.dart';
 import 'auth_controller.dart';
+import 'google_button.dart';
 
 /// Good enough to catch typos; the server checks it properly.
 bool isEmail(String value) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(value.trim());
@@ -42,7 +43,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
   final _name = TextEditingController();
   bool _busy = false;
+  bool _googleBusy = false;
   bool _showPassword = false;
+
+  Future<void> _google() async {
+    setState(() => _googleBusy = true);
+    try {
+      await ref.read(authProvider.notifier).google(); // the router moves on once signed in
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _googleBusy = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -212,6 +225,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     : Text(register ? l10n.createAccount : l10n.signIn),
               ),
             ),
+            const SizedBox(height: 16),
+            Row(
+              spacing: 12,
+              children: [
+                const Expanded(child: Divider()),
+                Text(l10n.or, style: TextStyle(color: context.tokens.muted)),
+                const Expanded(child: Divider()),
+              ],
+            ),
+            const SizedBox(height: 16),
+            GoogleButton(label: l10n.continueWithGoogle, busy: _googleBusy, onPressed: _busy ? null : _google),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => context.go(register ? '/login' : '/register'),

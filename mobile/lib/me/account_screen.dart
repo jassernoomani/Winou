@@ -29,11 +29,11 @@ class AccountScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _changePassword(BuildContext context) async {
+  Future<void> _changePassword(BuildContext context, User me) async {
     final changed = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const _PasswordSheet(),
+      builder: (_) => _PasswordSheet(hasPassword: me.hasPassword),
     );
     if (changed == true && context.mounted) _say(context, context.l10n.passwordChanged);
   }
@@ -49,8 +49,11 @@ class AccountScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _delete(BuildContext context) =>
-      showModalBottomSheet<void>(context: context, isScrollControlled: true, builder: (_) => const _DeleteSheet());
+  Future<void> _delete(BuildContext context, User me) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) => _DeleteSheet(hasPassword: me.hasPassword),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -78,6 +81,15 @@ class AccountScreen extends ConsumerWidget {
                           children: [
                             Text(value.displayName, style: theme.textTheme.titleLarge),
                             Text(value.email, style: theme.textTheme.bodyMedium?.copyWith(color: tokens.muted)),
+                            if (value.google)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: StatusPill(
+                                  l10n.signedInWithGoogle,
+                                  tone: Tone.info,
+                                  icon: LucideIcons.badgeCheck,
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -102,8 +114,9 @@ class AccountScreen extends ConsumerWidget {
                     const Divider(height: 1),
                     ListTile(
                       leading: const Icon(LucideIcons.keyRound),
-                      title: Text(l10n.changePassword),
-                      onTap: () => _changePassword(context),
+                      title: Text(value.hasPassword ? l10n.changePassword : l10n.setPassword),
+                      subtitle: value.hasPassword ? null : Text(l10n.setPasswordHelp),
+                      onTap: () => _changePassword(context, value),
                     ),
                   ],
                 ),
@@ -141,7 +154,7 @@ class AccountScreen extends ConsumerWidget {
                   leading: Icon(LucideIcons.trash2, color: danger),
                   title: Text(l10n.deleteAccount, style: TextStyle(color: danger)),
                   subtitle: Text(l10n.deleteAccountHelp),
-                  onTap: () => _delete(context),
+                  onTap: () => _delete(context, value),
                 ),
               ),
             ),
@@ -239,7 +252,9 @@ class _PasswordFieldState extends State<_PasswordField> {
 }
 
 class _PasswordSheet extends ConsumerStatefulWidget {
-  const _PasswordSheet();
+  const _PasswordSheet({required this.hasPassword});
+
+  final bool hasPassword; // false: the first password of an account made with Google
 
   @override
   ConsumerState<_PasswordSheet> createState() => _PasswordSheetState();
@@ -262,7 +277,8 @@ class _PasswordSheetState extends ConsumerState<_PasswordSheet> {
     if (!_form.currentState!.validate()) return;
     setState(() => _busy = true);
     try {
-      final tokens = await ref.read(apiProvider).changePassword(_current.text, _next.text);
+      final current = widget.hasPassword ? _current.text : null;
+      final tokens = await ref.read(apiProvider).changePassword(current, _next.text);
       await ref.read(authProvider.notifier).replaceTokens(tokens);
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -283,13 +299,20 @@ class _PasswordSheetState extends ConsumerState<_PasswordSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 12,
           children: [
-            Text(l10n.changePassword, style: Theme.of(context).textTheme.titleLarge),
-            Text(l10n.changePasswordHelp, style: TextStyle(color: context.tokens.muted)),
-            _PasswordField(
-              controller: _current,
-              label: l10n.currentPassword,
-              validator: (v) => (v ?? '').isEmpty ? l10n.required : null,
+            Text(
+              widget.hasPassword ? l10n.changePassword : l10n.setPassword,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
+            Text(
+              widget.hasPassword ? l10n.changePasswordHelp : l10n.setPasswordHelp,
+              style: TextStyle(color: context.tokens.muted),
+            ),
+            if (widget.hasPassword)
+              _PasswordField(
+                controller: _current,
+                label: l10n.currentPassword,
+                validator: (v) => (v ?? '').isEmpty ? l10n.required : null,
+              ),
             _PasswordField(
               controller: _next,
               label: l10n.newPassword,
@@ -300,7 +323,7 @@ class _PasswordSheetState extends ConsumerState<_PasswordSheet> {
               onPressed: _busy ? null : _save,
               child: _busy
                   ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.changePassword),
+                  : Text(widget.hasPassword ? l10n.changePassword : l10n.setPassword),
             ),
           ],
         ),
@@ -311,7 +334,9 @@ class _PasswordSheetState extends ConsumerState<_PasswordSheet> {
 
 /// What goes, and the password to be sure it's them.
 class _DeleteSheet extends ConsumerStatefulWidget {
-  const _DeleteSheet();
+  const _DeleteSheet({required this.hasPassword});
+
+  final bool hasPassword; // an account made with Google has none to type
 
   @override
   ConsumerState<_DeleteSheet> createState() => _DeleteSheetState();
@@ -334,7 +359,7 @@ class _DeleteSheetState extends ConsumerState<_DeleteSheet> {
     final messenger = ScaffoldMessenger.of(context);
     final done = context.l10n.accountDeleted;
     try {
-      await ref.read(apiProvider).deleteAccount(_password.text);
+      await ref.read(apiProvider).deleteAccount(widget.hasPassword ? _password.text : null);
       if (mounted) Navigator.pop(context);
       await ref.read(authProvider.notifier).logout(expired: true); // the account is gone
       messenger.showSnackBar(SnackBar(content: Text(done)));
@@ -358,11 +383,12 @@ class _DeleteSheetState extends ConsumerState<_DeleteSheet> {
           children: [
             Text(l10n.deleteAccountQuestion, style: Theme.of(context).textTheme.titleLarge),
             Note(l10n.deleteAccountWarning, tone: Tone.lost, icon: LucideIcons.triangleAlert),
-            _PasswordField(
-              controller: _password,
-              label: l10n.password,
-              validator: (v) => (v ?? '').isEmpty ? l10n.required : null,
-            ),
+            if (widget.hasPassword)
+              _PasswordField(
+                controller: _password,
+                label: l10n.password,
+                validator: (v) => (v ?? '').isEmpty ? l10n.required : null,
+              ),
             FilledButton.icon(
               onPressed: _busy ? null : _delete,
               // The deep coral of the "lost" button, so the white label stays readable

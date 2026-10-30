@@ -42,6 +42,7 @@ public class SecurityConfig {
             post("/auth/register"),
             post("/auth/login"),
             post("/auth/refresh"),
+            post("/auth/google"),
             post("/auth/logout"),
             get("/health"),
             get("/map"),

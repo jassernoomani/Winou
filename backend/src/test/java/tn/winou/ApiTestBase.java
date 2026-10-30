@@ -75,6 +75,7 @@ import tn.winou.matching.PhotoWorker;
         // Every test signs people up and in from one address
         "winou.auth.registrations-per-ip-per-hour=1000000",
         "winou.auth.login-attempts-per-ip=1000000",
+        "winou.google.client-ids=test-client",
 })
 @AutoConfigureMockMvc
 @Import(ApiTestBase.Fakes.class)
@@ -153,6 +154,24 @@ public abstract class ApiTestBase {
         @Primary
         RecordingNotifier recordingNotifier() {
             return new RecordingNotifier();
+        }
+
+        /** Google ID tokens are "sub|email|email_verified|name" in tests. */
+        @Bean
+        @Primary
+        tn.winou.security.GoogleTokens fakeGoogle(tn.winou.config.WinouProperties properties) {
+            return new tn.winou.security.GoogleTokens(properties) {
+                @Override
+                public Identity verify(String idToken) {
+                    String[] parts = idToken.split("\\|", -1);
+                    if (parts.length != 4) {
+                        throw tn.winou.common.ApiException.coded(org.springframework.http.HttpStatus.UNAUTHORIZED,
+                                "google_invalid", "Google sign-in failed. Try again.");
+                    }
+                    return new Identity(parts[0], parts[1].isEmpty() ? null : parts[1],
+                            Boolean.parseBoolean(parts[2]), parts[3].isEmpty() ? null : parts[3]);
+                }
+            };
         }
 
         /** Notifications are sent on the request thread in tests (after commit, as in production). */

@@ -83,12 +83,18 @@ public class AccountService {
         log.info("user {} deleted their account", user.getId());
     }
 
-    /** The current password, with the same limit on wrong guesses as signing in. */
+    /**
+     * The current password, with the same limit on wrong guesses as signing in. An account made
+     * with Google has none: being signed in is enough, and a "change" sets the first one.
+     */
     private void requirePassword(User user, String password) {
+        if (user.getPasswordHash() == null) {
+            return;
+        }
         String key = "login:" + user.getEmail();
         Duration window = settings.loginAttemptWindow();
         limiter.check(key, settings.loginAttemptsPerEmail(), window);
-        if (!passwords.verify(user.getPasswordHash(), password)) {
+        if (password == null || !passwords.verify(user.getPasswordHash(), password)) {
             limiter.record(key, window);
             throw ApiException.coded(HttpStatus.FORBIDDEN, "wrong_password", "The password is wrong.");
         }

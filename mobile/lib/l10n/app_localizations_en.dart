@@ -1158,4 +1158,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Your account was deleted.';
+
+  @override
+  String get or => 'or';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get signedInWithGoogle => 'Signs in with Google';
+
+  @override
+  String get setPassword => 'Set a password';
+
+  @override
+  String get setPasswordHelp =>
+      'To sign in with your email too, not only with Google';
+
+  @override
+  String get errorGoogleDisabled =>
+      'Google sign-in isn\'t available on this server.';
+
+  @override
+  String get errorGoogleNoEmail => 'This Google account has no verified email.';
+
+  @override
+  String get errorGoogleFailed => 'Google sign-in didn\'t work. Try again.';
 }

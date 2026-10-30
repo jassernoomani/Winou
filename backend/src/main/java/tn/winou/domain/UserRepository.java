@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByGoogleSub(String googleSub);
+
     boolean existsByEmail(String email);
 
     boolean existsByIdAndBannedUntilAfter(UUID id, OffsetDateTime now);

@@ -44,6 +44,12 @@ public class User extends BaseEntity {
     private String alertPoint;
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    /** Google's id for the user, once they used "Continue with Google". */
+    private String googleSub;
+
+    /** When we learned the email is theirs (from Google, or a code we sent); null if never. */
+    private OffsetDateTime emailVerifiedAt;
+
     /** Access tokens with an older version are refused: "sign out everywhere", a new password. */
     private int tokenVersion;
 

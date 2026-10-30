@@ -325,5 +325,13 @@
   "deleteAccountQuestion": "Supprimer votre compte ?",
   "deleteAccountWarning": "Vos avis de perte, signalements, photos et conversations sont supprimés définitivement. C'est irréversible.",
   "deleteAccountForGood": "Supprimer mon compte",
-  "accountDeleted": "Votre compte a été supprimé."
+  "accountDeleted": "Votre compte a été supprimé.",
+  "or": "ou",
+  "continueWithGoogle": "Continuer avec Google",
+  "signedInWithGoogle": "Connexion avec Google",
+  "setPassword": "Choisir un mot de passe",
+  "setPasswordHelp": "Pour vous connecter aussi avec votre e-mail, pas seulement avec Google",
+  "errorGoogleDisabled": "La connexion avec Google n'est pas disponible sur ce serveur.",
+  "errorGoogleNoEmail": "Ce compte Google n'a pas d'e-mail vérifié.",
+  "errorGoogleFailed": "La connexion avec Google n'a pas fonctionné. Réessayez."
 }

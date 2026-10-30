@@ -7,6 +7,9 @@ class Config {
   /// so one build works on any network the laptop and phone share.
   static String apiUrl = defaultApiUrl;
 
+  /// The Web client ID Google signs ID tokens for. Empty: read from google-services.json.
+  static const googleServerClientId = String.fromEnvironment('GOOGLE_SERVER_CLIENT_ID');
+
   /// Where the map opens before the GPS answers: Tunis.
   static const defaultLat = 36.8065;
   static const defaultLon = 10.1815;

@@ -108,6 +108,10 @@ class WinouApi {
     _tokens,
   );
 
+  /// Continue with Google: [idToken] from Google Sign-In.
+  Future<SessionTokens> google(String idToken) =>
+      _call(() => _dio.post('/auth/google', data: {'id_token': idToken}), _tokens);
+
   /// New tokens for a refresh token, which stops working.
   Future<SessionTokens> refreshSession(String refreshToken) =>
       _call(() => _plain.post('/auth/refresh', data: {'refresh_token': refreshToken}), _tokens);
@@ -115,13 +119,14 @@ class WinouApi {
   Future<void> endSession(String refreshToken) =>
       _call(() => _plain.post('/auth/logout', data: {'refresh_token': refreshToken}), (_) {});
 
-  /// Signs every other phone out; returns this phone's new tokens.
-  Future<SessionTokens> changePassword(String current, String next) =>
+  /// Signs every other phone out; returns this phone's new tokens. No [current]: the first password
+  /// of an account made with Google.
+  Future<SessionTokens> changePassword(String? current, String next) =>
       _call(() => _dio.post('/me/password', data: {'current_password': current, 'new_password': next}), _tokens);
 
   Future<void> signOutEverywhere() => _call(() => _dio.post('/me/sign-out-everywhere'), (_) {});
 
-  Future<void> deleteAccount(String password) => _call(() => _dio.delete('/me', data: {'password': password}), (_) {});
+  Future<void> deleteAccount(String? password) => _call(() => _dio.delete('/me', data: {'password': password}), (_) {});
 
   Future<User> rename(String displayName) =>
       _call(() => _dio.patch('/me', data: {'display_name': displayName}), (data) => User.fromJson(data));

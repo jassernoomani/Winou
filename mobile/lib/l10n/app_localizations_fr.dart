@@ -1168,4 +1168,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Votre compte a été supprimé.';
+
+  @override
+  String get or => 'ou';
+
+  @override
+  String get continueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get signedInWithGoogle => 'Connexion avec Google';
+
+  @override
+  String get setPassword => 'Choisir un mot de passe';
+
+  @override
+  String get setPasswordHelp =>
+      'Pour vous connecter aussi avec votre e-mail, pas seulement avec Google';
+
+  @override
+  String get errorGoogleDisabled =>
+      'La connexion avec Google n\'est pas disponible sur ce serveur.';
+
+  @override
+  String get errorGoogleNoEmail =>
+      'Ce compte Google n\'a pas d\'e-mail vérifié.';
+
+  @override
+  String get errorGoogleFailed =>
+      'La connexion avec Google n\'a pas fonctionné. Réessayez.';
 }

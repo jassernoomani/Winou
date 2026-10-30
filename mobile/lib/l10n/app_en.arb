@@ -710,5 +710,13 @@
   "deleteAccountQuestion": "Delete your account?",
   "deleteAccountWarning": "Your lost pet reports, sightings, photos and conversations are deleted for good. This can't be undone.",
   "deleteAccountForGood": "Delete my account",
-  "accountDeleted": "Your account was deleted."
+  "accountDeleted": "Your account was deleted.",
+  "or": "or",
+  "continueWithGoogle": "Continue with Google",
+  "signedInWithGoogle": "Signs in with Google",
+  "setPassword": "Set a password",
+  "setPasswordHelp": "To sign in with your email too, not only with Google",
+  "errorGoogleDisabled": "Google sign-in isn't available on this server.",
+  "errorGoogleNoEmail": "This Google account has no verified email.",
+  "errorGoogleFailed": "Google sign-in didn't work. Try again."
 }

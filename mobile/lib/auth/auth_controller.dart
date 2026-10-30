@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
+import '../config.dart';
 import '../push.dart';
 
 const _tokenKey = 'access_token';
@@ -48,6 +52,28 @@ class AuthController extends Notifier<AuthState> {
 
   Future<void> register(String email, String password, String displayName) async =>
       _save(await ref.read(apiProvider).register(email.trim(), password, displayName.trim()));
+
+  /// Continue with Google. Returns false if the user closed Google's sheet.
+  Future<bool> google() async {
+    final google = GoogleSignIn.instance;
+    _googleReady ??= google.initialize(
+      serverClientId: Config.googleServerClientId.isEmpty ? null : Config.googleServerClientId,
+    );
+    await _googleReady;
+    final GoogleSignInAccount account;
+    try {
+      account = await google.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return false;
+      throw ApiException(e.description ?? 'Google sign-in failed.', code: 'google_failed');
+    }
+    final idToken = account.authentication.idToken;
+    if (idToken == null) throw ApiException('Google sign-in failed.', code: 'google_failed');
+    await _save(await ref.read(apiProvider).google(idToken));
+    return true;
+  }
+
+  Future<void>? _googleReady;
 
   /// New tokens after a password change: the other phones were signed out, not this one.
   Future<void> replaceTokens(SessionTokens tokens) => _save(tokens, registerPush: false);
@@ -97,6 +123,10 @@ class AuthController extends Notifier<AuthState> {
       } catch (_) {} // signed out here anyway; the session expires on its own
     }
     _refresh = null;
+    if (_googleReady != null) {
+      // So the next "Continue with Google" asks which account
+      unawaited(GoogleSignIn.instance.signOut().catchError((_) {}));
+    }
     await (_storage.delete(key: _tokenKey), _storage.delete(key: _refreshKey)).wait;
     state = const AuthState();
   }

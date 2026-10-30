@@ -141,13 +141,19 @@ class User {
       email = json['email'],
       displayName = json['display_name'],
       role = _enum(Role.values, json['role']),
-      associationName = json['association_name'];
+      associationName = json['association_name'],
+      hasPassword = json['has_password'] ?? true,
+      emailVerified = json['email_verified'] ?? false,
+      google = json['google'] ?? false;
 
   final String id;
   final String email;
   final String displayName;
   final Role role;
   final String? associationName; // set once an admin approved their association
+  final bool hasPassword; // false for accounts made with Google, until they set one
+  final bool emailVerified;
+  final bool google; // signs in with Google
 
   bool get isAdmin => role == Role.admin;
 }
