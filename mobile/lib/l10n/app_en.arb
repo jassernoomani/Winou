@@ -1158,5 +1158,26 @@
         "type": "String"
       }
     }
-  }
+  },
+  "careCardTitle": "Care card",
+  "careCardIntro": "What the neighbourhood knows about this animal. Anyone can update it.",
+  "careEmpty": "Nothing known yet. Add what you know.",
+  "editCareCard": "Edit",
+  "careNickname": "Name",
+  "careNicknameHint": "What people call it",
+  "sterilised": "Sterilised",
+  "vaccinated": "Vaccinated",
+  "careUnknown": "Not known",
+  "careNotes": "Care notes",
+  "careNotesHint": "Ear-tipped, eats at the bakery around 6pm…",
+  "fedBy": "{count, plural, =0{Nobody feeds it yet} =1{Fed by 1 person} other{Fed by {count} people}}",
+  "@fedBy": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "iFeedIt": "I feed it",
+  "careUpdated": "Care card updated"
 }

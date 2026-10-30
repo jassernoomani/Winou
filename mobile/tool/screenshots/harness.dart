@@ -218,8 +218,10 @@ Map<String, dynamic> sightingJson({
   String? helpedBy,
   bool hidden = false,
   bool inCare = false,
+  Map<String, dynamic>? care,
 }) => {
   'in_care': inCare,
+  'care': care ?? (stray ? <String, dynamic>{'feeders': 0, 'i_feed': false} : null),
   'id': id,
   'species': species,
   'location': {'lat': Config.defaultLat + 0.002, 'lon': Config.defaultLon + 0.003},

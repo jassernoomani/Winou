@@ -1866,4 +1866,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String pushStillMissingBody(String a) {
     return 'If $a is back home, close the report so people stop looking. If not, share the poster again.';
   }
+
+  @override
+  String get careCardTitle => 'Care card';
+
+  @override
+  String get careCardIntro =>
+      'What the neighbourhood knows about this animal. Anyone can update it.';
+
+  @override
+  String get careEmpty => 'Nothing known yet. Add what you know.';
+
+  @override
+  String get editCareCard => 'Edit';
+
+  @override
+  String get careNickname => 'Name';
+
+  @override
+  String get careNicknameHint => 'What people call it';
+
+  @override
+  String get sterilised => 'Sterilised';
+
+  @override
+  String get vaccinated => 'Vaccinated';
+
+  @override
+  String get careUnknown => 'Not known';
+
+  @override
+  String get careNotes => 'Care notes';
+
+  @override
+  String get careNotesHint => 'Ear-tipped, eats at the bakery around 6pm…';
+
+  @override
+  String fedBy(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Fed by $count people',
+      one: 'Fed by 1 person',
+      zero: 'Nobody feeds it yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iFeedIt => 'I feed it';
+
+  @override
+  String get careUpdated => 'Care card updated';
 }

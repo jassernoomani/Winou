@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.PhotoOut;
 import tn.winou.web.ApiModels.SightingIn;
 import tn.winou.web.ApiModels.SightingOut;
+import tn.winou.web.ApiModels.StrayCareUpdate;
 import tn.winou.web.ApiModels.SightingUpdate;
 import tn.winou.web.Views;
 
@@ -71,6 +73,26 @@ public class SightingController {
     public SightingOut strayStatus(@PathVariable UUID sightingId, @Valid @RequestBody StrayStatusUpdate body,
             @CurrentUser User user) {
         return sightings.setStrayStatus(sightingId, body.status(), user);
+    }
+
+    @PutMapping("/sightings/{sightingId}/care")
+    @Operation(summary = "Update a stray's care card: name, sterilised, vaccinated, care notes",
+            description = "Anyone signed in may update it. Strays only (422 otherwise).")
+    public SightingOut care(@PathVariable UUID sightingId, @Valid @RequestBody StrayCareUpdate body,
+            @CurrentUser User user) {
+        return sightings.updateCare(sightingId, body, user);
+    }
+
+    @PutMapping("/sightings/{sightingId}/feeding")
+    @Operation(summary = "\"I feed this animal\" (strays only); it also keeps the stray on the map")
+    public SightingOut feed(@PathVariable UUID sightingId, @CurrentUser User user) {
+        return sightings.setFeeding(sightingId, true, user);
+    }
+
+    @DeleteMapping("/sightings/{sightingId}/feeding")
+    @Operation(summary = "No longer feeding this animal")
+    public SightingOut stopFeeding(@PathVariable UUID sightingId, @CurrentUser User user) {
+        return sightings.setFeeding(sightingId, false, user);
     }
 
     @PatchMapping("/sightings/{sightingId}")

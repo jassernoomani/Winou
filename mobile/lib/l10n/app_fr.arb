@@ -516,5 +516,19 @@
   "sortReward": "Plus grosse récompense",
   "noSearchResults": "Aucun animal perdu ne correspond à « {query} »",
   "pushStillMissingTitle": "{a} est toujours perdu ?",
-  "pushStillMissingBody": "Si {a} est rentré, clôturez l'annonce pour que les gens arrêtent de chercher. Sinon, partagez l'affiche à nouveau."
+  "pushStillMissingBody": "Si {a} est rentré, clôturez l'annonce pour que les gens arrêtent de chercher. Sinon, partagez l'affiche à nouveau.",
+  "careCardTitle": "Fiche de soins",
+  "careCardIntro": "Ce que le quartier sait de cet animal. Tout le monde peut la mettre à jour.",
+  "careEmpty": "Rien de connu pour l'instant. Ajoutez ce que vous savez.",
+  "editCareCard": "Modifier",
+  "careNickname": "Nom",
+  "careNicknameHint": "Comment on l'appelle",
+  "sterilised": "Stérilisé",
+  "vaccinated": "Vacciné",
+  "careUnknown": "On ne sait pas",
+  "careNotes": "Notes de soins",
+  "careNotesHint": "Oreille marquée, mange à la boulangerie vers 18 h…",
+  "fedBy": "{count, plural, =0{Personne ne le nourrit encore} =1{Nourri par 1 personne} other{Nourri par {count} personnes}}",
+  "iFeedIt": "Je le nourris",
+  "careUpdated": "Fiche mise à jour"
 }

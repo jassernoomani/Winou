@@ -3201,6 +3201,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If {a} is back home, close the report so people stop looking. If not, share the poster again.'**
   String pushStillMissingBody(String a);
+
+  /// No description provided for @careCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Care card'**
+  String get careCardTitle;
+
+  /// No description provided for @careCardIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'What the neighbourhood knows about this animal. Anyone can update it.'**
+  String get careCardIntro;
+
+  /// No description provided for @careEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing known yet. Add what you know.'**
+  String get careEmpty;
+
+  /// No description provided for @editCareCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editCareCard;
+
+  /// No description provided for @careNickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get careNickname;
+
+  /// No description provided for @careNicknameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What people call it'**
+  String get careNicknameHint;
+
+  /// No description provided for @sterilised.
+  ///
+  /// In en, this message translates to:
+  /// **'Sterilised'**
+  String get sterilised;
+
+  /// No description provided for @vaccinated.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccinated'**
+  String get vaccinated;
+
+  /// No description provided for @careUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Not known'**
+  String get careUnknown;
+
+  /// No description provided for @careNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Care notes'**
+  String get careNotes;
+
+  /// No description provided for @careNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ear-tipped, eats at the bakery around 6pm…'**
+  String get careNotesHint;
+
+  /// No description provided for @fedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nobody feeds it yet} =1{Fed by 1 person} other{Fed by {count} people}}'**
+  String fedBy(int count);
+
+  /// No description provided for @iFeedIt.
+  ///
+  /// In en, this message translates to:
+  /// **'I feed it'**
+  String get iFeedIt;
+
+  /// No description provided for @careUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Care card updated'**
+  String get careUpdated;
 }
 
 class _AppLocalizationsDelegate

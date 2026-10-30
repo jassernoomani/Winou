@@ -342,7 +342,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           Text(switch (item.type) {
             MapItemType.lost => l10n.lostNamed(item.name ?? ''),
             MapItemType.sighting => l10n.sightingOf(speciesLabel(l10n, item.species)),
-            MapItemType.stray => l10n.strayOf(speciesLabel(l10n, item.species)),
+            MapItemType.stray => item.name ?? l10n.strayOf(speciesLabel(l10n, item.species)), // its nickname
           }),
         ],
       ),

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ import tn.winou.matching.Records;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.web.ApiModels.SightingIn;
 import tn.winou.web.ApiModels.SightingOut;
+import tn.winou.web.ApiModels.StrayCareUpdate;
 import tn.winou.web.ApiModels.SightingUpdate;
 import tn.winou.web.Views;
 
@@ -47,10 +49,12 @@ public class SightingService {
     private final LostReportRepository reports;
     private final MatchRepository matches;
     private final AlertAreas areas;
+    private final JdbcClient jdbc;
 
     public SightingService(SightingRepository sightings, PhotoRepository photos, Records records, Views views,
             WinouProperties properties, AssociationService associations, Notifications notifications,
-            LostReportRepository reports, MatchRepository matches, AlertAreas areas) {
+            LostReportRepository reports, MatchRepository matches, AlertAreas areas, JdbcClient jdbc) {
+        this.jdbc = jdbc;
         this.areas = areas;
         this.reports = reports;
         this.matches = matches;
@@ -182,6 +186,48 @@ public class SightingService {
         sighting.setStrayStatusAt(OffsetDateTime.now());
         sighting.setStrayStatusBy(user.getId());
         return views.sighting(sighting, user);
+    }
+
+    /** Anyone signed in keeps a stray's care card up to date, as the neighbourhood learns more. */
+    @Transactional
+    public SightingOut updateCare(UUID id, StrayCareUpdate body, User user) {
+        Sighting sighting = stray(id, user);
+        sighting.setNickname(blankToNull(body.nickname()));
+        sighting.setSterilised(body.sterilised());
+        sighting.setVaccinated(body.vaccinated());
+        sighting.setCareNotes(blankToNull(body.notes()));
+        sighting.setCareUpdatedAt(OffsetDateTime.now());
+        sighting.setCareUpdatedBy(user.getId());
+        return views.sighting(sighting, user);
+    }
+
+    /** "I feed this animal", or no longer. Feeding it also says it is still around. */
+    @Transactional
+    public SightingOut setFeeding(UUID id, boolean feeding, User user) {
+        Sighting sighting = stray(id, user);
+        if (feeding) {
+            jdbc.sql("INSERT INTO stray_feeders (sighting_id, user_id) VALUES (:id, :user) ON CONFLICT DO NOTHING")
+                    .param("id", id).param("user", user.getId()).update();
+            if (sighting.getStrayStatus() == StrayStatus.AROUND) {
+                sighting.setStrayStatusAt(OffsetDateTime.now()); // stays on the map
+            }
+        } else {
+            jdbc.sql("DELETE FROM stray_feeders WHERE sighting_id = :id AND user_id = :user")
+                    .param("id", id).param("user", user.getId()).update();
+        }
+        return views.sighting(sighting, user);
+    }
+
+    private Sighting stray(UUID id, User user) {
+        Sighting sighting = visible(id, user);
+        if (!sighting.isStray()) {
+            throw ApiException.invalid("Only strays have a care card");
+        }
+        return sighting;
+    }
+
+    private static String blankToNull(String text) {
+        return text == null || text.isBlank() ? null : text.strip();
     }
 
     private static boolean isUrgent(Condition condition) {

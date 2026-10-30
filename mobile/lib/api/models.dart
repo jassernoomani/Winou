@@ -173,6 +173,30 @@ class Photo {
   bool get isProcessing => status == 'PENDING' || status == 'PROCESSING';
 }
 
+/// A stray's care card. [sterilised] and [vaccinated] are null when nobody knows.
+class StrayCare {
+  const StrayCare({this.nickname, this.sterilised, this.vaccinated, this.notes, this.feeders = 0, this.iFeed = false});
+
+  const StrayCare.empty() : this();
+
+  StrayCare.fromJson(Map<String, dynamic> json)
+    : nickname = json['nickname'],
+      sterilised = json['sterilised'],
+      vaccinated = json['vaccinated'],
+      notes = json['notes'],
+      feeders = json['feeders'] ?? 0,
+      iFeed = json['i_feed'] ?? false;
+
+  final String? nickname;
+  final bool? sterilised;
+  final bool? vaccinated;
+  final String? notes;
+  final int feeders; // people who say they feed it
+  final bool iFeed;
+
+  bool get isEmpty => nickname == null && sterilised == null && vaccinated == null && notes == null;
+}
+
 /// How the home list is ordered.
 enum FeedSort { recent, nearest, reward }
 
@@ -227,7 +251,8 @@ class Sighting {
       photos = [for (final p in json['photos']) Photo.fromJson(p)],
       hidden = json['hidden'] ?? false,
       authorId = json['author_id'],
-      inCare = json['in_care'] ?? false;
+      inCare = json['in_care'] ?? false,
+      care = json['care'] == null ? null : StrayCare.fromJson(json['care']);
 
   final String id;
   final Species species;
@@ -244,6 +269,10 @@ class Sighting {
   final bool hidden;
   final String? authorId; // sent to admins only
   final bool inCare; // the finder has the animal with them
+  final StrayCare? care; // strays only
+
+  /// A stray the neighbourhood named is called by its name.
+  String? get nickname => care?.nickname;
 
   bool get needsHelp => condition != Condition.healthy;
 }

@@ -406,6 +406,46 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     null,
   ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '83_stray_care',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(
+      sighting: sightingJson(
+        stray: true,
+        care: {
+          'nickname': 'Simba',
+          'sterilised': true,
+          'vaccinated': null,
+          'notes': 'Ear-tipped, very gentle. Eats at the bakery around 6pm.',
+          'feeders': 3,
+          'i_feed': true,
+        },
+      ),
+    ),
+    (tester) async {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -250));
+      await settle(tester);
+    },
+  ),
+  (
+    '84_stray_care_empty',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(sighting: sightingJson(stray: true)),
+    (tester) async {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -250));
+      await settle(tester);
+    },
+  ),
+  (
+    '85_stray_care_edit',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(sighting: sightingJson(stray: true, care: {'nickname': 'Simba', 'sterilised': true, 'feeders': 1})),
+    (tester) async {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -250));
+      await settle(tester);
+      await _tap(tester, find.text(_l10n.editCareCard));
+    },
+  ),
   ('80_home_search', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'red collar')),
   ('81_home_no_results', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'zebra')),
   ('82_home_sort', () => const LostFeedScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.sortBy))),

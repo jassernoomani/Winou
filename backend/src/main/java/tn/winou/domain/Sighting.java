@@ -49,6 +49,14 @@ public class Sighting extends BaseEntity {
 
     private OffsetDateTime strayStatusAt;
     private UUID strayStatusBy;
+
+    // A stray's care card, which anyone signed in may keep up to date
+    private String nickname;
+    private Boolean sterilised; // null: nobody knows
+    private Boolean vaccinated;
+    private String careNotes;
+    private OffsetDateTime careUpdatedAt;
+    private UUID careUpdatedBy;
     private OffsetDateTime hiddenAt; // reported by enough people; shown to the reporter and admins only
 
     private OffsetDateTime createdAt = OffsetDateTime.now();

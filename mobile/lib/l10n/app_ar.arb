@@ -516,5 +516,19 @@
   "sortReward": "أكبر مكافأة",
   "noSearchResults": "لا يوجد حيوان مفقود يطابق «{query}»",
   "pushStillMissingTitle": "هل ما زال {a} مفقودًا؟",
-  "pushStillMissingBody": "إذا عاد {a} إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد."
+  "pushStillMissingBody": "إذا عاد {a} إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد.",
+  "careCardTitle": "بطاقة الرعاية",
+  "careCardIntro": "ما يعرفه الحي عن هذا الحيوان. يمكن لأي شخص تحديثها.",
+  "careEmpty": "لا شيء معروف بعد. أضف ما تعرفه.",
+  "editCareCard": "تعديل",
+  "careNickname": "الاسم",
+  "careNicknameHint": "كيف يناديه الناس",
+  "sterilised": "معقّم",
+  "vaccinated": "ملقّح",
+  "careUnknown": "غير معروف",
+  "careNotes": "ملاحظات الرعاية",
+  "careNotesHint": "أذن مقصوصة، يأكل عند المخبز حوالي السادسة مساءً…",
+  "fedBy": "{count, plural, =0{لا أحد يطعمه بعد} =1{يطعمه شخص واحد} =2{يطعمه شخصان} few{يطعمه {count} أشخاص} other{يطعمه {count} شخصًا}}",
+  "iFeedIt": "أنا أطعمه",
+  "careUpdated": "تم تحديث البطاقة"
 }

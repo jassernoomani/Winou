@@ -1882,4 +1882,58 @@ class AppLocalizationsFr extends AppLocalizations {
   String pushStillMissingBody(String a) {
     return 'Si $a est rentré, clôturez l\'annonce pour que les gens arrêtent de chercher. Sinon, partagez l\'affiche à nouveau.';
   }
+
+  @override
+  String get careCardTitle => 'Fiche de soins';
+
+  @override
+  String get careCardIntro =>
+      'Ce que le quartier sait de cet animal. Tout le monde peut la mettre à jour.';
+
+  @override
+  String get careEmpty =>
+      'Rien de connu pour l\'instant. Ajoutez ce que vous savez.';
+
+  @override
+  String get editCareCard => 'Modifier';
+
+  @override
+  String get careNickname => 'Nom';
+
+  @override
+  String get careNicknameHint => 'Comment on l\'appelle';
+
+  @override
+  String get sterilised => 'Stérilisé';
+
+  @override
+  String get vaccinated => 'Vacciné';
+
+  @override
+  String get careUnknown => 'On ne sait pas';
+
+  @override
+  String get careNotes => 'Notes de soins';
+
+  @override
+  String get careNotesHint =>
+      'Oreille marquée, mange à la boulangerie vers 18 h…';
+
+  @override
+  String fedBy(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Nourri par $count personnes',
+      one: 'Nourri par 1 personne',
+      zero: 'Personne ne le nourrit encore',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iFeedIt => 'Je le nourris';
+
+  @override
+  String get careUpdated => 'Fiche mise à jour';
 }

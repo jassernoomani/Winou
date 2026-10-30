@@ -1912,4 +1912,59 @@ class AppLocalizationsAr extends AppLocalizations {
   String pushStillMissingBody(String a) {
     return 'إذا عاد $a إلى البيت، أغلق البلاغ حتى يتوقف الناس عن البحث. وإلا، شارك الملصق من جديد.';
   }
+
+  @override
+  String get careCardTitle => 'بطاقة الرعاية';
+
+  @override
+  String get careCardIntro =>
+      'ما يعرفه الحي عن هذا الحيوان. يمكن لأي شخص تحديثها.';
+
+  @override
+  String get careEmpty => 'لا شيء معروف بعد. أضف ما تعرفه.';
+
+  @override
+  String get editCareCard => 'تعديل';
+
+  @override
+  String get careNickname => 'الاسم';
+
+  @override
+  String get careNicknameHint => 'كيف يناديه الناس';
+
+  @override
+  String get sterilised => 'معقّم';
+
+  @override
+  String get vaccinated => 'ملقّح';
+
+  @override
+  String get careUnknown => 'غير معروف';
+
+  @override
+  String get careNotes => 'ملاحظات الرعاية';
+
+  @override
+  String get careNotesHint =>
+      'أذن مقصوصة، يأكل عند المخبز حوالي السادسة مساءً…';
+
+  @override
+  String fedBy(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'يطعمه $count شخصًا',
+      few: 'يطعمه $count أشخاص',
+      two: 'يطعمه شخصان',
+      one: 'يطعمه شخص واحد',
+      zero: 'لا أحد يطعمه بعد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get iFeedIt => 'أنا أطعمه';
+
+  @override
+  String get careUpdated => 'تم تحديث البطاقة';
 }

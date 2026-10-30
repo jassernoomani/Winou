@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 import tn.winou.common.Geo;
@@ -24,6 +25,7 @@ import tn.winou.web.ApiModels.Location;
 import tn.winou.web.ApiModels.LostReportOut;
 import tn.winou.web.ApiModels.PhotoOut;
 import tn.winou.web.ApiModels.SightingOut;
+import tn.winou.web.ApiModels.StrayCare;
 
 /** Entities to response bodies. Applies the privacy rules: fuzzed positions, hidden reporters. */
 @Component
@@ -32,8 +34,10 @@ public class Views {
     private final PhotoRepository photos;
     private final UserRepository users;
     private final WinouProperties.Privacy privacy;
+    private final JdbcClient jdbc;
 
-    public Views(PhotoRepository photos, UserRepository users, WinouProperties properties) {
+    public Views(PhotoRepository photos, UserRepository users, WinouProperties properties, JdbcClient jdbc) {
+        this.jdbc = jdbc;
         this.photos = photos;
         this.users = users;
         this.privacy = properties.privacy();
@@ -111,12 +115,37 @@ public class Views {
                         .map(Sighting::getStrayStatusBy).filter(Objects::nonNull).distinct().toList())
                 .stream().filter(User::isAssociation)
                 .collect(Collectors.toMap(User::getId, User::getAssociationName));
+        Map<UUID, Feeders> feeders = feeders(sightings.stream().filter(Sighting::isStray).map(Sighting::getId).toList(),
+                viewer);
         return sightings.stream().map(s -> new SightingOut(s.getId(), s.getSpecies(), Location.of(s.getLocation()),
                 s.getSeenAt(), s.getCondition(), s.getNote(), s.isStray(), s.getStrayStatus(), s.getStrayStatusAt(),
                 s.getStrayStatus() == StrayStatus.HELPED ? helpers.get(s.getStrayStatusBy()) : null,
                 viewer != null && viewer.getId().equals(s.getReporterId()),
                 photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt(),
-                isAdmin(viewer) ? s.getReporterId() : null, s.isInCare())).toList();
+                isAdmin(viewer) ? s.getReporterId() : null, s.isInCare(),
+                s.isStray() ? care(s, feeders.getOrDefault(s.getId(), Feeders.NONE)) : null)).toList();
+    }
+
+    private record Feeders(int count, boolean viewer) {
+        static final Feeders NONE = new Feeders(0, false);
+    }
+
+    private static StrayCare care(Sighting s, Feeders feeders) {
+        return new StrayCare(s.getNickname(), s.getSterilised(), s.getVaccinated(), s.getCareNotes(), feeders.count(),
+                feeders.viewer(), s.getCareUpdatedAt());
+    }
+
+    /** How many people feed each stray, and whether the viewer is one of them. */
+    private Map<UUID, Feeders> feeders(List<UUID> strayIds, User viewer) {
+        if (strayIds.isEmpty()) {
+            return Map.of();
+        }
+        return jdbc.sql("SELECT sighting_id, count(*) AS n, bool_or(user_id = :viewer) AS mine FROM stray_feeders "
+                        + "WHERE sighting_id IN (:ids) GROUP BY sighting_id")
+                .param("ids", strayIds).param("viewer", viewer == null ? new UUID(0, 0) : viewer.getId())
+                .query((rs, i) -> Map.entry(rs.getObject("sighting_id", UUID.class),
+                        new Feeders(rs.getInt("n"), rs.getBoolean("mine"))))
+                .list().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private static List<PhotoOut> photoList(List<Photo> photos) {

@@ -13,6 +13,7 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/report_sheet.dart';
+import 'stray_care.dart';
 
 class SightingDetailScreen extends ConsumerWidget {
   const SightingDetailScreen({super.key, required this.id});
@@ -53,7 +54,9 @@ class SightingDetailScreen extends ConsumerWidget {
     final mine = sighting.value?.isMine ?? false;
     return Scaffold(
       appBar: AppBar(
-        title: Text(sighting.value?.isStray ?? false ? l10n.typeStray : l10n.typeSighting),
+        title: Text(
+          sighting.value?.nickname ?? (sighting.value?.isStray ?? false ? l10n.typeStray : l10n.typeSighting),
+        ),
         actions: [
           if (mine)
             IconButton(
@@ -99,7 +102,12 @@ class SightingDetailScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(24),
                 child: PhotoGallery(value.photos, showStatus: value.isMine),
               ),
-              if (value.isStray) ...[const SizedBox(height: 16), FadeSlideIn(child: _StrayStatusCard(value))],
+              if (value.isStray) ...[
+                const SizedBox(height: 16),
+                FadeSlideIn(child: StrayCareCard(value)),
+                const SizedBox(height: 12),
+                FadeSlideIn(index: 1, child: _StrayStatusCard(value)),
+              ],
               const SizedBox(height: 16),
               FadeSlideIn(index: 1, child: SightingInfo(value)),
             ],

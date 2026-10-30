@@ -103,7 +103,7 @@ public class MapController {
     /** stray: null for both kinds, true for strays only, false for loose animals only. */
     private List<MapItem> sightings(Filters f, Boolean stray) {
         var sql = new StringBuilder("""
-                SELECT s.id, s.species, s.condition, s.is_stray, s.in_care, s.seen_at AS date,
+                SELECT s.id, s.species, s.condition, s.is_stray, s.in_care, s.seen_at AS date, s.nickname,
                        ST_Y(s.point::geometry) AS lat, ST_X(s.point::geometry) AS lon,
                        (SELECT p.id FROM photos p WHERE p.sighting_id = s.id ORDER BY p.created_at LIMIT 1) AS photo_id
                 FROM sightings s
@@ -121,7 +121,7 @@ public class MapController {
                 SPECIES.convertToEntityAttribute(rs.getString("species")),
                 new Location(rs.getDouble("lat"), rs.getDouble("lon")),
                 rs.getObject("date", OffsetDateTime.class),
-                null,
+                rs.getString("nickname"), // a stray the neighbourhood named
                 Condition.valueOf(rs.getString("condition")),
                 Views.imageUrl(rs.getObject("photo_id", UUID.class)),
                 rs.getBoolean("in_care"))).list();

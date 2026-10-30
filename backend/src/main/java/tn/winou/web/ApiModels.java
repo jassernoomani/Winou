@@ -205,7 +205,25 @@ public final class ApiModels {
             boolean hidden,
             OffsetDateTime createdAt,
             UUID authorId, // for admins only: the reporter is never shown to others
-            boolean inCare) {} // the finder has the animal with them
+            boolean inCare, // the finder has the animal with them
+            StrayCare care) {} // strays only
+
+    /** A stray's care card. sterilised/vaccinated null: nobody knows. */
+    public record StrayCare(
+            String nickname,
+            Boolean sterilised,
+            Boolean vaccinated,
+            String notes,
+            int feeders, // how many people say they feed it
+            boolean iFeed,
+            OffsetDateTime updatedAt) {}
+
+    /** The whole card, as the form shows it: blank text clears a field. */
+    public record StrayCareUpdate(
+            @Size(max = 40) String nickname,
+            Boolean sterilised,
+            Boolean vaccinated,
+            @Size(max = 500) String notes) {}
 
     /** AROUND also says "seen again today": it keeps the stray on the map. */
     public record StrayStatusUpdate(@NotNull StrayStatus status) {}

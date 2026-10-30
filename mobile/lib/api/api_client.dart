@@ -392,6 +392,26 @@ class WinouApi {
     (data) => Sighting.fromJson(data),
   );
 
+  /// The whole card: what is null or blank is cleared.
+  Future<Sighting> updateStrayCare(String id, StrayCare care) => _call(
+    () => _dio.put(
+      '/sightings/$id/care',
+      data: {
+        'nickname': care.nickname,
+        'sterilised': care.sterilised,
+        'vaccinated': care.vaccinated,
+        'notes': care.notes,
+      },
+    ),
+    (data) => Sighting.fromJson(data),
+  );
+
+  /// "I feed this animal", or no longer.
+  Future<Sighting> setFeeding(String id, bool feeding) => _call(
+    () => feeding ? _dio.put('/sightings/$id/feeding') : _dio.delete('/sightings/$id/feeding'),
+    (data) => Sighting.fromJson(data),
+  );
+
   // --- photos ---
 
   /// [ownerPath] is "/lost-reports/{id}" or "/sightings/{id}".
