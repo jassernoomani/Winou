@@ -11,6 +11,7 @@ import '../sightings/sighting_detail_screen.dart' show SightingInfo;
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/photo_viewer.dart';
 
 /// Your lost pet's photo next to the sighting photo that matched it. Two steps close the case:
 /// "that's my pet" (tells the finder, the search goes on), then "I got my pet back".
@@ -236,7 +237,7 @@ class _LabeledPhoto extends StatelessWidget {
         const SizedBox(height: 4),
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: AspectRatio(aspectRatio: 1, child: NetworkPhoto(url)),
+          child: AspectRatio(aspectRatio: 1, child: TappablePhoto(url)),
         ),
       ],
     );

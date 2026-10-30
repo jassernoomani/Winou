@@ -19,6 +19,7 @@ class MyActivityScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final isAdmin = ref.watch(meProvider).value?.isAdmin ?? false; // loaded with the screen, not when the menu opens
+    final waiting = isAdmin ? ref.watch(adminSummaryProvider).value?.total ?? 0 : 0;
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -26,12 +27,12 @@ class MyActivityScreen extends ConsumerWidget {
           title: Text(l10n.myActivity),
           actions: [
             PopupMenuButton<String>(
-              icon: const Icon(LucideIcons.ellipsisVertical),
+              icon: Badge(isLabelVisible: waiting > 0, child: const Icon(LucideIcons.ellipsisVertical)),
               tooltip: l10n.more,
               onSelected: (action) => switch (action) {
                 'logout' => ref.read(authProvider.notifier).logout(),
                 'server' => editServerAddress(context),
-                _ => context.push(action),
+                _ => context.push(action).then((_) => ref.invalidate(adminSummaryProvider)),
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
@@ -41,7 +42,11 @@ class MyActivityScreen extends ConsumerWidget {
                 if (isAdmin)
                   PopupMenuItem(
                     value: '/admin',
-                    child: ListTile(leading: const Icon(LucideIcons.shieldCheck), title: Text(l10n.admin)),
+                    child: ListTile(
+                      leading: const Icon(LucideIcons.shieldCheck),
+                      title: Text(l10n.admin),
+                      trailing: waiting > 0 ? Badge.count(count: waiting) : null,
+                    ),
                   ),
                 PopupMenuItem(
                   value: 'server',

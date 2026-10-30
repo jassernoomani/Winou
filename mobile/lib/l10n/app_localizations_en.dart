@@ -992,6 +992,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String actionDismissed(String what) {
-    return 'Reports on a $what dismissed';
+    return 'Reports dismissed · $what';
   }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get adminDashboard => 'Dashboard';
+
+  @override
+  String get adminActivity => 'Activity';
+
+  @override
+  String aboutUser(String name) {
+    return 'About $name';
+  }
+
+  @override
+  String get statUsers => 'Users';
+
+  @override
+  String statNewThisWeek(int count) {
+    return '+$count this week';
+  }
+
+  @override
+  String get statOpenLost => 'Still lost';
+
+  @override
+  String statOfTotal(int count) {
+    return 'of $count reported';
+  }
+
+  @override
+  String get statReunited => 'Back home';
+
+  @override
+  String statReunionRate(String rate) {
+    return '$rate of lost pets';
+  }
+
+  @override
+  String get statMatchesConfirmed => 'Matches confirmed';
+
+  @override
+  String get statStraysOnMap => 'Strays on the map';
+
+  @override
+  String get statAssociations => 'Associations';
+
+  @override
+  String statStraysHelped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'helped $count strays',
+      one: 'helped 1 stray',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastWeeks(int count) {
+    return 'Last $count weeks';
+  }
+
+  @override
+  String weekOf(String date) {
+    return 'Week of $date';
+  }
+
+  @override
+  String get seriesLost => 'Lost';
+
+  @override
+  String get seriesSightings => 'Sightings';
+
+  @override
+  String get seriesReunited => 'Back home';
+
+  @override
+  String get showTable => 'Show as a table';
+
+  @override
+  String get showChart => 'Show as a chart';
+
+  @override
+  String get weekColumn => 'Week';
+
+  @override
+  String get weeklyChartLabel =>
+      'Lost reports, sightings and pets back home per week. Touch and drag to see a week\'s numbers.';
 }

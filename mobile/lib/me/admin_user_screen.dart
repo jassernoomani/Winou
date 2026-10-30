@@ -106,7 +106,7 @@ class AdminUserScreen extends ConsumerWidget {
                 title: l10n.adminHistory,
                 index: 4,
                 empty: l10n.noAdminHistory,
-                children: [for (final a in value.history) _HistoryTile(a)],
+                children: [for (final a in value.history) AdminActionTile(a)],
               ),
             ],
           ),
@@ -336,10 +336,12 @@ IconData _actionIcon(AdminAction action) => switch (action) {
   AdminAction.unbanUser => LucideIcons.shieldCheck,
 };
 
-class _HistoryTile extends StatelessWidget {
-  const _HistoryTile(this.entry);
+/// One admin action: what, by whom, when. [showUser] adds who it was about.
+class AdminActionTile extends StatelessWidget {
+  const AdminActionTile(this.entry, {super.key, this.showUser = false});
 
   final AdminActionEntry entry;
+  final bool showUser;
 
   @override
   Widget build(BuildContext context) {
@@ -355,6 +357,8 @@ class _HistoryTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(adminActionLabel(l10n, entry)),
+              if (showUser && entry.userName != null)
+                Text(l10n.aboutUser(entry.userName!), style: Theme.of(context).textTheme.titleSmall),
               if (entry.note case final note?) Text(note, style: muted),
               Text('${entry.adminName ?? l10n.deletedAdmin} · ${timeAgo(l10n, entry.createdAt)}', style: muted),
             ],

@@ -1775,8 +1775,146 @@ abstract class AppLocalizations {
   /// No description provided for @actionDismissed.
   ///
   /// In en, this message translates to:
-  /// **'Reports on a {what} dismissed'**
+  /// **'Reports dismissed · {what}'**
   String actionDismissed(String what);
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @adminDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get adminDashboard;
+
+  /// No description provided for @adminActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get adminActivity;
+
+  /// No description provided for @aboutUser.
+  ///
+  /// In en, this message translates to:
+  /// **'About {name}'**
+  String aboutUser(String name);
+
+  /// No description provided for @statUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get statUsers;
+
+  /// No description provided for @statNewThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} this week'**
+  String statNewThisWeek(int count);
+
+  /// No description provided for @statOpenLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Still lost'**
+  String get statOpenLost;
+
+  /// No description provided for @statOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'of {count} reported'**
+  String statOfTotal(int count);
+
+  /// No description provided for @statReunited.
+  ///
+  /// In en, this message translates to:
+  /// **'Back home'**
+  String get statReunited;
+
+  /// No description provided for @statReunionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} of lost pets'**
+  String statReunionRate(String rate);
+
+  /// No description provided for @statMatchesConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches confirmed'**
+  String get statMatchesConfirmed;
+
+  /// No description provided for @statStraysOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Strays on the map'**
+  String get statStraysOnMap;
+
+  /// No description provided for @statAssociations.
+  ///
+  /// In en, this message translates to:
+  /// **'Associations'**
+  String get statAssociations;
+
+  /// No description provided for @statStraysHelped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{helped 1 stray} other{helped {count} strays}}'**
+  String statStraysHelped(int count);
+
+  /// No description provided for @lastWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Last {count} weeks'**
+  String lastWeeks(int count);
+
+  /// No description provided for @weekOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {date}'**
+  String weekOf(String date);
+
+  /// No description provided for @seriesLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost'**
+  String get seriesLost;
+
+  /// No description provided for @seriesSightings.
+  ///
+  /// In en, this message translates to:
+  /// **'Sightings'**
+  String get seriesSightings;
+
+  /// No description provided for @seriesReunited.
+  ///
+  /// In en, this message translates to:
+  /// **'Back home'**
+  String get seriesReunited;
+
+  /// No description provided for @showTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Show as a table'**
+  String get showTable;
+
+  /// No description provided for @showChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Show as a chart'**
+  String get showChart;
+
+  /// No description provided for @weekColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get weekColumn;
+
+  /// No description provided for @weeklyChartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost reports, sightings and pets back home per week. Touch and drag to see a week\'s numbers.'**
+  String get weeklyChartLabel;
 }
 
 class _AppLocalizationsDelegate

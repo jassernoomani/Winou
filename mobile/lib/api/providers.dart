@@ -42,6 +42,15 @@ final reportedContentProvider = FutureProvider.autoDispose<List<HiddenItem>>(
   (ref) => ref.watch(apiProvider).reportedContent(),
 );
 
+/// The counts on the Admin tabs and menu entry. Refresh it after acting on something.
+final adminSummaryProvider = FutureProvider.autoDispose<AdminSummary>((ref) => ref.watch(apiProvider).adminSummary());
+
+final adminStatsProvider = FutureProvider.autoDispose<AdminStats>((ref) => ref.watch(apiProvider).adminStats());
+
+final adminActionsProvider = FutureProvider.autoDispose<List<AdminActionEntry>>(
+  (ref) => ref.watch(apiProvider).adminActions(),
+);
+
 final conversationProvider = FutureProvider.autoDispose.family<Conversation, String>(
   (ref, id) => ref.watch(apiProvider).conversation(id),
 );

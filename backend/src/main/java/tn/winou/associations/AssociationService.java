@@ -74,6 +74,7 @@ public class AssociationService {
         } catch (DataIntegrityViolationException e) {
             throw pending(); // sent twice at the same moment
         }
+        notifications.send(n -> n.associationRequested(request));
         return out(request, user);
     }
 

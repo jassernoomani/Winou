@@ -9,6 +9,7 @@ import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
 import tn.winou.domain.Sighting;
+import tn.winou.web.ApiModels.ReportTarget;
 
 /** Tells users what happened to a case. Implementations never throw for a failed delivery. */
 public interface Notifier {
@@ -30,4 +31,10 @@ public interface Notifier {
 
     /** To the user who asked to be an association: approved or not. */
     void associationDecided(AssociationRequest request);
+
+    /** To admins: enough reports hid this content, it waits for review. */
+    void contentHidden(ReportTarget type, UUID id);
+
+    /** To admins: someone asked to be an association. */
+    void associationRequested(AssociationRequest request);
 }

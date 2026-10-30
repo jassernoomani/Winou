@@ -318,9 +318,30 @@ public final class ApiModels {
             String targetType,
             UUID targetId,
             String adminName,
+            UUID userId,
             String userName,
             String note,
             OffsetDateTime createdAt) {}
+
+    /** What waits for an admin: the counts on the Admin screen's tabs. */
+    public record AdminSummaryOut(long reported, long requests, long hidden) {}
+
+    public record WeekStats(OffsetDateTime weekStart, long lostReports, long sightings, long reunited) {}
+
+    /** The admin dashboard. reunion_rate: found / all lost reports, null before the first one. */
+    public record AdminStatsOut(
+            long users,
+            long newUsersThisWeek,
+            long openLostReports,
+            long lostReportsTotal,
+            long reunited,
+            Double reunionRate,
+            long sightings,
+            long straysOnMap,
+            long matchesConfirmed,
+            long associations,
+            long strayHelpedByAssociations,
+            List<WeekStats> weeks) {}
 
     public record AdminUserDetailOut(
             AdminUserOut user,

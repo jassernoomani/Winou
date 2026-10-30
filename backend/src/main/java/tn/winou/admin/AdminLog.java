@@ -2,6 +2,7 @@ package tn.winou.admin;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -38,19 +39,28 @@ public class AdminLog {
 
     /** The latest actions about a user, most recent first. */
     public List<AdminActionOut> about(UUID userId, int limit) {
+        return query("WHERE a.user_id = :user", Map.of("user", userId, "limit", limit, "offset", 0));
+    }
+
+    /** Everything admins did, most recent first. */
+    public List<AdminActionOut> recent(int limit, int offset) {
+        return query("", Map.of("limit", limit, "offset", offset));
+    }
+
+    private List<AdminActionOut> query(String where, Map<String, Object> params) {
         return jdbc.sql("""
-                        SELECT a.id, a.action, a.target_type, a.target_id, a.note, a.created_at,
+                        SELECT a.id, a.action, a.target_type, a.target_id, a.user_id, a.note, a.created_at,
                                admin.display_name AS admin_name, u.display_name AS user_name
                         FROM admin_actions a
                         LEFT JOIN users admin ON admin.id = a.admin_id
                         LEFT JOIN users u ON u.id = a.user_id
-                        WHERE a.user_id = :user
-                        ORDER BY a.created_at DESC LIMIT :limit""")
-                .param("user", userId)
-                .param("limit", limit)
+                        %s
+                        ORDER BY a.created_at DESC, a.id LIMIT :limit OFFSET :offset""".formatted(where))
+                .params(params)
                 .query((rs, i) -> new AdminActionOut(rs.getObject("id", UUID.class),
                         AdminAction.valueOf(rs.getString("action")), rs.getString("target_type"),
-                        rs.getObject("target_id", UUID.class), rs.getString("admin_name"), rs.getString("user_name"),
+                        rs.getObject("target_id", UUID.class), rs.getString("admin_name"),
+                        rs.getObject("user_id", UUID.class), rs.getString("user_name"),
                         rs.getString("note"), rs.getObject("created_at", OffsetDateTime.class)))
                 .list();
     }

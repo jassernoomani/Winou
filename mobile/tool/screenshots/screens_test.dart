@@ -134,18 +134,8 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     () => FakeApi(role: 'ASSOCIATION', associationName: 'Refuge de Tunis'),
     null,
   ),
-  (
-    '36_admin_requests',
-    () => const AdminScreen(),
-    () => FakeApi(role: 'ADMIN'),
-    (tester) => _tap(tester, find.text(_l10n.adminRequests)),
-  ),
-  (
-    '37_admin_hidden',
-    () => const AdminScreen(),
-    () => FakeApi(role: 'ADMIN'),
-    (tester) => _tap(tester, find.text(_l10n.adminHidden)),
-  ),
+  ('36_admin_requests', () => const AdminScreen(tab: 'requests'), () => FakeApi(role: 'ADMIN'), null),
+  ('37_admin_hidden', () => const AdminScreen(tab: 'hidden'), () => FakeApi(role: 'ADMIN'), null),
   (
     '38_chat_association',
     () => const ChatScreen(id: 'c1'),
@@ -158,7 +148,7 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     ),
     null,
   ),
-  ('40_admin_users', () => const AdminScreen(), () => FakeApi(role: 'ADMIN'), null),
+  ('40_admin_users', () => const AdminScreen(tab: 'users'), () => FakeApi(role: 'ADMIN'), null),
   ('41_admin_user_banned', () => const AdminUserScreen(id: 'u1'), () => FakeApi(role: 'ADMIN'), null),
   (
     '42_admin_suspend_sheet',
@@ -182,11 +172,39 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
       await settle(tester);
     },
   ),
+  ('44_admin_reported', () => const AdminScreen(tab: 'reported'), () => FakeApi(role: 'ADMIN'), null),
+  ('46_admin_dashboard', () => const AdminScreen(), () => FakeApi(role: 'ADMIN'), null),
   (
-    '44_admin_reported',
+    '47_admin_dashboard_week',
     () => const AdminScreen(),
     () => FakeApi(role: 'ADMIN'),
-    (tester) => _tap(tester, find.text(_l10n.adminReported)),
+    (tester) async {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+      await settle(tester, rounds: 1);
+      final chart = tester.getRect(
+        find.byWidgetPredicate((w) => w is Semantics && w.properties.label == _l10n.weeklyChartLabel),
+      );
+      final gesture = await tester.startGesture(chart.center);
+      await gesture.moveBy(const Offset(-40, 0));
+      await tester.pump();
+    },
+  ),
+  (
+    '48_admin_dashboard_table',
+    () => const AdminScreen(),
+    () => FakeApi(role: 'ADMIN'),
+    (tester) async {
+      await _tap(tester, find.byTooltip(_l10n.showTable));
+      await tester.drag(find.byType(ListView).first, const Offset(0, -420));
+      await settle(tester, rounds: 1);
+    },
+  ),
+  ('49_admin_activity', () => const AdminScreen(tab: 'activity'), () => FakeApi(role: 'ADMIN'), null),
+  (
+    '50_photo_viewer',
+    () => const LostReportDetailScreen(id: 'rocky'),
+    FakeApi.new,
+    (tester) => _tap(tester, find.byType(PageView).first),
   ),
   (
     '45_lost_detail_admin_menu',

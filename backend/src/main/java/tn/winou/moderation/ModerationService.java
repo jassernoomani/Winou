@@ -21,6 +21,7 @@ import tn.winou.domain.ChatMessage;
 import tn.winou.domain.ChatMessageRepository;
 import tn.winou.domain.ConversationRepository;
 import tn.winou.domain.User;
+import tn.winou.infra.Notifications;
 import tn.winou.reports.LostReportService;
 import tn.winou.security.Admins;
 import tn.winou.sightings.SightingService;
@@ -46,12 +47,14 @@ public class ModerationService {
     private final ChatMessageRepository messages;
     private final ConversationRepository conversations;
     private final AdminLog log;
+    private final Notifications notifications;
     private final WinouProperties.Moderation settings;
 
     public ModerationService(JdbcClient jdbc, LostReportService reports, SightingService sightings,
             ChatMessageRepository messages, ConversationRepository conversations, AdminLog log,
-            WinouProperties properties) {
+            Notifications notifications, WinouProperties properties) {
         this.log = log;
+        this.notifications = notifications;
         this.jdbc = jdbc;
         this.reports = reports;
         this.sightings = sightings;
@@ -93,9 +96,13 @@ public class ModerationService {
         if (reporters < needed) {
             return new ContentReportOut(false);
         }
-        jdbc.sql("UPDATE " + table(body.targetType()) + " SET hidden_at = now() WHERE id = :id AND hidden_at IS NULL")
+        int hidden = jdbc.sql("UPDATE " + table(body.targetType())
+                        + " SET hidden_at = now() WHERE id = :id AND hidden_at IS NULL")
                 .param("id", body.targetId())
                 .update();
+        if (hidden == 1) { // not when more reports come in for something already hidden
+            notifications.send(n -> n.contentHidden(body.targetType(), body.targetId()));
+        }
         return new ContentReportOut(true);
     }
 
@@ -217,7 +224,8 @@ public class ModerationService {
         if (dismissed == 0) {
             throw ApiException.coded(HttpStatus.CONFLICT, "no_reports", "Nobody reported it.");
         }
-        log.record(admin, AdminAction.DISMISS_REPORTS, type.name(), id, author, dismissed + " reports");
+        log.record(admin, AdminAction.DISMISS_REPORTS, type.name(), id, author,
+                dismissed + (dismissed == 1 ? " report" : " reports"));
     }
 
     /** Shows it again and forgets its reports, so the same reports can't hide it at once. */

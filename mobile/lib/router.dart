@@ -53,7 +53,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/map', builder: (_, _) => const MapScreen()),
       GoRoute(path: '/me', builder: (_, _) => const MyActivityScreen()),
       GoRoute(path: '/association', builder: (_, _) => const AssociationScreen()),
-      GoRoute(path: '/admin', builder: (_, _) => const AdminScreen()),
+      GoRoute(
+        path: '/admin',
+        builder: (_, state) => AdminScreen(tab: state.uri.queryParameters['tab']), // from a notification
+      ),
       GoRoute(
         path: '/admin/users/:id',
         builder: (_, state) => AdminUserScreen(id: state.pathParameters['id']!),

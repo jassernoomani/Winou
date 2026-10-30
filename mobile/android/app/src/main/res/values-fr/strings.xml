@@ -14,4 +14,11 @@
     <string name="association_approved_body">%1$s est approuvée. Vous serez prévenu des animaux blessés près de vous.</string>
     <string name="association_rejected_title">Demande d\'association refusée</string>
     <string name="association_rejected_body">Nous n\'avons pas pu vérifier %1$s. Vous pouvez envoyer une nouvelle demande avec plus de détails.</string>
+    <!-- To admins -->
+    <string name="admin_hidden_title">Masqué après des signalements</string>
+    <string name="admin_hidden_lost_body">Un avis de perte a été masqué. Touchez pour l\'examiner.</string>
+    <string name="admin_hidden_sighting_body">Un signalement a été masqué. Touchez pour l\'examiner.</string>
+    <string name="admin_hidden_message_body">Un message a été masqué. Touchez pour l\'examiner.</string>
+    <string name="admin_request_title">Nouvelle demande d\'association</string>
+    <string name="admin_request_body">%1$s souhaite devenir une association vérifiée.</string>
 </resources>

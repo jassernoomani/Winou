@@ -13,32 +13,84 @@ import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/report_sheet.dart';
+import 'admin_dashboard.dart';
+import 'admin_user_screen.dart' show AdminActionTile;
 
-/// For admins: users to look up and ban, reported content to dismiss or hide, association
-/// requests to approve or reject, and hidden content to restore or delete.
-class AdminScreen extends StatelessWidget {
-  const AdminScreen({super.key});
+/// For admins: how Winou is doing, users to look up and ban, reported content to dismiss or hide,
+/// association requests to approve or reject, hidden content to restore or delete, and what admins
+/// did. The tabs with work waiting show how much. [tab] opens one (from a notification).
+class AdminScreen extends ConsumerWidget {
+  const AdminScreen({super.key, this.tab});
+
+  final String? tab; // dashboard, users, reported, requests, hidden or activity
+
+  static const _tabs = ['dashboard', 'users', 'reported', 'requests', 'hidden', 'activity'];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final summary = ref.watch(adminSummaryProvider).value;
+    Widget counted(String label, int? count) => Tab(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          Text(label),
+          if (count != null && count > 0) Badge.count(count: count),
+        ],
+      ),
+    );
     return DefaultTabController(
-      length: 4,
+      length: _tabs.length,
+      initialIndex: _tabs.indexOf(tab ?? '').clamp(0, _tabs.length - 1),
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.admin),
           bottom: TabBar(
-            isScrollable: true, // four tabs, longer in French
+            isScrollable: true, // six tabs, longer in French
             tabAlignment: TabAlignment.start,
             tabs: [
+              Tab(text: l10n.adminDashboard),
               Tab(text: l10n.adminUsers),
-              Tab(text: l10n.adminReported),
-              Tab(text: l10n.adminRequests),
-              Tab(text: l10n.adminHidden),
+              counted(l10n.adminReported, summary?.reported),
+              counted(l10n.adminRequests, summary?.requests),
+              counted(l10n.adminHidden, summary?.hidden),
+              Tab(text: l10n.adminActivity),
             ],
           ),
         ),
-        body: const TabBarView(children: [_Users(), _Content(hidden: false), _Requests(), _Content(hidden: true)]),
+        body: const TabBarView(
+          children: [
+            AdminDashboard(),
+            _Users(),
+            _Content(hidden: false),
+            _Requests(),
+            _Content(hidden: true),
+            _Activity(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Everything admins did, newest first. Tap one to see the account it was about.
+class _Activity extends ConsumerWidget {
+  const _Activity();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    return _AdminList<AdminActionEntry>(
+      provider: adminActionsProvider,
+      empty: l10n.noAdminHistory,
+      emptyIcon: LucideIcons.history,
+      item: (entry) => Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: entry.userId == null ? null : () => context.push('/admin/users/${entry.userId}'),
+          child: Padding(padding: const EdgeInsets.all(14), child: AdminActionTile(entry, showUser: true)),
+        ),
       ),
     );
   }
@@ -210,7 +262,9 @@ class _Requests extends ConsumerWidget {
   Future<void> _decide(BuildContext context, WidgetRef ref, AssociationRequest r, bool approve) async {
     try {
       await ref.read(apiProvider).decideAssociationRequest(r.id, approve: approve);
-      ref.invalidate(pendingAssociationRequestsProvider);
+      ref
+        ..invalidate(pendingAssociationRequestsProvider)
+        ..invalidate(adminSummaryProvider);
     } catch (e) {
       if (context.mounted) showError(context, e);
     }
@@ -272,7 +326,8 @@ class _Content extends ConsumerWidget {
       await action();
       ref
         ..invalidate(reportedContentProvider)
-        ..invalidate(hiddenContentProvider);
+        ..invalidate(hiddenContentProvider)
+        ..invalidate(adminSummaryProvider);
     } catch (e) {
       if (context.mounted) showError(context, e);
     }
@@ -299,7 +354,9 @@ class _Content extends ConsumerWidget {
                 ? null
                 : () async {
                     await context.push(open);
-                    ref.invalidate(_provider); // may have been acted on from there
+                    ref
+                      ..invalidate(_provider) // may have been acted on from there
+                      ..invalidate(adminSummaryProvider);
                   },
             child: Padding(
               padding: const EdgeInsets.all(16),

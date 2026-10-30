@@ -171,6 +171,9 @@ public class LostReportService {
             if (body.status() == ReportStatus.FOUND && report.getStatus() != ReportStatus.FOUND) {
                 thankFinders(report);
             }
+            if (body.status() != report.getStatus()) {
+                report.setStatusAt(OffsetDateTime.now());
+            }
             report.setStatus(body.status());
             rematch = true; // reopened reports are matched again
         }

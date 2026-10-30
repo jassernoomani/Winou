@@ -1,6 +1,7 @@
 package tn.winou.domain;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
 
     boolean existsByIdAndBannedUntilAfter(UUID id, OffsetDateTime now);
+
+    List<User> findByRole(Role role);
 
     /** A phone gets notifications for one account only: the last one that signed in on it. */
     @Modifying

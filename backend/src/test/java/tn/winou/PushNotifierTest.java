@@ -167,6 +167,27 @@ class PushNotifierTest extends ApiTestBase {
     }
 
     @Test
+    void hiddenContentAndAssociationRequestsGoToEveryAdminsPhone() {
+        String admin = postJson("/auth/register", null, Map.of("email", ADMIN_EMAIL, "password", "password123",
+                "display_name", "Admin")).json().path("access_token").asString();
+        patchJson("/me", admin, Map.of("fcm_token", "admin-phone"));
+        patchJson("/me", register("user"), Map.of("fcm_token", "user-phone"));
+        UUID id = UUID.randomUUID();
+
+        notifier().contentHidden(tn.winou.web.ApiModels.ReportTarget.SIGHTING, id);
+        AssociationRequest request = new AssociationRequest();
+        request.setOrganisation("Refuge de Tunis");
+        notifier().associationRequested(request);
+
+        assertThat(sender.sent).extracting(FakeSender.Sent::token).containsExactly("admin-phone", "admin-phone");
+        assertThat(sender.sent.getFirst().push().bodyKey()).isEqualTo("admin_hidden_sighting_body");
+        assertThat(sender.sent.getFirst().push().tag()).isEqualTo("admin-hidden-" + id);
+        assertThat(sender.sent.getFirst().push().data()).containsEntry("type", "admin").containsEntry("tab", "hidden");
+        assertThat(sender.sent.get(1).push().bodyArgs()).containsExactly("Refuge de Tunis");
+        assertThat(sender.sent.get(1).push().data()).containsEntry("tab", "requests");
+    }
+
+    @Test
     void injuredAnimalsAndAssociationDecisionsArePushed() throws Exception {
         String association = register("association");
         patchJson("/me", association, Map.of("fcm_token", "association-phone"));
@@ -191,7 +212,9 @@ class PushNotifierTest extends ApiTestBase {
             String strings = Files.readString(Path.of("../mobile/android/app/src/main/res/" + values + "/strings.xml"));
             for (String key : List.of("help_title", "help_injured_body", "help_needs_help_body",
                     "association_approved_title", "association_approved_body", "association_rejected_title",
-                    "association_rejected_body")) {
+                    "association_rejected_body", "admin_hidden_title", "admin_hidden_lost_body",
+                    "admin_hidden_sighting_body", "admin_hidden_message_body", "admin_request_title",
+                    "admin_request_body")) {
                 assertThat(strings).as(values + ": " + key).contains("name=\"" + key + "\"");
             }
         }

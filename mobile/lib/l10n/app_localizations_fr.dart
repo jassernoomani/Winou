@@ -1001,6 +1001,96 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String actionDismissed(String what) {
-    return 'Signalements ignorés : $what';
+    return 'Signalements ignorés · $what';
   }
+
+  @override
+  String get close => 'Fermer';
+
+  @override
+  String get adminDashboard => 'Tableau de bord';
+
+  @override
+  String get adminActivity => 'Activité';
+
+  @override
+  String aboutUser(String name) {
+    return 'Concerne $name';
+  }
+
+  @override
+  String get statUsers => 'Utilisateurs';
+
+  @override
+  String statNewThisWeek(int count) {
+    return '+$count cette semaine';
+  }
+
+  @override
+  String get statOpenLost => 'Toujours perdus';
+
+  @override
+  String statOfTotal(int count) {
+    return 'sur $count signalés';
+  }
+
+  @override
+  String get statReunited => 'Rentrés';
+
+  @override
+  String statReunionRate(String rate) {
+    return '$rate des animaux perdus';
+  }
+
+  @override
+  String get statMatchesConfirmed => 'Correspondances confirmées';
+
+  @override
+  String get statStraysOnMap => 'Errants sur la carte';
+
+  @override
+  String get statAssociations => 'Associations';
+
+  @override
+  String statStraysHelped(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count errants aidés',
+      one: '1 errant aidé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String lastWeeks(int count) {
+    return '$count dernières semaines';
+  }
+
+  @override
+  String weekOf(String date) {
+    return 'Semaine du $date';
+  }
+
+  @override
+  String get seriesLost => 'Perdus';
+
+  @override
+  String get seriesSightings => 'Vus';
+
+  @override
+  String get seriesReunited => 'Rentrés';
+
+  @override
+  String get showTable => 'Afficher en tableau';
+
+  @override
+  String get showChart => 'Afficher en graphique';
+
+  @override
+  String get weekColumn => 'Semaine';
+
+  @override
+  String get weeklyChartLabel =>
+      'Animaux perdus, vus et rentrés par semaine. Touchez et glissez pour voir les chiffres d\'une semaine.';
 }

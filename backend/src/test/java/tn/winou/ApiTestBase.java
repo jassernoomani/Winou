@@ -244,6 +244,9 @@ public abstract class ApiTestBase {
         public final List<String> help = new ArrayList<>();
         /** "organisation: status" */
         public final List<String> associations = new ArrayList<>();
+        /** To admins: "TYPE id" hidden, organisations asking */
+        public final List<String> adminHidden = new ArrayList<>();
+        public final List<String> adminRequests = new ArrayList<>();
 
         @Override
         public void matchFound(Match match) {
@@ -275,6 +278,16 @@ public abstract class ApiTestBase {
             associations.add(request.getOrganisation() + ": " + request.getStatus());
         }
 
+        @Override
+        public void contentHidden(tn.winou.web.ApiModels.ReportTarget type, UUID id) {
+            adminHidden.add(type + " " + id);
+        }
+
+        @Override
+        public void associationRequested(AssociationRequest request) {
+            adminRequests.add(request.getOrganisation());
+        }
+
         void clear() {
             matches.clear();
             confirmed.clear();
@@ -282,6 +295,8 @@ public abstract class ApiTestBase {
             messages.clear();
             help.clear();
             associations.clear();
+            adminHidden.clear();
+            adminRequests.clear();
         }
     }
 

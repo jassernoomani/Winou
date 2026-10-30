@@ -15,6 +15,13 @@
     <string name="association_approved_body">%1$s is approved. You will hear about injured animals near you.</string>
     <string name="association_rejected_title">Association request declined</string>
     <string name="association_rejected_body">We could not verify %1$s. You can send a new request with more details.</string>
+    <!-- To admins -->
+    <string name="admin_hidden_title">Hidden after reports</string>
+    <string name="admin_hidden_lost_body">A lost pet report was hidden. Tap to review it.</string>
+    <string name="admin_hidden_sighting_body">A sighting was hidden. Tap to review it.</string>
+    <string name="admin_hidden_message_body">A chat message was hidden. Tap to review it.</string>
+    <string name="admin_request_title">New association request</string>
+    <string name="admin_request_body">%1$s wants to be a verified association.</string>
     <color name="notification">#2563EB</color>
     <!-- Launch screen, the same blue as the app's animated splash -->
     <color name="splash">#2F5BEA</color>

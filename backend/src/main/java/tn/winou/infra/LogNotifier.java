@@ -12,6 +12,7 @@ import tn.winou.domain.Conversation;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.Match;
 import tn.winou.domain.Sighting;
+import tn.winou.web.ApiModels.ReportTarget;
 
 /** Logs events only: used when no Firebase key is configured. */
 public class LogNotifier implements Notifier {
@@ -48,5 +49,15 @@ public class LogNotifier implements Notifier {
     @Override
     public void associationDecided(AssociationRequest request) {
         log.info("association request {}: {}", request.getId(), request.getStatus());
+    }
+
+    @Override
+    public void contentHidden(ReportTarget type, UUID id) {
+        log.info("{} {}: hidden after reports, telling admins", type, id);
+    }
+
+    @Override
+    public void associationRequested(AssociationRequest request) {
+        log.info("association request {}: telling admins", request.getId());
     }
 }

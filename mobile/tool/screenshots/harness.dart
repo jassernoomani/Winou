@@ -633,6 +633,64 @@ class FakeApi implements WinouApi {
   );
 
   @override
+  Future<AdminSummary> adminSummary() =>
+      _answer(() => AdminSummary.fromJson({'reported': 2, 'requests': 2, 'hidden': 2}));
+
+  @override
+  Future<AdminStats> adminStats() => _answer(() {
+    final monday = DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+    const lost = [3, 5, 4, 6, 8, 7, 9, 6, 10, 12, 9, 11];
+    const seen = [6, 9, 8, 12, 14, 13, 17, 15, 19, 22, 20, 24];
+    const home = [1, 1, 2, 2, 3, 4, 3, 5, 4, 6, 7, 6];
+    return AdminStats.fromJson({
+      'users': 214,
+      'new_users_this_week': 18,
+      'open_lost_reports': 27,
+      'lost_reports_total': 96,
+      'reunited': 44,
+      'reunion_rate': 44 / 96,
+      'sightings': 341,
+      'strays_on_map': 58,
+      'matches_confirmed': 51,
+      'associations': 4,
+      'stray_helped_by_associations': 23,
+      'weeks': [
+        for (var i = 0; i < 12; i++)
+          {
+            'week_start': monday.subtract(Duration(days: 7 * (11 - i))).toUtc().toIso8601String(),
+            'lost_reports': lost[i],
+            'sightings': seen[i],
+            'reunited': home[i],
+          },
+      ],
+    });
+  });
+
+  @override
+  Future<List<AdminActionEntry>> adminActions({int offset = 0}) => _answer(
+    () => [
+      for (final (i, (action, type, user, note, ago)) in [
+        ('BAN_USER', 'USER', 'Karim', '7 days: Selling animals in sightings', const Duration(hours: 4)),
+        ('DELETE_CONTENT', 'SIGHTING', 'Karim', null, const Duration(hours: 4, minutes: 2)),
+        ('APPROVE_ASSOCIATION', 'ASSOCIATION_REQUEST', 'Refuge de Tunis', 'Refuge de Tunis', const Duration(days: 1)),
+        ('DISMISS_REPORTS', 'LOST_REPORT', 'Amira', '1 reports', const Duration(days: 2)),
+        ('HIDE_CONTENT', 'LOST_REPORT', 'Sami', null, const Duration(days: 3)),
+      ].indexed)
+        AdminActionEntry.fromJson({
+          'id': 'a$i',
+          'action': action,
+          'target_type': type,
+          'target_id': 't$i',
+          'admin_name': 'Yasmine',
+          'user_id': 'u1',
+          'user_name': user,
+          'note': note,
+          'created_at': _ago(ago),
+        }),
+    ],
+  );
+
+  @override
   Future<List<Match>> myMatches() => _answer(() => [for (final m in matches) Match.fromJson(m)]);
 
   @override

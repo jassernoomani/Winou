@@ -15,11 +15,13 @@ import tn.winou.domain.LostReport;
 import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
 import tn.winou.domain.RequestStatus;
+import tn.winou.domain.Role;
 import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 import tn.winou.infra.PushSender.Push;
+import tn.winou.web.ApiModels.ReportTarget;
 
 /** Push notifications. A failed push never fails the action that caused it. */
 public class PushNotifier implements Notifier {
@@ -95,6 +97,30 @@ public class PushNotifier implements Notifier {
         String key = approved ? "association_approved" : "association_rejected";
         push(request.getUserId(), new Push(key + "_title", List.of(), key + "_body", List.of(request.getOrganisation()),
                 null, "association-" + request.getId(), Map.of("type", "association")));
+    }
+
+    @Override
+    public void contentHidden(ReportTarget type, UUID id) {
+        String body = switch (type) {
+            case LOST_REPORT -> "admin_hidden_lost_body";
+            case SIGHTING -> "admin_hidden_sighting_body";
+            case MESSAGE -> "admin_hidden_message_body";
+        };
+        // One notification per item: the tag replaces it if it's sent again
+        toAdmins(new Push("admin_hidden_title", List.of(), body, List.of(), null, "admin-hidden-" + id,
+                Map.of("type", "admin", "tab", "hidden")));
+    }
+
+    @Override
+    public void associationRequested(AssociationRequest request) {
+        toAdmins(new Push("admin_request_title", List.of(), "admin_request_body", List.of(request.getOrganisation()),
+                null, "admin-request-" + request.getId(), Map.of("type", "admin", "tab", "requests")));
+    }
+
+    private void toAdmins(Push push) {
+        for (User admin : users.findByRole(Role.ADMIN)) {
+            push(admin.getId(), push);
+        }
     }
 
     private void push(UUID userId, Push push) {

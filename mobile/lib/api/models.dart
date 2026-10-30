@@ -443,15 +443,78 @@ class AdminActionEntry {
   AdminActionEntry.fromJson(Map<String, dynamic> json)
     : action = _enum(AdminAction.values, json['action']),
       targetType = json['target_type'],
+      targetId = json['target_id'],
       adminName = json['admin_name'],
+      userId = json['user_id'],
+      userName = json['user_name'],
       note = json['note'],
       createdAt = _date(json['created_at']);
 
   final AdminAction action;
   final String targetType; // USER, ASSOCIATION_REQUEST, LOST_REPORT, SIGHTING or MESSAGE
+  final String targetId;
   final String? adminName; // null if that admin's account was deleted
+  final String? userId; // the account it was about
+  final String? userName;
   final String? note;
   final DateTime createdAt;
+}
+
+/// What waits for an admin, per Admin tab.
+class AdminSummary {
+  AdminSummary.fromJson(Map<String, dynamic> json)
+    : reported = json['reported'],
+      requests = json['requests'],
+      hidden = json['hidden'];
+
+  final int reported;
+  final int requests;
+  final int hidden;
+
+  int get total => reported + requests + hidden;
+}
+
+class WeekStats {
+  WeekStats.fromJson(Map<String, dynamic> json)
+    : start = _date(json['week_start']),
+      lostReports = json['lost_reports'],
+      sightings = json['sightings'],
+      reunited = json['reunited'];
+
+  final DateTime start;
+  final int lostReports;
+  final int sightings;
+  final int reunited;
+}
+
+/// The admin dashboard: totals, and the last 12 weeks oldest first.
+class AdminStats {
+  AdminStats.fromJson(Map<String, dynamic> json)
+    : users = json['users'],
+      newUsersThisWeek = json['new_users_this_week'],
+      openLostReports = json['open_lost_reports'],
+      lostReportsTotal = json['lost_reports_total'],
+      reunited = json['reunited'],
+      reunionRate = (json['reunion_rate'] as num?)?.toDouble(),
+      sightings = json['sightings'],
+      straysOnMap = json['strays_on_map'],
+      matchesConfirmed = json['matches_confirmed'],
+      associations = json['associations'],
+      strayHelpedByAssociations = json['stray_helped_by_associations'],
+      weeks = [for (final w in json['weeks']) WeekStats.fromJson(w)];
+
+  final int users;
+  final int newUsersThisWeek;
+  final int openLostReports;
+  final int lostReportsTotal;
+  final int reunited;
+  final double? reunionRate; // null before the first lost report
+  final int sightings;
+  final int straysOnMap;
+  final int matchesConfirmed;
+  final int associations;
+  final int strayHelpedByAssociations;
+  final List<WeekStats> weeks;
 }
 
 class AdminUserDetail {

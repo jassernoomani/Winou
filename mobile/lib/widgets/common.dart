@@ -7,6 +7,7 @@ import '../api/api_client.dart';
 import '../api/models.dart';
 import '../l10n/app_localizations.dart';
 import '../theme.dart';
+import 'photo_viewer.dart';
 
 extension L10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
@@ -127,7 +128,8 @@ class NetworkPhoto extends StatelessWidget {
 }
 
 /// Swipeable photos of a report or sighting, with a badge on photos that are not usable for matching.
-/// The first photo flies in from the list when [heroTag] matches the list's thumbnail.
+/// The first photo flies in from the list when [heroTag] matches the list's thumbnail. Tap one to
+/// see it whole, full screen.
 class PhotoGallery extends StatefulWidget {
   const PhotoGallery(this.photos, {super.key, this.showStatus = false, this.heroTag});
 
@@ -163,6 +165,12 @@ class _PhotoGalleryState extends State<PhotoGallery> {
                         fit: StackFit.expand,
                         children: [
                           hero(i, NetworkPhoto(photo.url)),
+                          Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () => openPhotoViewer(context, [for (final p in photos) p.url], initial: i),
+                            ),
+                          ),
                           if (widget.showStatus && photo.status != 'READY')
                             Positioned(
                               left: 12,

@@ -608,12 +608,84 @@
       }
     }
   },
-  "actionDismissed": "Reports on a {what} dismissed",
+  "actionDismissed": "Reports dismissed · {what}",
   "@actionDismissed": {
     "placeholders": {
       "what": {
         "type": "String"
       }
     }
-  }
+  },
+  "close": "Close",
+  "adminDashboard": "Dashboard",
+  "adminActivity": "Activity",
+  "aboutUser": "About {name}",
+  "@aboutUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statUsers": "Users",
+  "statNewThisWeek": "+{count} this week",
+  "@statNewThisWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statOpenLost": "Still lost",
+  "statOfTotal": "of {count} reported",
+  "@statOfTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statReunited": "Back home",
+  "statReunionRate": "{rate} of lost pets",
+  "@statReunionRate": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "statMatchesConfirmed": "Matches confirmed",
+  "statStraysOnMap": "Strays on the map",
+  "statAssociations": "Associations",
+  "statStraysHelped": "{count, plural, =1{helped 1 stray} other{helped {count} strays}}",
+  "@statStraysHelped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastWeeks": "Last {count} weeks",
+  "@lastWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekOf": "Week of {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seriesLost": "Lost",
+  "seriesSightings": "Sightings",
+  "seriesReunited": "Back home",
+  "showTable": "Show as a table",
+  "showChart": "Show as a chart",
+  "weekColumn": "Week",
+  "weeklyChartLabel": "Lost reports, sightings and pets back home per week. Touch and drag to see a week's numbers."
 }

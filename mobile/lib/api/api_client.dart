@@ -349,6 +349,16 @@ class WinouApi {
 
   Future<void> unbanUser(String id) => _call(() => _dio.post('/admin/users/$id/unban'), (_) {});
 
+  Future<AdminSummary> adminSummary() => _call(() => _dio.get('/admin/summary'), (data) => AdminSummary.fromJson(data));
+
+  Future<AdminStats> adminStats() => _call(() => _dio.get('/admin/stats'), (data) => AdminStats.fromJson(data));
+
+  /// What admins did, newest first.
+  Future<List<AdminActionEntry>> adminActions({int offset = 0}) => _call(
+    () => _dio.get('/admin/actions', queryParameters: {'limit': 100, 'offset': offset}),
+    (data) => [for (final a in data) AdminActionEntry.fromJson(a)],
+  );
+
   Future<void> revokeAssociation(String id) => _call(() => _dio.delete('/admin/users/$id/association'), (_) {});
 }
 
