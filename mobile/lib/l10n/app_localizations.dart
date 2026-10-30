@@ -2853,6 +2853,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing yet. Matches, messages and alerts near you will show up here.'**
   String get noNotifications;
+
+  /// No description provided for @listOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'List what\'s here'**
+  String get listOnMap;
+
+  /// No description provided for @placesHere.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing here} =1{1 here} other{{count} here}}'**
+  String placesHere(int count);
+
+  /// No description provided for @nothingHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in this part of the map. Move or zoom out.'**
+  String get nothingHere;
 }
 
 class _AppLocalizationsDelegate

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
@@ -52,6 +54,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   MapFilters _filters = const MapFilters();
   List<MapItem> _items = [];
   bool _loading = false;
+  int _zoom = 13; // whole zoom level the markers are grouped at
   Timer? _debounce;
   int _request = 0; // ignore answers to outdated requests
 
@@ -129,6 +132,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
             : null,
         actions: [
+          IconButton(icon: const Icon(LucideIcons.list), tooltip: l10n.listOnMap, onPressed: _listVisible),
           IconButton(icon: const Icon(LucideIcons.slidersHorizontal), tooltip: l10n.filters, onPressed: _editFilters),
         ],
       ),
@@ -141,30 +145,51 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             _load();
             _centerOnMe(zoom: 14); // the camera can only move once the map is ready
           },
-          onPositionChanged: (_, _) => _scheduleLoad(),
+          onPositionChanged: (camera, _) {
+            _scheduleLoad();
+            // Markers regroup when the zoom level changes, not while panning
+            if (camera.zoom.floor() != _zoom) setState(() => _zoom = camera.zoom.floor());
+          },
         ),
         children: [
           osmTiles(context),
           MarkerLayer(
             markers: [
-              for (final item in _items)
-                Marker(
-                  key: ValueKey('${item.type.api}-${item.id}'),
-                  point: item.location,
-                  width: 60,
-                  height: 60,
-                  child: GestureDetector(
-                    onTap: () => _preview(item),
-                    // Markers pop in as the area loads
-                    child: FadeSlideIn(
-                      key: ValueKey(item.id),
-                      offset: const Offset(0, 0.3),
-                      scale: 0.4,
-                      duration: const Duration(milliseconds: 350),
-                      child: _MarkerIcon(item),
+              for (final group in groupMarkers(_items, _zoom))
+                if (group.length == 1)
+                  Marker(
+                    key: ValueKey('${group.single.type.api}-${group.single.id}'),
+                    point: group.single.location,
+                    width: 60,
+                    height: 60,
+                    child: GestureDetector(
+                      onTap: () => _preview(group.single),
+                      // Markers pop in as the area loads
+                      child: FadeSlideIn(
+                        key: ValueKey(group.single.id),
+                        offset: const Offset(0, 0.3),
+                        scale: 0.4,
+                        duration: const Duration(milliseconds: 350),
+                        child: _MarkerIcon(group.single),
+                      ),
+                    ),
+                  )
+                else
+                  Marker(
+                    key: ValueKey('group-${group.map((i) => i.id).join()}'),
+                    point: _middle(group),
+                    width: 64,
+                    height: 64,
+                    child: GestureDetector(
+                      onTap: () => _openGroup(group),
+                      child: FadeSlideIn(
+                        offset: Offset.zero,
+                        scale: 0.4,
+                        duration: const Duration(milliseconds: 350),
+                        child: _GroupIcon(group),
+                      ),
                     ),
                   ),
-                ),
             ],
           ),
           osmAttribution(),
@@ -207,49 +232,172 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
-  void _preview(MapItem item) {
+  static LatLng _middle(List<MapItem> items) => LatLng(
+    items.map((i) => i.location.latitude).reduce((a, b) => a + b) / items.length,
+    items.map((i) => i.location.longitude).reduce((a, b) => a + b) / items.length,
+  );
+
+  /// A group: zoom in until it splits; if its places are (nearly) the same, list them instead.
+  void _openGroup(List<MapItem> items) {
+    final lats = items.map((i) => i.location.latitude);
+    final lons = items.map((i) => i.location.longitude);
+    final spread = [lats.reduce(math.max) - lats.reduce(math.min), lons.reduce(math.max) - lons.reduce(math.min)];
+    if (spread.reduce(math.max) < 0.0003 || _map.camera.zoom >= 17.5) {
+      _list(items, context.l10n.placesHere(items.length));
+      return;
+    }
+    _map.fitCamera(
+      CameraFit.coordinates(
+        coordinates: [for (final i in items) i.location],
+        padding: const EdgeInsets.all(80),
+        maxZoom: 18,
+      ),
+    );
+  }
+
+  /// "List what's here": everything in the visible area, nearest to the middle first.
+  void _listVisible() {
+    final camera = _map.camera;
+    const distance = Distance();
+    final visible = [
+      for (final item in _items)
+        if (camera.visibleBounds.contains(item.location)) item,
+    ]..sort((a, b) => distance(camera.center, a.location).compareTo(distance(camera.center, b.location)));
+    _list(visible, context.l10n.placesHere(visible.length));
+  }
+
+  void _list(List<MapItem> items, String title) {
     final l10n = context.l10n;
     showModalBottomSheet(
       context: context,
-      builder: (sheet) => SafeArea(
-        child: ListTile(
-          contentPadding: const EdgeInsets.fromLTRB(20, 0, 16, 16),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: SizedBox.square(dimension: 72, child: NetworkPhoto(item.photoUrl)),
-          ),
-          // The type as on the map legend, then what it is
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 2,
-            children: [
-              Row(
-                spacing: 6,
-                children: [
-                  _Dot(markerStyle(item.type).$1),
-                  Text(_typeLabel(l10n, item.type), style: Theme.of(context).textTheme.labelMedium),
-                ],
+      isScrollControlled: true,
+      builder: (sheet) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.55,
+        maxChildSize: 0.92,
+        builder: (context, scroll) => items.isEmpty
+            ? ListView(
+                controller: scroll,
+                children: [EmptyState(icon: LucideIcons.mapPinOff, text: l10n.nothingHere)],
+              )
+            : ListView.builder(
+                controller: scroll,
+                padding: const EdgeInsets.only(bottom: 16),
+                itemCount: items.length + 1,
+                itemBuilder: (context, i) => i == 0
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                        child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+                      )
+                    : _itemTile(items[i - 1], () {
+                        Navigator.pop(sheet);
+                        final item = items[i - 1];
+                        _open(item.type == MapItemType.lost ? '/lost/${item.id}' : '/sightings/${item.id}');
+                      }),
               ),
-              Text(switch (item.type) {
-                MapItemType.lost => l10n.lostNamed(item.name ?? ''),
-                MapItemType.sighting => l10n.sightingOf(speciesLabel(l10n, item.species)),
-                MapItemType.stray => l10n.strayOf(speciesLabel(l10n, item.species)),
-              }),
-            ],
-          ),
-          subtitle: Text(
-            [
-              l10n.seenAgo(timeAgo(l10n, item.date)),
-              if (item.condition != null && item.condition != Condition.healthy) conditionLabel(l10n, item.condition!),
-            ].join(' · '),
-          ),
-          trailing: const ForwardIcon(),
-          onTap: () {
+      ),
+    );
+  }
+
+  void _preview(MapItem item) {
+    showModalBottomSheet(
+      context: context,
+      builder: (sheet) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _itemTile(item, () {
             Navigator.pop(sheet);
             _open(item.type == MapItemType.lost ? '/lost/${item.id}' : '/sightings/${item.id}');
-          },
+          }),
         ),
+      ),
+    );
+  }
+
+  /// One place: photo, type as on the legend, what it is, when.
+  Widget _itemTile(MapItem item, VoidCallback onTap) {
+    final l10n = context.l10n;
+    return ListTile(
+      contentPadding: const EdgeInsets.fromLTRB(20, 4, 16, 4),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SizedBox.square(dimension: 72, child: NetworkPhoto(item.photoUrl)),
+      ),
+      // The type as on the map legend, then what it is
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 2,
+        children: [
+          Row(
+            spacing: 6,
+            children: [
+              _Dot(markerStyle(item.type).$1),
+              Text(_typeLabel(l10n, item.type), style: Theme.of(context).textTheme.labelMedium),
+            ],
+          ),
+          Text(switch (item.type) {
+            MapItemType.lost => l10n.lostNamed(item.name ?? ''),
+            MapItemType.sighting => l10n.sightingOf(speciesLabel(l10n, item.species)),
+            MapItemType.stray => l10n.strayOf(speciesLabel(l10n, item.species)),
+          }),
+        ],
+      ),
+      subtitle: Text(
+        [
+          l10n.seenAgo(timeAgo(l10n, item.date)),
+          if (item.condition != null && item.condition != Condition.healthy) conditionLabel(l10n, item.condition!),
+        ].join(' · '),
+      ),
+      trailing: const ForwardIcon(),
+      onTap: onTap,
+    );
+  }
+}
+
+/// Places whose markers would overlap at [zoom], grouped: a fixed grid of 56 px cells in web-map
+/// pixels, so groups don't change while panning, only when zooming.
+List<List<MapItem>> groupMarkers(List<MapItem> items, int zoom) {
+  final scale = 256 * math.pow(2, zoom);
+  final cells = <(int, int), List<MapItem>>{};
+  for (final item in items) {
+    final lat = item.location.latitude * math.pi / 180;
+    final x = (item.location.longitude + 180) / 360 * scale;
+    final y = (1 - math.log(math.tan(lat) + 1 / math.cos(lat)) / math.pi) / 2 * scale;
+    cells.putIfAbsent((x ~/ 56, y ~/ 56), () => []).add(item);
+  }
+  return cells.values.toList();
+}
+
+/// A group of places: how many, in the brand's blue; red-ringed if one of them needs help.
+class _GroupIcon extends StatelessWidget {
+  const _GroupIcon(this.items);
+
+  final List<MapItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final urgent = items.any((i) => i.condition != null && i.condition != Condition.healthy);
+    final size = 38.0 + math.min(items.length, 30) / 30 * 14; // bigger groups look bigger
+    final circle = Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: Brand.gradient,
+        shape: BoxShape.circle,
+        border: Border.all(color: urgent ? Brand.red : Colors.white, width: 3),
+        boxShadow: const [BoxShadow(blurRadius: 6, color: Color(0x33101D36), offset: Offset(0, 2))],
+      ),
+      child: Text(
+        items.length > 99 ? '99+' : '${items.length}',
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
+      ),
+    );
+    return Center(
+      child: Semantics(
+        label: context.l10n.placesHere(items.length),
+        child: urgent ? Pulse(color: Brand.red, size: 64, child: circle) : circle,
       ),
     );
   }

@@ -458,5 +458,8 @@
   "pushAdminRequestTitle": "Nouvelle demande d'association",
   "pushAdminRequestBody": "{a} souhaite devenir une association vérifiée.",
   "notifications": "Notifications",
-  "noNotifications": "Rien pour l'instant. Les correspondances, messages et alertes près de chez vous apparaîtront ici."
+  "noNotifications": "Rien pour l'instant. Les correspondances, messages et alertes près de chez vous apparaîtront ici.",
+  "listOnMap": "Lister ce qui est ici",
+  "placesHere": "{count, plural, =0{Rien ici} =1{1 ici} other{{count} ici}}",
+  "nothingHere": "Rien dans cette partie de la carte. Déplacez-vous ou dézoomez."
 }

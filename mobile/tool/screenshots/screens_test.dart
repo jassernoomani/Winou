@@ -17,6 +17,7 @@ import 'package:winou/auth/auth_screens.dart';
 import 'package:winou/auth/forgot_password_screen.dart';
 import 'package:winou/auth/suspended_screen.dart';
 import 'package:winou/auth/welcome_screen.dart';
+import 'package:winou/config.dart';
 import 'package:winou/connection.dart';
 import 'package:winou/home_shell.dart';
 import 'package:winou/chat/chat_screen.dart';
@@ -59,6 +60,29 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 Finder _markers() => find.byWidgetPredicate((w) => w.runtimeType.toString() == '_MarkerIcon');
+
+/// Places crowded in two spots, and one alone: grouped on the map.
+final _crowded = [
+  for (final (i, (dLat, dLon, type, condition)) in [
+    (0.0040, 0.0040, 'lost', null),
+    (0.0042, 0.0043, 'sighting', 'HEALTHY'),
+    (0.0039, 0.0045, 'stray', 'HEALTHY'),
+    (0.0043, 0.0041, 'sighting', 'HEALTHY'),
+    (-0.0050, -0.0040, 'stray', 'INJURED'),
+    (-0.0052, -0.0038, 'stray', 'HEALTHY'),
+    (-0.0012, 0.0080, 'lost', null),
+  ].indexed)
+    {
+      'type': type,
+      'id': 'c$i',
+      'species': 'cat',
+      'location': {'lat': Config.defaultLat + dLat, 'lon': Config.defaultLon + dLon},
+      'date': DateTime.now().subtract(Duration(hours: i)).toUtc().toIso8601String(),
+      'name': type == 'lost' ? 'Luna' : null,
+      'condition': condition,
+      'photo_url': '/files/cat.jpg',
+    },
+];
 
 /// Enough lost pets to fill a grid.
 final _manyLost = [
@@ -335,6 +359,8 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ),
   ('69_alerts_near_me', () => const AlertAreaScreen(), FakeApi.new, null),
   ('70_notifications', () => const NotificationsScreen(), FakeApi.new, null),
+  ('72_map_groups', () => const MapScreen(), () => FakeApi(mapItems: _crowded), null),
+  ('71_map_list', () => const MapScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.listOnMap))),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 

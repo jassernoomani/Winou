@@ -1644,4 +1644,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noNotifications =>
       'Nothing yet. Matches, messages and alerts near you will show up here.';
+
+  @override
+  String get listOnMap => 'List what\'s here';
+
+  @override
+  String placesHere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count here',
+      one: '1 here',
+      zero: 'Nothing here',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nothingHere =>
+      'Nothing in this part of the map. Move or zoom out.';
 }

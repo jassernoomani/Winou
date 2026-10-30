@@ -1688,4 +1688,25 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get noNotifications =>
       'لا شيء بعد. ستظهر هنا التطابقات والرسائل والتنبيهات القريبة منك.';
+
+  @override
+  String get listOnMap => 'عرض ما هنا كقائمة';
+
+  @override
+  String placesHere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count هنا',
+      few: '$count هنا',
+      two: 'اثنان هنا',
+      one: 'واحد هنا',
+      zero: 'لا شيء هنا',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nothingHere =>
+      'لا شيء في هذا الجزء من الخريطة. حرّك الخريطة أو صغّرها.';
 }

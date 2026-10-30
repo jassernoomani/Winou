@@ -1660,4 +1660,23 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get noNotifications =>
       'Rien pour l\'instant. Les correspondances, messages et alertes près de chez vous apparaîtront ici.';
+
+  @override
+  String get listOnMap => 'Lister ce qui est ici';
+
+  @override
+  String placesHere(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ici',
+      one: '1 ici',
+      zero: 'Rien ici',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nothingHere =>
+      'Rien dans cette partie de la carte. Déplacez-vous ou dézoomez.';
 }

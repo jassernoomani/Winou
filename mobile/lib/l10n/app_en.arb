@@ -1023,5 +1023,15 @@
     }
   },
   "notifications": "Notifications",
-  "noNotifications": "Nothing yet. Matches, messages and alerts near you will show up here."
+  "noNotifications": "Nothing yet. Matches, messages and alerts near you will show up here.",
+  "listOnMap": "List what's here",
+  "placesHere": "{count, plural, =0{Nothing here} =1{1 here} other{{count} here}}",
+  "@placesHere": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nothingHere": "Nothing in this part of the map. Move or zoom out."
 }
