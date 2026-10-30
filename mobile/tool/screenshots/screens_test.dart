@@ -5,8 +5,10 @@
 //
 // writes tool/screenshots/out/<screen>_<theme>.png (not committed).
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:winou/api/models.dart';
@@ -235,6 +237,17 @@ void main() {
           await settle(tester, rounds: 10); // photos from files take a few real-time rounds to decode
           if (act != null) await act(tester);
           await expectLater(find.byKey(screenshotKey), matchesGoldenFile('out/${name}_${brightness.name}.png'));
+          // HIRES=1 also writes a 1080 x 2400 copy to out/hires/ (for the portfolio).
+          if (Platform.environment['HIRES'] != null) {
+            final boundary = tester.renderObject<RenderRepaintBoundary>(find.byKey(screenshotKey));
+            await tester.runAsync(() async {
+              final image = await boundary.toImage(pixelRatio: 3);
+              final png = await image.toByteData(format: ui.ImageByteFormat.png);
+              File('tool/screenshots/out/hires/${name}_${brightness.name}.png')
+                ..createSync(recursive: true)
+                ..writeAsBytesSync(png!.buffer.asUint8List());
+            });
+          }
           await tester.pumpWidget(const SizedBox()); // stops the screen's timers
           await settle(tester, rounds: 1);
         });
