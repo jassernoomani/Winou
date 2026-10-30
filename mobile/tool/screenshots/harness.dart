@@ -188,7 +188,13 @@ Map<String, dynamic> lostJson({
   bool mine = false,
   String? description = 'Shy grey tabby, green eyes, small notch in the left ear.',
   Duration seen = const Duration(hours: 2),
+  int? reward,
+  bool? microchipped,
+  String? phone,
 }) => {
+  'reward_tnd': reward,
+  'microchipped': microchipped,
+  'contact_phone': phone,
   'id': id,
   'name': name,
   'species': species,

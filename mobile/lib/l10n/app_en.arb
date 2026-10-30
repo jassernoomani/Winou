@@ -1033,5 +1033,30 @@
       }
     }
   },
-  "nothingHere": "Nothing in this part of the map. Move or zoom out."
+  "nothingHere": "Nothing in this part of the map. Move or zoom out.",
+  "editReport": "Edit",
+  "saveChanges": "Save changes",
+  "removePhoto": "Remove this photo",
+  "moreDetails": "More details (optional)",
+  "rewardOptional": "Reward",
+  "currencyTnd": "TND",
+  "rewardTooHigh": "100,000 at most",
+  "microchipQuestion": "Is it microchipped?",
+  "yes": "Yes",
+  "no": "No",
+  "notSure": "Not sure",
+  "phoneOptional": "Phone to show (optional)",
+  "phoneHelp": "Everyone who sees the report can call you",
+  "phoneInvalid": "Digits, spaces, + ( ) - only",
+  "rewardPill": "{tnd} TND reward",
+  "@rewardPill": {
+    "placeholders": {
+      "tnd": {
+        "type": "int"
+      }
+    }
+  },
+  "microchipped": "Microchipped",
+  "notMicrochipped": "Not microchipped",
+  "call": "Call"
 }

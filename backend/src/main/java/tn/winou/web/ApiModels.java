@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import tn.winou.domain.ApiEnum;
@@ -122,21 +123,32 @@ public final class ApiModels {
 
     // --- lost reports ---
 
+    /** reward_tnd, microchipped and contact_phone are optional; the phone is shown to people who see the report. */
     public record LostReportIn(
             @NotNull @Size(min = 1, max = 80) String name,
             @NotNull Species species,
             @Size(max = 2000) String description,
             @NotNull @Valid Location lastSeen,
-            @NotNull @PastOrPresent OffsetDateTime lastSeenAt) {}
+            @NotNull @PastOrPresent OffsetDateTime lastSeenAt,
+            @Min(1) @Max(100000) Integer rewardTnd,
+            Boolean microchipped,
+            @Pattern(regexp = "^[+0-9 ()-]{6,20}$", message = "a phone number: digits, spaces, + ( ) -") String contactPhone) {}
 
-    /** Null fields are left unchanged. */
+    /**
+     * Null fields are left unchanged. reward_tnd 0 and an empty contact_phone remove them;
+     * microchipped can't go back to "not said".
+     */
     public record LostReportUpdate(
             @Size(min = 1, max = 80) String name,
             Species species,
             @Size(max = 2000) String description,
             @Valid Location lastSeen,
             @PastOrPresent OffsetDateTime lastSeenAt,
-            ReportStatus status) {}
+            ReportStatus status,
+            @Min(0) @Max(100000) Integer rewardTnd,
+            Boolean microchipped,
+            @Pattern(regexp = "^([+0-9 ()-]{6,20})?$", message = "a phone number: digits, spaces, + ( ) -")
+            String contactPhone) {}
 
     public record LostReportOut(
             UUID id,
@@ -150,7 +162,10 @@ public final class ApiModels {
             List<PhotoOut> photos,
             boolean hidden, // reported by several people: only the owner and admins see it
             OffsetDateTime createdAt,
-            UUID authorId) {} // for admins only, null for everyone else
+            UUID authorId, // for admins only, null for everyone else
+            Integer rewardTnd,
+            Boolean microchipped, // null: not said
+            String contactPhone) {}
 
     // --- sightings ---
 

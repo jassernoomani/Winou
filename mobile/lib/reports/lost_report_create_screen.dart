@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
+import '../api/providers.dart';
 import '../auth/auth_controller.dart';
 import '../uploads.dart';
 import '../widgets/common.dart';
@@ -13,8 +15,12 @@ import '../widgets/photo_upload.dart';
 
 const _maxPhotos = 5;
 
+/// Reports a lost pet, or with [editing], changes one: the same form, filled in, where photos
+/// can also be removed.
 class LostReportCreateScreen extends ConsumerStatefulWidget {
-  const LostReportCreateScreen({super.key});
+  const LostReportCreateScreen({super.key, this.editing});
+
+  final LostReport? editing;
 
   @override
   ConsumerState<LostReportCreateScreen> createState() => _LostReportCreateScreenState();
@@ -22,18 +28,25 @@ class LostReportCreateScreen extends ConsumerStatefulWidget {
 
 class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen> {
   final _form = GlobalKey<FormState>();
-  final _name = TextEditingController();
-  final _description = TextEditingController();
-  Species _species = Species.cat;
-  DateTime _lastSeenAt = DateTime.now();
-  LatLng? _lastSeen;
+  late final _name = TextEditingController(text: widget.editing?.name);
+  late final _description = TextEditingController(text: widget.editing?.description);
+  late final _reward = TextEditingController(text: widget.editing?.rewardTnd?.toString());
+  late final _phone = TextEditingController(text: widget.editing?.contactPhone);
+  late Species _species = widget.editing?.species ?? Species.cat;
+  late DateTime _lastSeenAt = widget.editing?.lastSeenAt ?? DateTime.now();
+  late LatLng? _lastSeen = widget.editing?.lastSeen;
+  late bool? _microchipped = widget.editing?.microchipped; // null: not said
+  late List<Photo> _kept = [...?widget.editing?.photos]; // photos already on the report, editing
   List<PickedPhoto> _photos = [];
   String? _progress;
 
+  bool get _editing => widget.editing != null;
+
   @override
   void dispose() {
-    _name.dispose();
-    _description.dispose();
+    for (final controller in [_name, _description, _reward, _phone]) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -54,25 +67,53 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     final api = ref.read(apiProvider);
+    final reward = int.tryParse(_reward.text.trim());
     setState(() => _progress = '');
     try {
-      final report = await api.createLostReport(
-        name: _name.text.trim(),
-        species: _species,
-        description: _description.text.trim(),
-        lastSeen: _lastSeen!,
-        lastSeenAt: _lastSeenAt,
-      );
+      final String id;
+      if (widget.editing case final report?) {
+        id = report.id;
+        await api.updateLostReport(
+          id,
+          name: _name.text.trim(),
+          species: _species,
+          description: _description.text.trim(),
+          // Only when moved: moving the place or the time matches the pet again
+          lastSeen: _lastSeen == report.lastSeen ? null : _lastSeen,
+          lastSeenAt: _lastSeenAt == report.lastSeenAt ? null : _lastSeenAt,
+          rewardTnd: reward ?? 0,
+          microchipped: _microchipped,
+          contactPhone: _phone.text.trim(),
+        );
+        for (final removed in report.photos.where((p) => !_kept.contains(p))) {
+          await api.deletePhoto(removed.id);
+        }
+      } else {
+        id = (await api.createLostReport(
+          name: _name.text.trim(),
+          species: _species,
+          description: _description.text.trim(),
+          lastSeen: _lastSeen!,
+          lastSeenAt: _lastSeenAt,
+          rewardTnd: reward,
+          microchipped: _microchipped,
+          contactPhone: _phone.text.trim(),
+        )).id;
+      }
       if (!mounted) return;
       await uploadPhotos(
         context,
         api,
         ref.read(uploadQueueProvider.notifier),
-        '/lost-reports/${report.id}',
+        '/lost-reports/$id',
         _photos,
         onProgress: (p) => setState(() => _progress = p),
       );
-      if (mounted) context.pop('/lost/${report.id}'); // the map opens it next
+      ref
+        ..invalidate(lostReportProvider(id))
+        ..invalidate(myLostReportsProvider);
+      if (!mounted) return;
+      _editing ? context.pop() : context.pop('/lost/$id'); // a new report opens next
     } catch (e) {
       if (mounted) {
         showError(context, e);
@@ -85,8 +126,9 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final busy = _progress != null;
+    final photoCount = _kept.length + _photos.length;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.reportLostPet)),
+      appBar: AppBar(title: Text(_editing ? l10n.editReport : l10n.reportLostPet)),
       body: AbsorbPointer(
         absorbing: busy,
         child: Form(
@@ -96,7 +138,16 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
             children: [
               Text(l10n.lostPhotosHint, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 8),
-              PhotoPickerStrip(photos: _photos, max: _maxPhotos, onChanged: (p) => setState(() => _photos = p)),
+              if (_kept.isNotEmpty) ...[
+                _KeptPhotos(_kept, onRemove: (photo) => setState(() => _kept = [..._kept]..remove(photo))),
+                const SizedBox(height: 8),
+              ],
+              if (_kept.length < _maxPhotos)
+                PhotoPickerStrip(
+                  photos: _photos,
+                  max: _maxPhotos - _kept.length,
+                  onChanged: (p) => setState(() => _photos = p),
+                ),
               const SizedBox(height: 20),
               FieldLabel(l10n.petName),
               TextFormField(
@@ -140,6 +191,41 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
                 ),
               ),
               if (_lastSeen != null) LocationPreview(_lastSeen!, height: 140),
+              const SizedBox(height: 24),
+              Text(l10n.moreDetails, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 12),
+              FieldLabel(l10n.rewardOptional),
+              TextFormField(
+                controller: _reward,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(6)],
+                decoration: InputDecoration(prefixIcon: const Icon(LucideIcons.gift), suffixText: l10n.currencyTnd),
+                validator: (v) => (int.tryParse(v ?? '') ?? 1) > 100000 ? l10n.rewardTooHigh : null,
+              ),
+              const SizedBox(height: 16),
+              FieldLabel(l10n.microchipQuestion),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final (value, label) in [(true, l10n.yes), (false, l10n.no), (null, l10n.notSure)])
+                    ChoiceChip(
+                      label: Text(label),
+                      selected: _microchipped == value,
+                      onSelected: (_) => setState(() => _microchipped = value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              FieldLabel(l10n.phoneOptional),
+              TextFormField(
+                controller: _phone,
+                keyboardType: TextInputType.phone,
+                autofillHints: const [AutofillHints.telephoneNumber],
+                decoration: InputDecoration(prefixIcon: const Icon(LucideIcons.phone), helperText: l10n.phoneHelp),
+                validator: (v) => (v ?? '').trim().isEmpty || RegExp(r'^[+0-9 ()-]{6,20}$').hasMatch(v!.trim())
+                    ? null
+                    : l10n.phoneInvalid,
+              ),
             ],
           ),
         ),
@@ -148,14 +234,51 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: FilledButton.icon(
-            onPressed: busy || _photos.isEmpty || _lastSeen == null ? null : _submit,
+            onPressed: busy || photoCount == 0 || _lastSeen == null ? null : _submit,
             icon: busy
                 ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(LucideIcons.megaphone),
-            label: Text(busy ? l10n.uploading(_progress!) : l10n.publishReport),
+                : Icon(_editing ? LucideIcons.check : LucideIcons.megaphone),
+            label: Text(busy ? l10n.uploading(_progress!) : (_editing ? l10n.saveChanges : l10n.publishReport)),
           ),
         ),
       ),
     );
   }
+}
+
+/// Photos already on the report, each with a button to remove it.
+class _KeptPhotos extends StatelessWidget {
+  const _KeptPhotos(this.photos, {required this.onRemove});
+
+  final List<Photo> photos;
+  final ValueChanged<Photo> onRemove;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 88,
+    child: ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: photos.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 8),
+      itemBuilder: (context, i) => Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: SizedBox.square(dimension: 88, child: NetworkPhoto(photos[i].url)),
+          ),
+          PositionedDirectional(
+            top: 4,
+            end: 4,
+            child: IconButton.filled(
+              tooltip: context.l10n.removePhoto,
+              visualDensity: VisualDensity.compact,
+              style: IconButton.styleFrom(backgroundColor: Colors.black54, foregroundColor: Colors.white),
+              onPressed: () => onRemove(photos[i]),
+              icon: const Icon(LucideIcons.x, size: 16),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

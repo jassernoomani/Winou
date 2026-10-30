@@ -1663,4 +1663,60 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get nothingHere =>
       'Nothing in this part of the map. Move or zoom out.';
+
+  @override
+  String get editReport => 'Edit';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get removePhoto => 'Remove this photo';
+
+  @override
+  String get moreDetails => 'More details (optional)';
+
+  @override
+  String get rewardOptional => 'Reward';
+
+  @override
+  String get currencyTnd => 'TND';
+
+  @override
+  String get rewardTooHigh => '100,000 at most';
+
+  @override
+  String get microchipQuestion => 'Is it microchipped?';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get notSure => 'Not sure';
+
+  @override
+  String get phoneOptional => 'Phone to show (optional)';
+
+  @override
+  String get phoneHelp => 'Everyone who sees the report can call you';
+
+  @override
+  String get phoneInvalid => 'Digits, spaces, + ( ) - only';
+
+  @override
+  String rewardPill(int tnd) {
+    return '$tnd TND reward';
+  }
+
+  @override
+  String get microchipped => 'Microchipped';
+
+  @override
+  String get notMicrochipped => 'Not microchipped';
+
+  @override
+  String get call => 'Call';
 }

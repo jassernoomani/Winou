@@ -90,12 +90,19 @@ public class LostReportService {
         report.setDescription(body.description());
         report.setLastSeen(body.lastSeen().toPoint());
         report.setLastSeenAt(body.lastSeenAt());
+        report.setRewardTnd(body.rewardTnd());
+        report.setMicrochipped(body.microchipped());
+        report.setContactPhone(blankToNull(body.contactPhone()));
         reports.save(report);
         List<UUID> watching = areas.watchingLost(report.getLastSeen(), user.getId());
         if (!watching.isEmpty()) {
             notifications.send(n -> n.lostNearby(report, watching));
         }
         return views.report(report, user);
+    }
+
+    private static String blankToNull(String text) {
+        return text == null || text.isBlank() ? null : text.strip();
     }
 
     @Transactional(readOnly = true)
@@ -162,6 +169,15 @@ public class LostReportService {
         }
         if (body.description() != null) {
             report.setDescription(body.description());
+        }
+        if (body.rewardTnd() != null) {
+            report.setRewardTnd(body.rewardTnd() == 0 ? null : body.rewardTnd());
+        }
+        if (body.microchipped() != null) {
+            report.setMicrochipped(body.microchipped());
+        }
+        if (body.contactPhone() != null) {
+            report.setContactPhone(blankToNull(body.contactPhone()));
         }
         if (body.species() != null) {
             report.setSpecies(body.species());

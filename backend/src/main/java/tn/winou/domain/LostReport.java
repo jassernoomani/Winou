@@ -41,6 +41,9 @@ public class LostReport extends BaseEntity {
     private OffsetDateTime createdAt = OffsetDateTime.now();
     private OffsetDateTime hiddenAt; // reported by enough people; shown to the owner and admins only
     private OffsetDateTime statusAt; // last change of status, null while it was never closed
+    private Integer rewardTnd;
+    private Boolean microchipped;
+    private String contactPhone; // shown to people who see the report, if the owner gave one
 
     public GeoPoint getLastSeen() {
         return GeoPoint.parse(lastSeenPoint);

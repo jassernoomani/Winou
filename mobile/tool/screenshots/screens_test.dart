@@ -361,6 +361,32 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('70_notifications', () => const NotificationsScreen(), FakeApi.new, null),
   ('72_map_groups', () => const MapScreen(), () => FakeApi(mapItems: _crowded), null),
   ('71_map_list', () => const MapScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.listOnMap))),
+  (
+    '73_lost_details',
+    () => const LostReportDetailScreen(id: 'rex'),
+    () => FakeApi(
+      lost: [
+        lostJson(
+          id: 'rex',
+          name: 'Rex',
+          species: 'dog',
+          description: 'Sandy terrier mix, red collar, very friendly.',
+          reward: 200,
+          microchipped: true,
+          phone: '+216 20 123 456',
+        ),
+      ],
+    ),
+    null,
+  ),
+  (
+    '74_edit_report',
+    () => LostReportCreateScreen(
+      editing: LostReport.fromJson(lostJson(mine: true, reward: 150, microchipped: false, phone: '20 123 456')),
+    ),
+    FakeApi.new,
+    null,
+  ),
   ('39_activity', () => const MyActivityScreen(), () => FakeApi(role: 'ADMIN'), null),
 ];
 

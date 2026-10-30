@@ -2871,6 +2871,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing in this part of the map. Move or zoom out.'**
   String get nothingHere;
+
+  /// No description provided for @editReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editReport;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this photo'**
+  String get removePhoto;
+
+  /// No description provided for @moreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details (optional)'**
+  String get moreDetails;
+
+  /// No description provided for @rewardOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward'**
+  String get rewardOptional;
+
+  /// No description provided for @currencyTnd.
+  ///
+  /// In en, this message translates to:
+  /// **'TND'**
+  String get currencyTnd;
+
+  /// No description provided for @rewardTooHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'100,000 at most'**
+  String get rewardTooHigh;
+
+  /// No description provided for @microchipQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it microchipped?'**
+  String get microchipQuestion;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @notSure.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure'**
+  String get notSure;
+
+  /// No description provided for @phoneOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone to show (optional)'**
+  String get phoneOptional;
+
+  /// No description provided for @phoneHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone who sees the report can call you'**
+  String get phoneHelp;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Digits, spaces, + ( ) - only'**
+  String get phoneInvalid;
+
+  /// No description provided for @rewardPill.
+  ///
+  /// In en, this message translates to:
+  /// **'{tnd} TND reward'**
+  String rewardPill(int tnd);
+
+  /// No description provided for @microchipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchipped'**
+  String get microchipped;
+
+  /// No description provided for @notMicrochipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Not microchipped'**
+  String get notMicrochipped;
+
+  /// No description provided for @call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get call;
 }
 
 class _AppLocalizationsDelegate

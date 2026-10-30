@@ -234,7 +234,7 @@ use **Authorize** with your email as the username.
 | `GET/PATCH /me` | profile, FCM token |
 | `POST /me/password`, `POST /me/sign-out-everywhere`, `DELETE /me` | change password, sign out every phone, delete the account |
 | `POST /me/email/verification`, `.../confirm` | confirm the email with a code |
-| `POST /lost-reports`, `GET/PATCH/DELETE /lost-reports/{id}`, `GET /me/lost-reports` | lost pets |
+| `POST /lost-reports`, `GET/PATCH/DELETE /lost-reports/{id}`, `GET /me/lost-reports` | lost pets, with an optional reward, microchip and phone to show |
 | `POST /sightings`, `GET/PATCH/DELETE /sightings/{id}`, `GET /me/sightings` | loose animals and strays (`is_stray`) |
 | `POST /lost-reports/{id}/photos`, `POST /sightings/{id}/photos` | upload one photo (max 5 per report, 3 per sighting) |
 | `GET /photos/{id}` | processing status: `PENDING` → `READY`, or `NO_ANIMAL` (retake the photo) |
@@ -248,6 +248,8 @@ use **Authorize** with your email as the username.
 | `PATCH /sightings/{id}/stray-status` | anyone: a stray is `AROUND` (seen again), `HELPED` or `GONE` |
 | `POST/GET /me/association-request` | ask to be shown as an association; see where it stands |
 | `POST /reports` | report a lost report, sighting or message |
+| `GET/PUT/DELETE /me/alert-area` | watch an area: pets lost there, animals in need there |
+| `GET /me/notifications`, `POST /me/notifications/read` | everything you were notified of, newest first |
 
 Admins only:
 

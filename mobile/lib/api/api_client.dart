@@ -221,6 +221,9 @@ class WinouApi {
     String? description,
     required LatLng lastSeen,
     required DateTime lastSeenAt,
+    int? rewardTnd,
+    bool? microchipped,
+    String? contactPhone,
   }) => _call(
     () => _dio.post(
       '/lost-reports',
@@ -230,6 +233,37 @@ class WinouApi {
         if (description != null && description.isNotEmpty) 'description': description,
         'last_seen': locationJson(lastSeen),
         'last_seen_at': lastSeenAt.toUtc().toIso8601String(),
+        'reward_tnd': ?rewardTnd,
+        'microchipped': ?microchipped,
+        if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
+      },
+    ),
+    (data) => LostReport.fromJson(data),
+  );
+
+  /// Null fields are left as they are; [rewardTnd] 0 and an empty [contactPhone] remove them.
+  Future<LostReport> updateLostReport(
+    String id, {
+    String? name,
+    Species? species,
+    String? description,
+    LatLng? lastSeen,
+    DateTime? lastSeenAt,
+    int? rewardTnd,
+    bool? microchipped,
+    String? contactPhone,
+  }) => _call(
+    () => _dio.patch(
+      '/lost-reports/$id',
+      data: {
+        'name': ?name,
+        'species': ?species?.api,
+        'description': ?description,
+        if (lastSeen != null) 'last_seen': locationJson(lastSeen),
+        if (lastSeenAt != null) 'last_seen_at': lastSeenAt.toUtc().toIso8601String(),
+        'reward_tnd': ?rewardTnd,
+        'microchipped': ?microchipped,
+        'contact_phone': ?contactPhone,
       },
     ),
     (data) => LostReport.fromJson(data),

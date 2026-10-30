@@ -185,7 +185,10 @@ class LostReport {
       status = _enum(ReportStatus.values, json['status']),
       photos = [for (final p in json['photos']) Photo.fromJson(p)],
       hidden = json['hidden'] ?? false,
-      authorId = json['author_id'];
+      authorId = json['author_id'],
+      rewardTnd = json['reward_tnd'],
+      microchipped = json['microchipped'],
+      contactPhone = json['contact_phone'];
 
   final String id;
   final String name;
@@ -198,6 +201,9 @@ class LostReport {
   final List<Photo> photos;
   final bool hidden; // reported by several people: only the owner sees it
   final String? authorId; // sent to admins only
+  final int? rewardTnd;
+  final bool? microchipped; // null: not said
+  final String? contactPhone; // the owner chose to show it
 
   bool get isMine => !locationIsApproximate;
 }

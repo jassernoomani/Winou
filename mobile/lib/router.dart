@@ -114,6 +114,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
       GoRoute(
+        path: '/lost/:id/edit',
+        builder: (_, state) => LostReportCreateScreen(editing: state.extra as LostReport?),
+      ),
+      GoRoute(
         path: '/lost/:id/reunited',
         builder: (_, state) => ReunionScreen(id: state.pathParameters['id']!),
       ),

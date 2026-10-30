@@ -76,15 +76,17 @@ public class SharePageController {
         String seen = t.lastSeen + " " + report.getLastSeenAt()
                 .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).withLocale(t.locale));
         String description = report.getDescription() == null ? "" : report.getDescription();
+        String reward = report.getRewardTnd() == null ? "" : "<p class=\"tag\">" + esc(t.reward(report.getRewardTnd())) + "</p>";
         String body = """
                 %s
                 <p class="tag">%s</p>
                 <h1>%s</h1>
                 <p class="seen">%s</p>
                 %s
+                %s
                 <p>%s</p>""".formatted(
                 image == null ? "" : "<img class=\"photo\" src=\"" + esc(image) + "\" alt=\"" + esc(report.getName()) + "\">",
-                esc(t.lost(report.getSpecies())), esc(report.getName()), esc(seen),
+                esc(t.lost(report.getSpecies())), esc(report.getName()), esc(seen), reward,
                 description.isBlank() ? "" : "<p>" + esc(description) + "</p>", esc(t.help));
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML)
                 .cacheControl(CacheControl.maxAge(java.time.Duration.ofMinutes(5)))
@@ -175,6 +177,14 @@ public class SharePageController {
                     "Seen this pet? Report it in the Winou app: the owner hears about it at once.",
                     "Get Winou (Android)", "Winou: find lost pets, help street animals.",
                     "No longer missing", "This pet isn't listed as missing anymore. Thanks for helping!");
+        }
+
+        String reward(int tnd) {
+            return switch (lang) {
+                case "fr" -> "Récompense : " + tnd + " DT";
+                case "ar" -> "مكافأة: " + tnd + " د.ت";
+                default -> "Reward: " + tnd + " TND";
+            };
         }
 
         String lost(Species species) {

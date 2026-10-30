@@ -1679,4 +1679,60 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get nothingHere =>
       'Rien dans cette partie de la carte. Déplacez-vous ou dézoomez.';
+
+  @override
+  String get editReport => 'Modifier';
+
+  @override
+  String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get removePhoto => 'Retirer cette photo';
+
+  @override
+  String get moreDetails => 'Plus de détails (facultatif)';
+
+  @override
+  String get rewardOptional => 'Récompense';
+
+  @override
+  String get currencyTnd => 'DT';
+
+  @override
+  String get rewardTooHigh => '100 000 au maximum';
+
+  @override
+  String get microchipQuestion => 'Est-il pucé ?';
+
+  @override
+  String get yes => 'Oui';
+
+  @override
+  String get no => 'Non';
+
+  @override
+  String get notSure => 'Je ne sais pas';
+
+  @override
+  String get phoneOptional => 'Téléphone à afficher (facultatif)';
+
+  @override
+  String get phoneHelp => 'Toute personne qui voit l\'avis pourra vous appeler';
+
+  @override
+  String get phoneInvalid => 'Chiffres, espaces, + ( ) - seulement';
+
+  @override
+  String rewardPill(int tnd) {
+    return 'Récompense $tnd DT';
+  }
+
+  @override
+  String get microchipped => 'Pucé';
+
+  @override
+  String get notMicrochipped => 'Non pucé';
+
+  @override
+  String get call => 'Appeler';
 }

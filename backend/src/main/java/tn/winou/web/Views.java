@@ -89,7 +89,8 @@ public class Views {
             GeoPoint shown = shownPosition(r.getId(), r.getOwnerId(), r.getLastSeen(), viewer);
             return new LostReportOut(r.getId(), r.getName(), r.getSpecies(), r.getDescription(), Location.of(shown),
                     !exact, r.getLastSeenAt(), r.getStatus(), photoList(byReport.get(r.getId())),
-                    r.getHiddenAt() != null, r.getCreatedAt(), isAdmin(viewer) ? r.getOwnerId() : null);
+                    r.getHiddenAt() != null, r.getCreatedAt(), isAdmin(viewer) ? r.getOwnerId() : null,
+                    r.getRewardTnd(), r.getMicrochipped(), r.getContactPhone());
         }).toList();
     }
 

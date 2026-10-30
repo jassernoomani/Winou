@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
@@ -49,6 +50,11 @@ class LostReportDetailScreen extends ConsumerWidget {
         }
         return;
       }
+      if (action == 'edit') {
+        await context.push('/lost/${report.id}/edit', extra: report);
+        ref.invalidate(lostReportProvider(id));
+        return;
+      }
       if (action == 'delete') {
         final ok = await confirm(context, l10n.deleteReportQuestion, l10n.delete);
         if (!ok) return;
@@ -94,6 +100,7 @@ class LostReportDetailScreen extends ConsumerWidget {
                   itemBuilder: (_) => [
                     if (!r.isMine) PopupMenuItem(value: 'report', child: Text(l10n.report)),
                     if (r.isMine) ...[
+                      PopupMenuItem(value: 'edit', child: Text(l10n.editReport)),
                       if (r.status != ReportStatus.found) PopupMenuItem(value: 'found', child: Text(l10n.markFound)),
                       if (r.status != ReportStatus.closed)
                         PopupMenuItem(value: 'closed', child: Text(l10n.closeReport)),
@@ -133,6 +140,10 @@ class LostReportDetailScreen extends ConsumerWidget {
                         child: Row(
                           children: [
                             Expanded(child: Text(value.name, style: Theme.of(context).textTheme.headlineMedium)),
+                            if (value.rewardTnd case final reward?) ...[
+                              StatusPill(l10n.rewardPill(reward), tone: Tone.stray, icon: LucideIcons.gift),
+                              const SizedBox(width: 6),
+                            ],
                             StatusPill(
                               statusLabel(l10n, value.status),
                               tone: reportStatusTone(value.status),
@@ -152,6 +163,9 @@ class LostReportDetailScreen extends ConsumerWidget {
                                 InfoRow(LucideIcons.pawPrint, speciesLabel(l10n, value.species)),
                                 InfoRow(LucideIcons.clock, l10n.lastSeenOn(formatDateTime(context, value.lastSeenAt))),
                                 if (value.description != null) InfoRow(LucideIcons.textAlignStart, value.description!),
+                                if (value.microchipped case final chipped?)
+                                  InfoRow(LucideIcons.cpu, chipped ? l10n.microchipped : l10n.notMicrochipped),
+                                if (value.contactPhone case final phone?) _PhoneRow(phone, mine: value.isMine),
                               ],
                             ),
                           ),
@@ -235,6 +249,27 @@ class LostReportDetailScreen extends ConsumerWidget {
 }
 
 /// A back button that stays readable on top of a photo.
+/// The phone the owner chose to show, with a button to call it.
+class _PhoneRow extends StatelessWidget {
+  const _PhoneRow(this.phone, {required this.mine});
+
+  final String phone;
+  final bool mine;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Expanded(child: InfoRow(LucideIcons.phone, phone)),
+      if (!mine)
+        TextButton.icon(
+          onPressed: () => launchUrl(Uri(scheme: 'tel', path: phone.replaceAll(RegExp(r'[^+0-9]'), ''))),
+          icon: const Icon(LucideIcons.phoneCall, size: 18),
+          label: Text(context.l10n.call),
+        ),
+    ],
+  );
+}
+
 class _RoundBack extends StatelessWidget {
   const _RoundBack();
 

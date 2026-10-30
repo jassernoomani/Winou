@@ -1709,4 +1709,60 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get nothingHere =>
       'لا شيء في هذا الجزء من الخريطة. حرّك الخريطة أو صغّرها.';
+
+  @override
+  String get editReport => 'تعديل';
+
+  @override
+  String get saveChanges => 'حفظ التعديلات';
+
+  @override
+  String get removePhoto => 'إزالة هذه الصورة';
+
+  @override
+  String get moreDetails => 'تفاصيل إضافية (اختياري)';
+
+  @override
+  String get rewardOptional => 'مكافأة';
+
+  @override
+  String get currencyTnd => 'د.ت';
+
+  @override
+  String get rewardTooHigh => '100000 كحد أقصى';
+
+  @override
+  String get microchipQuestion => 'هل يحمل شريحة إلكترونية؟';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
+  String get notSure => 'لست متأكدًا';
+
+  @override
+  String get phoneOptional => 'رقم هاتف للعرض (اختياري)';
+
+  @override
+  String get phoneHelp => 'يمكن لكل من يرى البلاغ الاتصال بك';
+
+  @override
+  String get phoneInvalid => 'أرقام ومسافات و + ( ) - فقط';
+
+  @override
+  String rewardPill(int tnd) {
+    return 'مكافأة $tnd د.ت';
+  }
+
+  @override
+  String get microchipped => 'يحمل شريحة إلكترونية';
+
+  @override
+  String get notMicrochipped => 'لا يحمل شريحة';
+
+  @override
+  String get call => 'اتصال';
 }
