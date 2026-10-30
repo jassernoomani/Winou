@@ -36,6 +36,10 @@ class MyActivityScreen extends ConsumerWidget {
               },
               itemBuilder: (_) => [
                 PopupMenuItem(
+                  value: '/account',
+                  child: ListTile(leading: const Icon(LucideIcons.circleUser), title: Text(l10n.account)),
+                ),
+                PopupMenuItem(
                   value: '/association',
                   child: ListTile(leading: const Icon(LucideIcons.heartHandshake), title: Text(l10n.becomeAssociation)),
                 ),

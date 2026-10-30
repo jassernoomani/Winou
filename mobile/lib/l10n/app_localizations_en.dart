@@ -1084,4 +1084,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weeklyChartLabel =>
       'Lost reports, sightings and pets back home per week. Touch and drag to see a week\'s numbers.';
+
+  @override
+  String get errorTooManyAttempts =>
+      'Too many attempts. Wait a few minutes and try again.';
+
+  @override
+  String get errorWrongPassword => 'The password is wrong.';
+
+  @override
+  String get errorSessionExpired => 'Please sign in again.';
+
+  @override
+  String get showPassword => 'Show password';
+
+  @override
+  String get hidePassword => 'Hide password';
+
+  @override
+  String get nameHelp => 'Shown to people you talk to';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get changeName => 'Change your name';
+
+  @override
+  String get nameChanged => 'Name changed.';
+
+  @override
+  String get changePassword => 'Change password';
+
+  @override
+  String get changePasswordHelp => 'Your other phones will be signed out.';
+
+  @override
+  String get currentPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get passwordChanged =>
+      'Password changed. Your other phones were signed out.';
+
+  @override
+  String get signOutEverywhere => 'Sign out of all phones';
+
+  @override
+  String get signOutEverywhereHelp =>
+      'If you lost a phone, or used someone else\'s';
+
+  @override
+  String get signOutEverywhereQuestion =>
+      'Sign out of Winou on every phone, this one included?';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountHelp => 'Your account and everything you posted';
+
+  @override
+  String get deleteAccountQuestion => 'Delete your account?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Your lost pet reports, sightings, photos and conversations are deleted for good. This can\'t be undone.';
+
+  @override
+  String get deleteAccountForGood => 'Delete my account';
+
+  @override
+  String get accountDeleted => 'Your account was deleted.';
 }

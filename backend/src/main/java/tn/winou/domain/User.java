@@ -44,6 +44,9 @@ public class User extends BaseEntity {
     private String alertPoint;
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    /** Access tokens with an older version are refused: "sign out everywhere", a new password. */
+    private int tokenVersion;
+
     /** Set by an admin; the ban is over once this has passed. */
     private OffsetDateTime bannedUntil;
     private String banReason;

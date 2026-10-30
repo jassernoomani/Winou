@@ -45,6 +45,12 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
         } catch (IllegalArgumentException e) {
             throw ApiException.unauthorized("Invalid or expired token");
         }
+        // Signed out everywhere since (tokens from before versions count as version 0)
+        Object version = token.getToken().getClaims().get(Tokens.VERSION);
+        int issuedFor = version instanceof Number n ? n.intValue() : 0;
+        if (issuedFor != user.getTokenVersion()) {
+            throw ApiException.unauthorized("Signed out");
+        }
         requireNotBanned(user);
         return user;
     }

@@ -56,6 +56,9 @@ String errorMessage(BuildContext context, Object error) {
       'file_too_large' || 'image_too_large' => l10n.errorImageTooLarge,
       'email_taken' => l10n.errorEmailTaken,
       'banned' => l10n.errorBanned,
+      'too_many_attempts' => l10n.errorTooManyAttempts,
+      'wrong_password' => l10n.errorWrongPassword,
+      'session_expired' => l10n.errorSessionExpired,
       _ => error.status == 401 ? l10n.errorWrongCredentials : error.message,
     };
   }

@@ -41,6 +41,8 @@ public class SecurityConfig {
     private static final RequestMatcher PUBLIC = new OrRequestMatcher(
             post("/auth/register"),
             post("/auth/login"),
+            post("/auth/refresh"),
+            post("/auth/logout"),
             get("/health"),
             get("/map"),
             get("/photos/{id}/image"),

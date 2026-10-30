@@ -24,7 +24,8 @@ public record WinouProperties(
         Strays strays,
         Associations associations,
         Moderation moderation,
-        Admin admin) {
+        Admin admin,
+        Auth auth) {
 
     public record Jwt(String secret, Duration expiry) {}
 
@@ -77,6 +78,17 @@ public record WinouProperties(
 
     /** Content reported by hideAfterReports different people is hidden until an admin looks at it. */
     public record Moderation(int hideAfterReports, int reportsPerDay) {}
+
+    /**
+     * Staying signed in: a refresh token lasts refreshTokenDays without use. Wrong passwords are
+     * limited per email and per network address within loginAttemptWindow.
+     */
+    public record Auth(
+            int refreshTokenDays,
+            int loginAttemptsPerEmail,
+            int loginAttemptsPerIp,
+            Duration loginAttemptWindow,
+            int registrationsPerIpPerHour) {}
 
     /** Accounts with these emails are admins (compared lowercase). */
     public record Admin(List<String> emails) {

@@ -10,6 +10,7 @@ import 'auth/suspended_screen.dart';
 import 'chat/chat_screen.dart';
 import 'chat/conversations_screen.dart';
 import 'map/map_screen.dart';
+import 'me/account_screen.dart';
 import 'me/admin_screen.dart';
 import 'me/admin_user_screen.dart';
 import 'me/association_screen.dart';
@@ -53,6 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/map', builder: (_, _) => const MapScreen()),
       GoRoute(path: '/me', builder: (_, _) => const MyActivityScreen()),
       GoRoute(path: '/association', builder: (_, _) => const AssociationScreen()),
+      GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
       GoRoute(
         path: '/admin',
         builder: (_, state) => AdminScreen(tab: state.uri.queryParameters['tab']), // from a notification

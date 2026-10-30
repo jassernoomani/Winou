@@ -72,6 +72,9 @@ import tn.winou.matching.PhotoWorker;
         "winou.jwt.secret=test-secret-at-least-32-bytes-long!!",
         "winou.privacy.location-fuzz-secret=test-fuzz-secret",
         "winou.admin.emails=" + ApiTestBase.ADMIN_EMAIL,
+        // Every test signs people up and in from one address
+        "winou.auth.registrations-per-ip-per-hour=1000000",
+        "winou.auth.login-attempts-per-ip=1000000",
 })
 @AutoConfigureMockMvc
 @Import(ApiTestBase.Fakes.class)

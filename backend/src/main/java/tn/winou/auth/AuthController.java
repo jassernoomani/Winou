@@ -1,5 +1,7 @@
 package tn.winou.auth;
 
+import java.time.Duration;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,15 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import tn.winou.common.ApiException;
+import tn.winou.config.WinouProperties;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
 import tn.winou.security.Admins;
+import tn.winou.security.AttemptLimiter;
 import tn.winou.security.CurrentUser;
 import tn.winou.security.CurrentUserResolver;
 import tn.winou.security.Passwords;
-import tn.winou.security.Tokens;
+import tn.winou.security.Sessions;
+import tn.winou.web.ApiModels.RefreshIn;
 import tn.winou.web.ApiModels.RegisterIn;
 import tn.winou.web.ApiModels.TokenOut;
 import tn.winou.web.ApiModels.UserOut;
@@ -32,22 +38,33 @@ import tn.winou.web.ApiModels.UserUpdate;
 @Tag(name = "auth")
 public class AuthController {
 
+    private static final Duration HOUR = Duration.ofHours(1);
+
     private final UserRepository users;
     private final Passwords passwords;
-    private final Tokens tokens;
+    private final Sessions sessions;
     private final Admins admins;
+    private final AttemptLimiter limiter;
+    private final WinouProperties.Auth settings;
 
-    public AuthController(UserRepository users, Passwords passwords, Tokens tokens, Admins admins) {
+    public AuthController(UserRepository users, Passwords passwords, Sessions sessions, Admins admins,
+            AttemptLimiter limiter, WinouProperties properties) {
         this.users = users;
         this.passwords = passwords;
-        this.tokens = tokens;
+        this.sessions = sessions;
         this.admins = admins;
+        this.limiter = limiter;
+        this.settings = properties.auth();
     }
 
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public TokenOut register(@Valid @RequestBody RegisterIn body) {
-        String email = body.email().toLowerCase();
+    @Operation(summary = "Create an account; signs in at once",
+            description = "At most REGISTRATIONS_PER_IP_PER_HOUR accounts per network address and hour.")
+    public TokenOut register(@Valid @RequestBody RegisterIn body, HttpServletRequest request) {
+        String ipKey = "register:" + request.getRemoteAddr();
+        limiter.check(ipKey, settings.registrationsPerIpPerHour(), HOUR);
+        String email = body.email().strip().toLowerCase();
         if (users.existsByEmail(email)) {
             throw emailTaken();
         }
@@ -58,18 +75,44 @@ public class AuthController {
         } catch (DataIntegrityViolationException e) {
             throw emailTaken(); // registered at the same moment by another request
         }
-        return TokenOut.bearer(tokens.issue(user.getId()));
+        limiter.record(ipKey, HOUR);
+        return sessions.start(user);
     }
 
     @PostMapping(value = "/auth/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @Operation(summary = "OAuth2 password form: `username` is the email")
-    public TokenOut login(@RequestParam String username, @RequestParam String password) {
-        User user = users.findByEmail(username.toLowerCase()).orElse(null);
+    @Operation(summary = "OAuth2 password form: `username` is the email",
+            description = "After LOGIN_ATTEMPTS_PER_EMAIL wrong passwords for an email, or LOGIN_ATTEMPTS_PER_IP "
+                    + "from one network address, within LOGIN_ATTEMPT_WINDOW_MINUTES: 429 \"too_many_attempts\".")
+    public TokenOut login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) {
+        String email = username.strip().toLowerCase();
+        String emailKey = "login:" + email;
+        String ipKey = "login-ip:" + request.getRemoteAddr();
+        Duration window = settings.loginAttemptWindow();
+        limiter.check(emailKey, settings.loginAttemptsPerEmail(), window);
+        limiter.check(ipKey, settings.loginAttemptsPerIp(), window);
+        User user = users.findByEmail(email).orElse(null);
         if (!passwords.verify(user != null ? user.getPasswordHash() : null, password)) {
+            limiter.record(emailKey, window);
+            limiter.record(ipKey, window);
             throw ApiException.unauthorized("Wrong email or password");
         }
         CurrentUserResolver.requireNotBanned(user);
-        return TokenOut.bearer(tokens.issue(user.getId()));
+        limiter.clear(emailKey);
+        return sessions.start(user);
+    }
+
+    @PostMapping("/auth/refresh")
+    @Operation(summary = "A new access token and refresh token for a refresh token, which stops working",
+            description = "401 \"session_expired\" when the session ended: sign in again.")
+    public TokenOut refresh(@Valid @RequestBody RefreshIn body) {
+        return sessions.refresh(body.refreshToken());
+    }
+
+    @PostMapping("/auth/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Ends the session of this refresh token")
+    public void logout(@Valid @RequestBody RefreshIn body) {
+        sessions.end(body.refreshToken());
     }
 
     @GetMapping("/me")
@@ -81,7 +124,10 @@ public class AuthController {
     @Transactional
     public UserOut updateMe(@Valid @RequestBody UserUpdate body, @CurrentUser User user) {
         if (body.getDisplayName() != null) {
-            user.setDisplayName(body.getDisplayName());
+            if (body.getDisplayName().isBlank()) {
+                throw ApiException.invalid("The name can't be empty");
+            }
+            user.setDisplayName(body.getDisplayName().strip());
         }
         if (body.isFcmTokenSent()) {
             if (body.getFcmToken() != null) {
@@ -92,7 +138,7 @@ public class AuthController {
         return out(users.save(user));
     }
 
-    private static UserOut out(User user) {
+    static UserOut out(User user) {
         return new UserOut(user.getId(), user.getEmail(), user.getDisplayName(), user.getRole(),
                 user.getAssociationName(), user.getCreatedAt());
     }

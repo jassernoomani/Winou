@@ -1915,6 +1915,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lost reports, sightings and pets back home per week. Touch and drag to see a week\'s numbers.'**
   String get weeklyChartLabel;
+
+  /// No description provided for @errorTooManyAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Wait a few minutes and try again.'**
+  String get errorTooManyAttempts;
+
+  /// No description provided for @errorWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The password is wrong.'**
+  String get errorWrongPassword;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in again.'**
+  String get errorSessionExpired;
+
+  /// No description provided for @showPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get hidePassword;
+
+  /// No description provided for @nameHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown to people you talk to'**
+  String get nameHelp;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @changeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your name'**
+  String get changeName;
+
+  /// No description provided for @nameChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Name changed.'**
+  String get nameChanged;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your other phones will be signed out.'**
+  String get changePasswordHelp;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. Your other phones were signed out.'**
+  String get passwordChanged;
+
+  /// No description provided for @signOutEverywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of all phones'**
+  String get signOutEverywhere;
+
+  /// No description provided for @signOutEverywhereHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'If you lost a phone, or used someone else\'s'**
+  String get signOutEverywhereHelp;
+
+  /// No description provided for @signOutEverywhereQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of Winou on every phone, this one included?'**
+  String get signOutEverywhereQuestion;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account and everything you posted'**
+  String get deleteAccountHelp;
+
+  /// No description provided for @deleteAccountQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountQuestion;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Your lost pet reports, sightings, photos and conversations are deleted for good. This can\'t be undone.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @deleteAccountForGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my account'**
+  String get deleteAccountForGood;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account was deleted.'**
+  String get accountDeleted;
 }
 
 class _AppLocalizationsDelegate

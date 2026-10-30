@@ -1,7 +1,6 @@
 package tn.winou.security;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -11,8 +10,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Component;
 
 import tn.winou.config.WinouProperties;
+import tn.winou.domain.User;
 
-/** Access tokens: HS256 JWT with the user id as subject. */
+/** Access tokens: HS256 JWT with the user id as subject and the user's token version. */
 @Component
 public class Tokens {
 
@@ -24,10 +24,13 @@ public class Tokens {
         this.properties = properties;
     }
 
-    public String issue(UUID userId) {
+    public static final String VERSION = "ver";
+
+    public String issue(User user) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .subject(userId.toString())
+                .subject(user.getId().toString())
+                .claim(VERSION, user.getTokenVersion())
                 .issuedAt(now)
                 .expiresAt(now.plus(properties.jwt().expiry()))
                 .build();

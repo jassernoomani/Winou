@@ -31,6 +31,8 @@ spring:
 
 server:
   port: 8080
+  # Behind Caddy: the client's address comes from X-Forwarded-For, trusted from private networks only
+  forward-headers-strategy: native
   error:
     whitelabel:
       enabled: false
@@ -44,7 +46,7 @@ springdoc:
 winou:
   jwt:
     secret: ${JWT_SECRET:dev-only-insecure-secret-at-least-32-bytes}
-    expiry: ${JWT_EXPIRE_MINUTES:10080}m
+    expiry: ${JWT_EXPIRE_MINUTES:60}m   # the app renews it with its refresh token
   ml:
     url: ${ML_SERVICE_URL:http://localhost:8000}
     timeout: 120s
@@ -97,6 +99,12 @@ winou:
   moderation:
     hide-after-reports: ${HIDE_AFTER_REPORTS:3}
     reports-per-day: ${RATE_LIMIT_REPORTS_PER_DAY:20}
+  auth:
+    refresh-token-days: ${REFRESH_TOKEN_DAYS:90}         # signed out after this long without opening the app
+    login-attempts-per-email: ${LOGIN_ATTEMPTS_PER_EMAIL:5}
+    login-attempts-per-ip: ${LOGIN_ATTEMPTS_PER_IP:30}
+    login-attempt-window: ${LOGIN_ATTEMPT_WINDOW_MINUTES:15}m
+    registrations-per-ip-per-hour: ${REGISTRATIONS_PER_IP_PER_HOUR:10}
   admin:
     # Comma-separated: these accounts review association requests and reported content in the app
     emails: ${ADMIN_EMAILS:}

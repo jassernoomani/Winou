@@ -19,6 +19,7 @@ import 'package:winou/chat/chat_screen.dart';
 import 'package:winou/chat/conversations_screen.dart';
 import 'package:winou/l10n/app_localizations_en.dart';
 import 'package:winou/map/map_screen.dart';
+import 'package:winou/me/account_screen.dart';
 import 'package:winou/me/admin_screen.dart';
 import 'package:winou/me/admin_user_screen.dart';
 import 'package:winou/me/association_screen.dart';
@@ -213,6 +214,19 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
     () => const LostReportDetailScreen(id: 'rocky'),
     () => FakeApi(role: 'ADMIN'),
     (tester) => _tap(tester, find.byTooltip(_l10n.more)),
+  ),
+  ('51_account', () => const AccountScreen(), FakeApi.new, null),
+  (
+    '52_change_password',
+    () => const AccountScreen(),
+    FakeApi.new,
+    (tester) => _tap(tester, find.text(_l10n.changePassword)),
+  ),
+  (
+    '53_delete_account',
+    () => const AccountScreen(),
+    FakeApi.new,
+    (tester) => _tap(tester, find.text(_l10n.deleteAccount)),
   ),
   (
     '39_activity_menu',

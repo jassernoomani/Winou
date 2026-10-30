@@ -1093,4 +1093,79 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get weeklyChartLabel =>
       'Animaux perdus, vus et rentrés par semaine. Touchez et glissez pour voir les chiffres d\'une semaine.';
+
+  @override
+  String get errorTooManyAttempts =>
+      'Trop de tentatives. Attendez quelques minutes et réessayez.';
+
+  @override
+  String get errorWrongPassword => 'Le mot de passe est incorrect.';
+
+  @override
+  String get errorSessionExpired => 'Veuillez vous reconnecter.';
+
+  @override
+  String get showPassword => 'Afficher le mot de passe';
+
+  @override
+  String get hidePassword => 'Masquer le mot de passe';
+
+  @override
+  String get nameHelp => 'Visible par les personnes avec qui vous échangez';
+
+  @override
+  String get account => 'Compte';
+
+  @override
+  String get changeName => 'Changer votre nom';
+
+  @override
+  String get nameChanged => 'Nom modifié.';
+
+  @override
+  String get changePassword => 'Changer le mot de passe';
+
+  @override
+  String get changePasswordHelp => 'Vos autres téléphones seront déconnectés.';
+
+  @override
+  String get currentPassword => 'Mot de passe actuel';
+
+  @override
+  String get newPassword => 'Nouveau mot de passe';
+
+  @override
+  String get passwordChanged =>
+      'Mot de passe changé. Vos autres téléphones ont été déconnectés.';
+
+  @override
+  String get signOutEverywhere => 'Se déconnecter de tous les téléphones';
+
+  @override
+  String get signOutEverywhereHelp =>
+      'Si vous avez perdu un téléphone, ou utilisé celui de quelqu\'un d\'autre';
+
+  @override
+  String get signOutEverywhereQuestion =>
+      'Se déconnecter de Winou sur tous les téléphones, y compris celui-ci ?';
+
+  @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountHelp =>
+      'Votre compte et tout ce que vous avez publié';
+
+  @override
+  String get deleteAccountQuestion => 'Supprimer votre compte ?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Vos avis de perte, signalements, photos et conversations sont supprimés définitivement. C\'est irréversible.';
+
+  @override
+  String get deleteAccountForGood => 'Supprimer mon compte';
+
+  @override
+  String get accountDeleted => 'Votre compte a été supprimé.';
 }

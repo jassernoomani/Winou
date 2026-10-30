@@ -51,12 +51,21 @@ public final class ApiModels {
             @NotNull @Size(min = 8, max = 128) String password,
             @NotNull @Size(min = 1, max = 80) String displayName) {}
 
-    public record TokenOut(String accessToken, String tokenType) {
+    /** refresh_token gets a new pair from POST /auth/refresh when the access token expires. */
+    public record TokenOut(String accessToken, String tokenType, String refreshToken) {
 
-        public static TokenOut bearer(String token) {
-            return new TokenOut(token, "bearer");
+        public static TokenOut of(String accessToken, String refreshToken) {
+            return new TokenOut(accessToken, "bearer", refreshToken);
         }
     }
+
+    public record RefreshIn(@NotBlank @Size(max = 200) String refreshToken) {}
+
+    public record PasswordChangeIn(
+            @NotNull @Size(max = 128) String currentPassword,
+            @NotNull @Size(min = 8, max = 128) String newPassword) {}
+
+    public record DeleteAccountIn(@NotNull @Size(max = 128) String password) {}
 
     /** association_name: set for approved associations, shown with a badge. */
     public record UserOut(

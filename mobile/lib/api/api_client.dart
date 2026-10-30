@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:latlong2/latlong.dart';
 
 import '../config.dart';
@@ -17,30 +18,46 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
+/// What signing in returns: a short-lived access token, and the refresh token that renews it.
+typedef SessionTokens = ({String access, String? refresh});
+
+SessionTokens _tokens(dynamic data) => (access: data['access_token'], refresh: data['refresh_token']);
+
 /// Thin wrapper over the Winou API. One method per endpoint.
 class WinouApi {
+  /// [renew] trades the refresh token for new tokens after a 401; false if the session is over.
   WinouApi({
     required String? Function() token,
+    required Future<bool> Function() renew,
     required void Function() onUnauthorized,
     required void Function(Ban ban) onBanned,
-  }) : _dio = Dio(
-         BaseOptions(
-           baseUrl: Config.apiUrl,
-           connectTimeout: const Duration(seconds: 10),
-           receiveTimeout: const Duration(seconds: 60),
-           listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
-         ),
-       ) {
+  }) : _dio = Dio(_options),
+       _plain = Dio(_options) {
+    _plain.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) => handler.next(_toServer(options))));
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          options.baseUrl = Config.apiUrl; // may have been changed in the app since
+          _toServer(options);
           final value = token();
           if (value != null) options.headers['Authorization'] = 'Bearer $value';
           handler.next(options);
         },
-        onError: (error, handler) {
-          if (error.response?.statusCode == 401 && token() != null) onUnauthorized();
+        onError: (error, handler) async {
+          final request = error.requestOptions;
+          if (error.response?.statusCode == 401 && token() != null) {
+            // The access token expired: renew it once, then send the request again
+            if (request.extra['renewed'] != true && await renew()) {
+              request.extra['renewed'] = true;
+              request.headers['Authorization'] = 'Bearer ${token()}';
+              if (request.data case final FormData form) request.data = form.clone(); // a form is sent once
+              try {
+                return handler.resolve(await _dio.fetch(request));
+              } on DioException catch (e) {
+                return handler.reject(e);
+              }
+            }
+            onUnauthorized();
+          }
           final exception = _toApiException(error);
           // Banned by an admin: on any request, or when signing in
           if (exception.code == 'banned') onBanned(Ban.fromJson(exception.detail!));
@@ -50,7 +67,22 @@ class WinouApi {
     );
   }
 
+  static final _options = BaseOptions(
+    baseUrl: Config.apiUrl,
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 60),
+    listFormat: ListFormat.multi, // type=lost&type=stray, as the API expects
+  );
+
+  static RequestOptions _toServer(RequestOptions options) =>
+      options..baseUrl = Config.apiUrl; // may have been changed in the app since
+
   final Dio _dio;
+  final Dio _plain; // without the token or renewal: for the session's own calls
+
+  /// Tests answer requests themselves.
+  @visibleForTesting
+  set debugAdapter(HttpClientAdapter adapter) => _dio.httpClientAdapter = _plain.httpClientAdapter = adapter;
 
   Future<T> _call<T>(Future<Response> Function() request, T Function(dynamic data) parse) async {
     try {
@@ -62,19 +94,37 @@ class WinouApi {
 
   // --- auth ---
 
-  Future<String> login(String email, String password) => _call(
+  Future<SessionTokens> login(String email, String password) => _call(
     () => _dio.post(
       '/auth/login',
       data: {'username': email, 'password': password},
       options: Options(contentType: Headers.formUrlEncodedContentType),
     ),
-    (data) => data['access_token'],
+    _tokens,
   );
 
-  Future<String> register(String email, String password, String displayName) => _call(
+  Future<SessionTokens> register(String email, String password, String displayName) => _call(
     () => _dio.post('/auth/register', data: {'email': email, 'password': password, 'display_name': displayName}),
-    (data) => data['access_token'],
+    _tokens,
   );
+
+  /// New tokens for a refresh token, which stops working.
+  Future<SessionTokens> refreshSession(String refreshToken) =>
+      _call(() => _plain.post('/auth/refresh', data: {'refresh_token': refreshToken}), _tokens);
+
+  Future<void> endSession(String refreshToken) =>
+      _call(() => _plain.post('/auth/logout', data: {'refresh_token': refreshToken}), (_) {});
+
+  /// Signs every other phone out; returns this phone's new tokens.
+  Future<SessionTokens> changePassword(String current, String next) =>
+      _call(() => _dio.post('/me/password', data: {'current_password': current, 'new_password': next}), _tokens);
+
+  Future<void> signOutEverywhere() => _call(() => _dio.post('/me/sign-out-everywhere'), (_) {});
+
+  Future<void> deleteAccount(String password) => _call(() => _dio.delete('/me', data: {'password': password}), (_) {});
+
+  Future<User> rename(String displayName) =>
+      _call(() => _dio.patch('/me', data: {'display_name': displayName}), (data) => User.fromJson(data));
 
   Future<User> me() => _call(() => _dio.get('/me'), (data) => User.fromJson(data));
 

@@ -9,6 +9,24 @@ import '../widgets/common.dart';
 import '../widgets/server_settings.dart';
 import 'auth_controller.dart';
 
+/// Good enough to catch typos; the server checks it properly.
+bool isEmail(String value) => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]{2,}$').hasMatch(value.trim());
+
+/// The eye in a password field.
+class ShowPasswordButton extends StatelessWidget {
+  const ShowPasswordButton({super.key, required this.shown, required this.onPressed});
+
+  final bool shown;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: shown ? context.l10n.hidePassword : context.l10n.showPassword,
+    onPressed: onPressed,
+    icon: Icon(shown ? LucideIcons.eyeOff : LucideIcons.eye),
+  );
+}
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.register = false});
 
@@ -24,6 +42,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _password = TextEditingController();
   final _name = TextEditingController();
   bool _busy = false;
+  bool _showPassword = false;
 
   @override
   void dispose() {
@@ -141,9 +160,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               FieldLabel(l10n.displayName),
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(prefixIcon: Icon(LucideIcons.user)),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(LucideIcons.user),
+                  helperText: l10n.nameHelp,
+                  counterText: '', // the limit is generous
+                ),
                 textInputAction: TextInputAction.next,
-                autofillHints: const [AutofillHints.nickname],
+                textCapitalization: TextCapitalization.words,
+                maxLength: 80,
+                autofillHints: const [AutofillHints.name],
                 validator: (v) => (v ?? '').trim().isEmpty ? l10n.required : null,
               ),
               const SizedBox(height: 12),
@@ -155,7 +180,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.email],
-              validator: (v) => (v ?? '').contains('@') ? null : l10n.invalidEmail,
+              autocorrect: false,
+              validator: (v) => isEmail(v ?? '') ? null : l10n.invalidEmail,
             ),
             const SizedBox(height: 12),
             FieldLabel(l10n.password),
@@ -164,8 +190,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(LucideIcons.lock),
                 helperText: register ? l10n.passwordTooShort : null,
+                suffixIcon: ShowPasswordButton(
+                  shown: _showPassword,
+                  onPressed: () => setState(() => _showPassword = !_showPassword),
+                ),
               ),
-              obscureText: true,
+              obscureText: !_showPassword,
+              autocorrect: false,
+              enableSuggestions: false,
               autofillHints: [register ? AutofillHints.newPassword : AutofillHints.password],
               onFieldSubmitted: (_) => _submit(),
               validator: (v) => register && (v ?? '').length < 8 ? l10n.passwordTooShort : null,
