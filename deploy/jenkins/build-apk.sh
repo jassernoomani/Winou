@@ -12,9 +12,11 @@ yes | sdkmanager --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
 
 # The Flutter template gives Gradle 8 GB (mobile/android/gradle.properties); here it shares the
 # laptop with the live server. Gradle reads these user-level settings over the project's.
+# Metaspace: the Kotlin compiler runs inside Gradle (in-process) and needs more than 512 MB.
+# Out of memory, Gradle stops at once instead of hanging until the stage times out.
 mkdir -p "$HOME/.gradle"
 cat > "$HOME/.gradle/gradle.properties" <<'EOF'
-org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=512m
+org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=1g -XX:+ExitOnOutOfMemoryError
 org.gradle.daemon=false
 kotlin.compiler.execution.strategy=in-process
 EOF
