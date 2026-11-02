@@ -2,6 +2,7 @@ package tn.winou.infra;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -62,11 +63,16 @@ public class S3Storage implements Storage {
     public void delete(List<String> keys) {
         try {
             var objects = keys.stream().map(DeleteObject::new).toList();
-            // Lazy: iterating the results performs the deletion
+            // Lazy: iterating the results performs the deletion (in batches), so go through all of them
+            // before reporting failures, or the batches after the first failure are never sent.
+            List<String> failed = new ArrayList<>();
             for (Result<DeleteError> result : client.removeObjects(
                     RemoveObjectsArgs.builder().bucket(bucket).objects(objects).build())) {
                 DeleteError error = result.get();
-                throw new StorageException("could not delete " + error.objectName() + ": " + error.message(), null);
+                failed.add(error.objectName() + ": " + error.message());
+            }
+            if (!failed.isEmpty()) {
+                throw new StorageException("could not delete " + failed, null);
             }
         } catch (StorageException e) {
             throw e;

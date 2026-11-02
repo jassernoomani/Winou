@@ -71,6 +71,10 @@ public class Matcher {
     public void process(Photo photo) {
         LostReport report = photo.getLostReportId() == null ? null : reports.findById(photo.getLostReportId()).orElseThrow();
         Sighting sighting = photo.getSightingId() == null ? null : sightings.findById(photo.getSightingId()).orElseThrow();
+        if (report == null && sighting == null) {
+            photo.setStatus(PhotoStatus.SKIPPED); // a "my pets" photo: matched once copied into a lost report
+            return;
+        }
         Species species = report != null ? report.getSpecies() : sighting.getSpecies();
 
         if (species == Species.OTHER) {

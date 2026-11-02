@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.imageio.IIOImage;
@@ -43,7 +44,23 @@ public class Images {
     }
 
     /** The original's content type, and the copy served to everyone. */
-    public record PublicCopy(byte[] jpeg, String originalType) {}
+    public record PublicCopy(byte[] jpeg, String originalType) {
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof PublicCopy c && Arrays.equals(jpeg, c.jpeg) && originalType.equals(c.originalType);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * Arrays.hashCode(jpeg) + originalType.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "PublicCopy[jpeg=%d bytes, originalType=%s]".formatted(jpeg.length, originalType);
+        }
+    }
 
     /**
      * Validates an upload and returns an upright JPEG without metadata, including the GPS position

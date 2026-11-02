@@ -131,6 +131,7 @@ public class PhotoWorker implements SmartLifecycle {
                 try {
                     Thread.sleep(settings.poll());
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // keep the flag for whoever stopped us
                     return;
                 }
             }

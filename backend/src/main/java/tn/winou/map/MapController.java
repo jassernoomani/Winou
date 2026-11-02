@@ -74,7 +74,9 @@ public class MapController {
         return new MapOut(items.subList(0, Math.min(maxResults, items.size())), items.size() > maxResults);
     }
 
-    private record Filters(double[] bbox, List<Species> species, List<Condition> conditions, OffsetDateTime since,
+    private record BBox(double minLon, double minLat, double maxLon, double maxLat) {}
+
+    private record Filters(BBox bbox, List<Species> species, List<Condition> conditions, OffsetDateTime since,
             OffsetDateTime until) {
 
         Filters {
@@ -129,9 +131,10 @@ public class MapController {
 
     /** Appends the shared filters, the ordering and the limit; returns the parameters. */
     private Map<String, Object> where(StringBuilder sql, String t, String point, String date, Filters f) {
-        double[] b = f.bbox();
+        BBox b = f.bbox();
         Map<String, Object> params = new HashMap<>(Map.of(
-                "minLon", b[0], "minLat", b[1], "maxLon", b[2], "maxLat", b[3], "limit", maxResults + 1));
+                "minLon", b.minLon(), "minLat", b.minLat(), "maxLon", b.maxLon(), "maxLat", b.maxLat(),
+                "limit", maxResults + 1));
         sql.append(" AND ST_Intersects(%s.%s, ST_MakeEnvelope(:minLon, :minLat, :maxLon, :maxLat, 4326)::geography)"
                 .formatted(t, point));
         if (!f.species().isEmpty()) {
@@ -154,7 +157,7 @@ public class MapController {
         return params;
     }
 
-    private static double[] parseBbox(String bbox) {
+    private static BBox parseBbox(String bbox) {
         String[] parts = bbox.split(",");
         double[] v = new double[4];
         try {
@@ -170,6 +173,6 @@ public class MapController {
         if (!(-180 <= v[0] && v[0] < v[2] && v[2] <= 180 && -90 <= v[1] && v[1] < v[3] && v[3] <= 90)) {
             throw ApiException.invalid("bbox is out of range or inverted");
         }
-        return v;
+        return new BBox(v[0], v[1], v[2], v[3]);
     }
 }

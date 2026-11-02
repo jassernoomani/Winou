@@ -69,7 +69,12 @@ public final class Geo {
         return new BigInteger(1, Arrays.copyOfRange(bytes, offset, offset + 8)).doubleValue() / 0x1p64;
     }
 
-    /** Rounds to 5 decimals (about 1 m) the way Python's round() does. */
+    /**
+     * Rounds to 5 decimals (about 1 m) the way Python's round() does: from the double's exact binary
+     * value, hence new BigDecimal(double) and not BigDecimal.valueOf (which starts from the shortest
+     * decimal string and rounds some halves differently, moving public positions).
+     */
+    @SuppressWarnings("java:S2111")
     private static double round5(double value) {
         return new BigDecimal(value).setScale(5, RoundingMode.HALF_EVEN).doubleValue();
     }
