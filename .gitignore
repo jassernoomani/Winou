@@ -32,3 +32,9 @@ research/outputs/*failures*.png
 
 # Firebase app config (kept local)
 google-services.json
+
+# Test and coverage reports (CI)
+ml-service/coverage.xml
+ml-service/test-results.xml
+ml-service/.coverage
+mobile/coverage/

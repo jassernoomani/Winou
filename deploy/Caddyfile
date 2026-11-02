@@ -8,6 +8,12 @@
 		file_server
 	}
 
+	# GitHub's push webhook for Jenkins (deploy/jenkins/). Only this path: the Jenkins UI stays on
+	# the laptop at http://localhost:8081/jenkins.
+	handle /jenkins/github-webhook* {
+		reverse_proxy host.docker.internal:8081
+	}
+
 	handle {
 		reverse_proxy api:8080
 	}

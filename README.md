@@ -17,6 +17,10 @@ with image embeddings, plus a community map of street animals. Built for Tunis.
 ![Qdrant](https://img.shields.io/badge/Qdrant-vectors-DC244C)
 ![Firebase](https://img.shields.io/badge/FCM-push-FFCA28?logo=firebase&logoColor=black)
 
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=jassernoomani_Winou&metric=alert_status)](https://sonarcloud.io/project/overview?id=jassernoomani_Winou)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=jassernoomani_Winou&metric=coverage)](https://sonarcloud.io/component_measures?id=jassernoomani_Winou&metric=coverage)
+[![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=jassernoomani_Winou&metric=sqale_rating)](https://sonarcloud.io/project/overview?id=jassernoomani_Winou)
+
 [Features](#features) · [How it works](#how-it-works) · [Does matching work?](#does-matching-work) ·
 [Run it](#run-it) · [Reference](#reference)
 
@@ -199,6 +203,7 @@ ml-service/   FastAPI: detect, crop, embed
 backend/      Spring Boot API + background matching worker (Java 25)
 mobile/       Flutter app
 deploy/       free hosting: a home PC or Oracle Cloud, DuckDNS, Caddy
+deploy/jenkins/  CI/CD: Jenkins + SonarCloud, deploys every push to main (Jenkinsfile)
 scripts/      Qdrant setup, demo startup (demo.ps1) and demo data (seed_demo.py)
 design/       the screens as HTML, imported into Figma
 docs/         brief, demo guide, README screenshots
@@ -213,6 +218,7 @@ docs/         brief, demo guide, README screenshots
 | 4 | Close the loop: confirm, chat, found | ✅ |
 | 5 | Stray map, associations, moderation | ✅ |
 | + | Admin tools: dashboard, users, suspensions, audit log | ✅ |
+| + | CI/CD: Jenkins, SonarCloud quality gate, auto-deploy | ✅ [setup](deploy/jenkins/README.md) |
 
 See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the original brief.
 

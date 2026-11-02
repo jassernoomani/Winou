@@ -1,0 +1,49 @@
+# Jenkins configuration as code: the admin account, the SonarCloud token and the Winou pipeline job.
+# Values in ${...} come from deploy/jenkins/.env (see .env.example).
+jenkins:
+  systemMessage: "Winou CI/CD. The pipeline is defined in the repo's Jenkinsfile."
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: "https://${WINOU_DOMAIN}/jenkins/"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: sonarcloud-token
+              description: SonarCloud token (My Account > Security)
+              secret: "${SONAR_TOKEN}"
+
+jobs:
+  - script: >
+      pipelineJob('winou') {
+        description('Tests, SonarCloud analysis, deploy to the home server, APK. Started by GitHub pushes to main.')
+        properties {
+          pipelineTriggers { triggers { githubPush() } }
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('https://github.com/jassernoomani/Winou.git') }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }

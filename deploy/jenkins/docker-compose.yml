@@ -1,0 +1,37 @@
+# Jenkins, as its own compose project so redeploying Winou never restarts it. From this folder:
+#
+#   docker compose up -d --build
+#
+# The UI is only on this machine: http://localhost:8081/jenkins. From the internet, Caddy forwards
+# GitHub's webhook (/jenkins/github-webhook/) and nothing else.
+name: winou-ci
+
+services:
+  jenkins:
+    build: .
+    image: winou-jenkins
+    container_name: winou-jenkins
+    restart: unless-stopped
+    # Docker Desktop's socket is root:root, mode 660: join group 0 to use it
+    group_add: ["0"]
+    ports:
+      - "127.0.0.1:8081:8080"
+    environment:
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?set JENKINS_ADMIN_PASSWORD in deploy/jenkins/.env}
+      SONAR_TOKEN: ${SONAR_TOKEN:?set SONAR_TOKEN in deploy/jenkins/.env}
+      WINOU_DOMAIN: ${WINOU_DOMAIN:-winou.duckdns.org}
+      WINOU_HOST_REPO: ${WINOU_HOST_REPO:?set WINOU_HOST_REPO in deploy/jenkins/.env}
+      # Testcontainers starts its containers on the host's Docker; reach them through the host
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The laptop's copy of the repo (with .env and secrets/), mounted at the path Docker Desktop
+      # knows it by, so `docker compose` run from Jenkins bind-mounts the right host folders.
+      - ../..:${WINOU_HOST_REPO}
+      # Same signing key as APKs built by hand, so installed apps update in place
+      # (copied into ~/.android by build-apk.sh)
+      - ${ANDROID_DEBUG_KEYSTORE:-${USERPROFILE}/.android/debug.keystore}:/run/secrets/android-debug.keystore:ro
+
+volumes:
+  jenkins_home:
