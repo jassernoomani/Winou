@@ -40,6 +40,19 @@ class PetsTest extends ApiTestBase {
     }
 
     @Test
+    void aPetsPhotoThatReachesTheWorkerIsSkipped() {
+        String owner = register("owner");
+        String id = pet(owner).path("id").asString();
+        String photoId = upload(owner, "/pets/" + id + "/photos", RED).path("id").asString();
+        // Belongs to neither a lost report nor a sighting; the worker must not choke on it
+        jdbc.sql("UPDATE photos SET status = 'PENDING' WHERE id = :id::uuid").param("id", photoId).update();
+        work();
+        assertThat(jdbc.sql("SELECT status FROM photos WHERE id = :id::uuid").param("id", photoId)
+                .query(String.class).single()).isEqualTo("SKIPPED");
+        assertThat(ml.calls.get()).isZero();
+    }
+
+    @Test
     void markingAPetLostMakesAReportFromItsProfile() {
         String owner = register("owner");
         String id = pet(owner).path("id").asString();
