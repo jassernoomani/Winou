@@ -10,6 +10,15 @@ repo="${WINOU_HOST_REPO:?WINOU_HOST_REPO is not set}"
 mkdir -p "$ANDROID_HOME"
 yes | sdkmanager --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
 
+# The Flutter template gives Gradle 8 GB (mobile/android/gradle.properties); here it shares the
+# laptop with the live server. Gradle reads these user-level settings over the project's.
+mkdir -p "$HOME/.gradle"
+cat > "$HOME/.gradle/gradle.properties" <<'EOF'
+org.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=512m
+org.gradle.daemon=false
+kotlin.compiler.execution.strategy=in-process
+EOF
+
 # The laptop's debug key signs the APK (as in deploy/README.md), so installed apps update in place
 mkdir -p "$HOME/.android"
 cp /run/secrets/android-debug.keystore "$HOME/.android/debug.keystore"

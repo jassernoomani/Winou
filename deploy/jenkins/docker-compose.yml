@@ -14,6 +14,9 @@ services:
     restart: unless-stopped
     # Docker Desktop's socket is root:root, mode 660: join group 0 to use it
     group_add: ["0"]
+    # A build that overreaches is killed here instead of starving the live server (Docker's VM has
+    # ~7.4 GB; the Winou stack uses ~2.5 GB)
+    mem_limit: 4500m
     ports:
       - "127.0.0.1:8081:8080"
     environment:
@@ -32,6 +35,8 @@ services:
       # Same signing key as APKs built by hand, so installed apps update in place
       # (copied into ~/.android by build-apk.sh)
       - ${ANDROID_DEBUG_KEYSTORE:-${USERPROFILE}/.android/debug.keystore}:/run/secrets/android-debug.keystore:ro
+      # Nightly backups (backup.sh): a folder on the laptop, outside the repo
+      - ${WINOU_BACKUP_DIR:-${USERPROFILE}/winou-backups}:/backups
 
 volumes:
   jenkins_home:

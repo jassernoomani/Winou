@@ -1,0 +1,18 @@
+// Nightly backup of the live server (Jenkins job winou-backup, scheduled in casc/jenkins.yaml).
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+    }
+
+    stages {
+        stage('Backup') {
+            steps {
+                sh 'bash deploy/jenkins/backup.sh'
+            }
+        }
+    }
+}

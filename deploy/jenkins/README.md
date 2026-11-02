@@ -47,3 +47,46 @@ internet, Caddy forwards GitHub's webhook path and nothing else.
 - *Build with Parameters*: `FORCE_APK` rebuilds the APK, `SKIP_DEPLOY` only tests and analyses.
 - Jenkins data (job history, caches, Android SDK) is in the `winou-ci_jenkins_home` volume.
 - After editing anything in this folder: `docker compose up -d --build`.
+
+## Nightly backups
+
+The `winou-backup` job runs every night around 3:00 ([backup.sh](backup.sh)) and writes one folder
+per night to **`C:\Users\BabaYaga\winou-backups`** (`WINOU_BACKUP_DIR` in `.env` changes it). The
+last 14 nights are kept; each backup is checked (readable archives) before older ones are deleted.
+
+| File | What | Rebuildable otherwise? |
+|---|---|---|
+| `postgres.sql.gz` | the database: accounts, reports, sightings, matches, chats | no |
+| `minio.tar.gz` | every photo (originals, public copies, crops, chat photos) | no |
+| `qdrant-pet_photos.snapshot` | the photo vectors | slowly: re-embedding every photo |
+
+These sit on the same disk as the server: they protect against mistakes and corruption, not a dead
+disk. Copy the folder elsewhere now and then (USB drive, the other PC, cloud storage).
+
+Run one now: *winou-backup → Build Now*.
+
+### Restoring
+
+From the repo root, with the stack running (`compose` = `docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml`):
+
+```bash
+night=/c/Users/BabaYaga/winou-backups/2026-11-03        # the night to restore
+
+# Database: replaces the current one
+compose stop api worker
+compose exec -T postgres psql -U winou -d postgres -c "DROP DATABASE winou WITH (FORCE)" -c "CREATE DATABASE winou OWNER winou"
+gunzip -c "$night/postgres.sql.gz" | compose exec -T postgres psql -U winou -d winou
+
+# Photos: replaces the MinIO volume's content
+compose stop minio
+docker run --rm -v winou_minio_data:/data -v "$night":/backup alpine:3.22 \
+  sh -c 'rm -rf /data/* /data/.[!.]* ; tar -xzf /backup/minio.tar.gz -C /data'
+
+# Vectors: upload the snapshot to Qdrant (replaces the collection)
+compose up -d minio qdrant
+docker run --rm --network winou_default -v "$night":/backup curlimages/curl:8.21.0 -fsS \
+  -X POST "http://qdrant:6333/collections/pet_photos/snapshots/upload?priority=snapshot" \
+  -F "snapshot=@/backup/qdrant-pet_photos.snapshot"
+
+compose up -d
+```

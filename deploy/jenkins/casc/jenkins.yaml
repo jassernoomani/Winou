@@ -2,7 +2,8 @@
 # Values in ${...} come from deploy/jenkins/.env (see .env.example).
 jenkins:
   systemMessage: "Winou CI/CD. The pipeline is defined in the repo's Jenkinsfile."
-  numExecutors: 2
+  # One build at a time: builds share the laptop with the live server
+  numExecutors: 1
   securityRealm:
     local:
       allowsSignup: false
@@ -28,7 +29,7 @@ credentials:
               secret: "${SONAR_TOKEN}"
 
 jobs:
-  - script: >
+  - script: |
       pipelineJob('winou') {
         description('Tests, SonarCloud analysis, deploy to the home server, APK. Started by GitHub pushes to main.')
         properties {
@@ -43,6 +44,24 @@ jobs:
               }
             }
             scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }
+      pipelineJob('winou-backup') {
+        description('Nightly backup of the database, photos and vectors to the laptop (deploy/jenkins/backup.sh).')
+        properties {
+          pipelineTriggers { triggers { cron { spec('H 3 * * *') } } }
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('https://github.com/jassernoomani/Winou.git') }
+                branch('*/main')
+              }
+            }
+            scriptPath('deploy/jenkins/Jenkinsfile.backup')
             lightweight(true)
           }
         }

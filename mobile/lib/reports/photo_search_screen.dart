@@ -309,9 +309,14 @@ class _HitCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 13, color: tokens.muted),
                         ),
-                        StatusPill(
-                          hit.likely ? l10n.searchStrongMatch : l10n.searchPossibleMatch,
-                          tone: hit.likely ? Tone.found : Tone.stray,
+                        // Shrinks rather than overflow with long labels or large text
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: StatusPill(
+                            hit.likely ? l10n.searchStrongMatch : l10n.searchPossibleMatch,
+                            tone: hit.likely ? Tone.found : Tone.stray,
+                          ),
                         ),
                       ],
                     ),

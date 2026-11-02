@@ -458,6 +458,7 @@ class FakeApi implements WinouApi {
     this.role = 'USER',
     this.associationName,
     this.request,
+    this.photoError,
   }) : sightingData = sighting ?? sightingJson(species: 'dog', mine: true, seen: Duration.zero),
        lost =
            lost ??
@@ -542,7 +543,7 @@ class FakeApi implements WinouApi {
   Future<T> _answer<T>(T Function() value) {
     if (hang) return Completer<T>().future;
     if (fail) return Future.error(ApiException('Cannot reach the server.', code: 'network'));
-    return Future.value(value());
+    return Future.sync(value); // a throwing answer becomes a failed future
   }
 
   @override
@@ -867,13 +868,19 @@ class FakeApi implements WinouApi {
     DateTime? since,
   }) => _answer(() => [for (final i in mapItems) MapItem.fromJson(i)]);
 
+  /// What photo checks and searches throw instead of answering (e.g. code "no_animal_detected").
+  final ApiException? photoError;
+
   @override
-  Future<PhotoCheck> checkPhoto(String filePath) =>
-      _answer(() => PhotoCheck.fromJson({'species': 'dog', 'confidence': 0.93}));
+  Future<PhotoCheck> checkPhoto(String filePath) => _answer(() {
+    if (photoError case final error?) throw error;
+    return PhotoCheck.fromJson({'species': 'dog', 'confidence': 0.93});
+  });
 
   /// The open reports of that species in [lost], best first, the first ones above the threshold.
   @override
   Future<PhotoSearch> searchByPhoto(String filePath, LatLng at, {Species? species}) => _answer(() {
+    if (photoError case final error?) throw error;
     final wanted = species?.api ?? 'dog';
     final candidates = [
       for (final r in lost)
