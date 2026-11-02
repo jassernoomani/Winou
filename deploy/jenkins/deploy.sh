@@ -30,8 +30,9 @@ if [ "$head" != "$commit" ]; then
 fi
 
 compose up -d --build --remove-orphans
-# Caddy does not notice Caddyfile edits by itself
+# Caddy and Prometheus do not notice edits to their (mounted) config files by themselves
 compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+compose kill -s SIGHUP prometheus
 docker image prune -f >/dev/null
 
 echo "Waiting for the API to report healthy..."

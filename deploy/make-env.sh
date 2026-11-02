@@ -29,6 +29,7 @@ secret() { openssl rand -base64 48 | tr -d '/+=\n' | cut -c1-48; }
   echo "S3_ACCESS_KEY=winou"
   echo "S3_SECRET_KEY=$(secret)"
   echo "LOCATION_FUZZ_SECRET=$(secret)"
+  echo "GRAFANA_ADMIN_PASSWORD=$(secret)"
 } > .env
 chmod 600 .env
 echo "wrote .env for $domain (admin: $admin)"

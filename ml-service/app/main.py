@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 from app.config import Settings, settings
 from app.images import ImageError, decode_upload, to_jpeg, to_jpeg_base64
+from app.metrics import STAGE_SECONDS, install as install_metrics
 from app.pipeline import Pipeline
 
 
@@ -43,6 +44,7 @@ def create_app(load_pipeline: Callable[[Settings], Pipeline] = Pipeline) -> Fast
         yield
 
     app = FastAPI(title="Winou ML service", version="1.0.0", lifespan=lifespan)
+    install_metrics(app)
 
     @app.exception_handler(ImageError)
     def image_error(_: Request, exc: ImageError):
@@ -55,7 +57,8 @@ def create_app(load_pipeline: Callable[[Settings], Pipeline] = Pipeline) -> Fast
         return decode_upload(file.file.read(max_bytes + 1), max_bytes, settings.max_image_pixels)
 
     def detect_or_fail(pipeline: Pipeline, image):
-        detection = pipeline.detect(image)
+        with STAGE_SECONDS.labels("detect").time():
+            detection = pipeline.detect(image)
         if detection is None:
             raise ImageError(422, "no_animal_detected",
                              "No cat or dog found. Try a closer photo showing the animal's head.")
@@ -83,7 +86,8 @@ def create_app(load_pipeline: Callable[[Settings], Pipeline] = Pipeline) -> Fast
         image = read_image(file)
         detection = detect_or_fail(pipeline, image)
         crop = pipeline.crop(image, detection)
-        vector = pipeline.embed(crop)
+        with STAGE_SECONDS.labels("embed").time():
+            vector = pipeline.embed(crop)
         return EmbedOut(
             detection=DetectionOut(**detection.__dict__),
             model=pipeline.model_name,

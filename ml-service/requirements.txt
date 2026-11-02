@@ -8,3 +8,4 @@ pi-heif==1.4.0
 fastapi==0.162.0
 uvicorn[standard]
 python-multipart
+prometheus-client==0.26.0

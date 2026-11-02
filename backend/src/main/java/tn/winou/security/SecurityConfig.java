@@ -57,6 +57,7 @@ public class SecurityConfig {
             get("/swagger-ui/**"),
             get("/openapi.json"),
             get("/openapi.json/**"),
+            get("/actuator/**"),                  // only served on the management port, never published
             PathPatternRequestMatcher.withDefaults().matcher("/error"));
 
     @Bean

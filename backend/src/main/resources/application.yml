@@ -50,6 +50,22 @@ server:
     whitelabel:
       enabled: false
 
+# Prometheus scrapes /actuator/prometheus on this port, inside the compose network only: it is not
+# published and Caddy does not route it.
+management:
+  server:
+    port: ${MANAGEMENT_PORT:9091}
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: winou
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
 springdoc:
   swagger-ui:
     path: /docs

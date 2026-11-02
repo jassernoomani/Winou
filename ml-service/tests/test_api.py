@@ -155,3 +155,14 @@ def test_convert_returns_upright_jpeg_without_exif():
     image = Image.open(io.BytesIO(response.content))
     assert image.format == "JPEG" and image.size == (32, 64)  # rotated, then shrunk
     assert not image.getexif()
+
+
+def test_metrics_count_requests_and_stages():
+    client, _ = make_client()
+    with client:
+        client.post("/embed", files=upload(image_bytes()))
+        text = client.get("/metrics").text
+    assert 'winou_ml_request_seconds_count{endpoint="/embed",status="200"}' in text
+    assert 'winou_ml_stage_seconds_count{stage="detect"}' in text
+    assert 'winou_ml_stage_seconds_count{stage="embed"}' in text
+    assert 'endpoint="/metrics"' not in text  # scrapes are not counted

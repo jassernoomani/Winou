@@ -1,0 +1,31 @@
+# What Prometheus scrapes, every 15 s. Everything is reached inside the compose network, except
+# Jenkins, which is its own compose project (reached through the host).
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Spring Boot API: HTTP traffic, JVM, database pool, and the app gauges (photo queue, matches...)
+  - job_name: api
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["api:9091"]
+
+  # Detection and embedding times
+  - job_name: ml-service
+    static_configs:
+      - targets: ["ml-service:8000"]
+
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  # Builds: results and durations (deploy/jenkins/, Prometheus plugin)
+  - job_name: jenkins
+    metrics_path: /jenkins/prometheus/
+    static_configs:
+      - targets: ["host.docker.internal:8081"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

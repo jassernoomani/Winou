@@ -7,3 +7,4 @@ github
 credentials-binding
 timestamper
 junit
+prometheus
