@@ -47,8 +47,10 @@ import 'package:winou/sightings/sighting_create_screen.dart';
 import 'package:winou/sightings/sighting_detail_screen.dart';
 import 'package:winou/sightings/sighting_thanks_screen.dart';
 import 'package:winou/splash_screen.dart';
+import 'package:winou/theme.dart';
 import 'package:winou/uploads.dart';
 import 'package:winou/widgets/connection_banner.dart';
+import 'package:winou/widgets/illustrations.dart';
 import 'package:winou/widgets/common.dart' show initDates;
 
 import 'harness.dart';
@@ -552,6 +554,23 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
       await _tap(tester, find.text(_l10n.vetsAndShelters));
       await settle(tester, rounds: 8);
     },
+  ),
+  (
+    '93_welcome_art',
+    () => const DecoratedBox(
+      decoration: BoxDecoration(gradient: Brand.gradient),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            WelcomeIllustration(WelcomeArt.lost),
+            WelcomeIllustration(WelcomeArt.saw),
+            WelcomeIllustration(WelcomeArt.strays),
+          ],
+        ),
+      ),
+    ),
+    FakeApi.new,
+    null,
   ),
   ('86_search_by_photo', () => const PhotoSearchScreen(), _searchApi, _searchWithCamera),
   ('87_search_no_results', () => const PhotoSearchScreen(), () => FakeApi(lost: []), _searchWithCamera),

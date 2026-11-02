@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -29,6 +30,7 @@ class LostFeedScreen extends ConsumerStatefulWidget {
 
 class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
   final _scroll = ScrollController();
+  bool _compactButtons = false;
   List<LostReport> _reports = [];
   bool _loading = false;
   bool _hasMore = true;
@@ -47,6 +49,11 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
     super.initState();
     _scroll.addListener(() {
       if (_scroll.position.extentAfter < 400) _loadMore();
+      // Reading the list: the buttons step aside; heading back up (or at the top): full size
+      final down = _scroll.position.userScrollDirection == ScrollDirection.reverse && _scroll.offset > 120;
+      final up = _scroll.position.userScrollDirection == ScrollDirection.forward || _scroll.offset <= 120;
+      if (down && !_compactButtons) setState(() => _compactButtons = true);
+      if (up && _compactButtons) setState(() => _compactButtons = false);
     });
     _locateThenLoad();
   }
@@ -162,6 +169,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               gradient: Brand.lostGradient,
               icon: LucideIcons.megaphone,
               label: l10n.reportLostPet,
+              compact: _compactButtons,
               onPressed: () => _open('/lost/new'),
             ),
           ),
@@ -173,6 +181,7 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
               gradient: Brand.sightingGradient,
               icon: LucideIcons.camera,
               label: l10n.iSawAnAnimal,
+              compact: _compactButtons,
               onPressed: () => _open('/sightings/new'),
             ),
           ),

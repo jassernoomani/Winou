@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/models.dart';
 import '../api/providers.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/illustrations.dart';
 
 /// After posting a sighting: thanks, what happens next, and the sighting as it now shows on the map.
 class SightingThanksScreen extends ConsumerWidget {
@@ -30,11 +30,14 @@ class SightingThanksScreen extends ConsumerWidget {
             scale: 0.6,
             offset: Offset.zero,
             child: Center(
-              child: Container(
-                width: 112,
-                height: 112,
-                decoration: BoxDecoration(color: foundBackground, shape: BoxShape.circle),
-                child: Icon(LucideIcons.heart, size: 52, color: foundForeground),
+              child: RadarRings(
+                color: foundForeground,
+                size: 170,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: foundBackground, shape: BoxShape.circle),
+                  child: const BrandPin(size: 88),
+                ),
               ),
             ),
           ),

@@ -8,6 +8,7 @@ import '../preferences.dart';
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
+import '../widgets/illustrations.dart';
 
 /// First launch: what Winou does in three pages, then the two permissions it asks for, each with
 /// the reason first. Android shows its own prompt only when the user taps "Allow".
@@ -63,9 +64,9 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                   controller: _pages,
                   onPageChanged: (page) => setState(() => _page = page),
                   children: [
-                    _Intro(icon: LucideIcons.search, title: l10n.welcomeLostTitle, body: l10n.welcomeLostBody),
-                    _Intro(icon: LucideIcons.camera, title: l10n.welcomeSawTitle, body: l10n.welcomeSawBody),
-                    _Intro(icon: LucideIcons.pawPrint, title: l10n.welcomeStraysTitle, body: l10n.welcomeStraysBody),
+                    _Intro(art: WelcomeArt.lost, title: l10n.welcomeLostTitle, body: l10n.welcomeLostBody),
+                    _Intro(art: WelcomeArt.saw, title: l10n.welcomeSawTitle, body: l10n.welcomeSawBody),
+                    _Intro(art: WelcomeArt.strays, title: l10n.welcomeStraysTitle, body: l10n.welcomeStraysBody),
                     const _Permissions(),
                   ],
                 ),
@@ -111,9 +112,9 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 }
 
 class _Intro extends StatelessWidget {
-  const _Intro({required this.icon, required this.title, required this.body});
+  const _Intro({required this.art, required this.title, required this.body});
 
-  final IconData icon;
+  final WelcomeArt art;
   final String title;
   final String body;
 
@@ -125,16 +126,8 @@ class _Intro extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FadeSlideIn(
-            scale: 0.7,
-            offset: Offset.zero,
-            child: Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.16)),
-              child: Icon(icon, size: 72, color: Colors.white),
-            ),
-          ),
-          const SizedBox(height: 32),
+          FadeSlideIn(scale: 0.7, offset: Offset.zero, child: WelcomeIllustration(art)),
+          const SizedBox(height: 16),
           FadeSlideIn(
             index: 1,
             child: Text(

@@ -465,12 +465,34 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // The icon among two still rings, the app icon's radar motif
           Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: tokens.tonal),
-            child: Icon(icon, size: 44, color: tokens.accent),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: tokens.accent.withValues(alpha: 0.08), width: 2),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: tokens.accent.withValues(alpha: 0.16), width: 2),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [tokens.tonal, tokens.tonal.withValues(alpha: 0.6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Icon(icon, size: 44, color: tokens.accent),
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             text,
             textAlign: TextAlign.center,
@@ -492,15 +514,22 @@ class GradientFab extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onPressed,
+    this.compact = false,
   });
 
   final LinearGradient gradient;
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
+  final bool compact; // just the icon (the label stays for screen readers and as a tooltip)
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => Tooltip(
+    message: compact ? label : '',
+    child: Semantics(button: true, label: label, excludeSemantics: true, child: _button()),
+  );
+
+  Widget _button() => Container(
     height: 52,
     decoration: BoxDecoration(
       gradient: gradient,
@@ -515,16 +544,28 @@ class GradientFab extends StatelessWidget {
       child: InkWell(
         customBorder: const StadiumBorder(),
         onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(horizontal: compact ? 16 : 18),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: 8,
             children: [
               Icon(icon, color: Colors.white, size: 20),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+              // The label folds away to the side
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                child: compact
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 8),
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+                        ),
+                      ),
               ),
             ],
           ),
