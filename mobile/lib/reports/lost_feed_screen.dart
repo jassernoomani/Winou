@@ -240,8 +240,13 @@ class _LostFeedScreenState extends ConsumerState<LostFeedScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 prefixIcon: const Icon(LucideIcons.search, color: Color(0xFF6B7591)),
+                // Empty: search by photo instead (like a camera-search button in a search bar)
                 suffixIcon: _search.text.isEmpty
-                    ? null
+                    ? IconButton(
+                        tooltip: l10n.searchByPhoto,
+                        icon: const Icon(LucideIcons.scanSearch, color: Brand.blue),
+                        onPressed: () => _open('/search-photo'),
+                      )
                     : IconButton(
                         tooltip: l10n.clearSearch,
                         icon: const Icon(LucideIcons.x, color: Color(0xFF6B7591)),

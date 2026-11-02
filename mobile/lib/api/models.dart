@@ -173,6 +173,40 @@ class Photo {
   bool get isProcessing => status == 'PENDING' || status == 'PROCESSING';
 }
 
+/// What the photo check found: the species and how sure the detector is.
+class PhotoCheck {
+  PhotoCheck.fromJson(Map<String, dynamic> json)
+    : species = _enum(Species.values, json['species']),
+      confidence = (json['confidence'] as num).toDouble();
+
+  final Species species;
+  final double confidence;
+}
+
+/// Lost reports that look like a photo. [likely] hits pass the matching threshold; the others are
+/// weaker look-alikes, worth a glance.
+class PhotoSearch {
+  PhotoSearch.fromJson(Map<String, dynamic> json)
+    : species = _enum(Species.values, json['species']),
+      results = [for (final r in json['results']) PhotoSearchHit.fromJson(r)];
+
+  final Species species;
+  final List<PhotoSearchHit> results;
+}
+
+class PhotoSearchHit {
+  PhotoSearchHit.fromJson(Map<String, dynamic> json)
+    : report = LostReport.fromJson(json['report']),
+      score = (json['score'] as num).toDouble(),
+      likely = json['likely'],
+      matchedImageUrl = absoluteUrl(json['matched_image_url'])!;
+
+  final LostReport report;
+  final double score;
+  final bool likely;
+  final String matchedImageUrl; // the report's photo that looks most like the searched one
+}
+
 /// A stray's care card. [sterilised] and [vaccinated] are null when nobody knows.
 class StrayCare {
   const StrayCare({this.nickname, this.sterilised, this.vaccinated, this.notes, this.feeders = 0, this.iFeed = false});

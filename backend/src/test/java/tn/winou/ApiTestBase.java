@@ -218,6 +218,7 @@ public abstract class ApiTestBase {
     public static class FakeMl implements MlClient {
 
         public final AtomicInteger calls = new AtomicInteger();
+        public final AtomicInteger detectCalls = new AtomicInteger();
         public volatile boolean down;
 
         @Override
@@ -241,6 +242,19 @@ public abstract class ApiTestBase {
         @Override
         public byte[] heicToJpeg(byte[] image, int maxSide) {
             return image(RED, "jpg");
+        }
+
+        @Override
+        public Detection detect(byte[] image) {
+            detectCalls.incrementAndGet();
+            if (down) {
+                throw new IllegalStateException("ml-service unreachable");
+            }
+            double[] rgb = meanRgb(image);
+            if (rgb[0] + rgb[1] + rgb[2] < 10) {
+                throw new NoAnimalDetected();
+            }
+            return new Detection(rgb[2] > rgb[0] ? "dog" : "cat", 0.9); // blue photos are dogs
         }
 
         private static double[] meanRgb(byte[] jpeg) {

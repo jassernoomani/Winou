@@ -3,13 +3,16 @@ import 'dart:ui' as ui;
 
 import 'package:exif/exif.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../api/api_client.dart';
 import '../api/models.dart';
+import '../auth/auth_controller.dart';
 import '../uploads.dart';
+import '../theme.dart';
 import 'common.dart';
 
 final _picker = ImagePicker();
@@ -212,14 +215,41 @@ Future<List<PickedPhoto>> addPhotos(BuildContext context, int limit) async {
   };
 }
 
+/// What the photo check said about a picked photo. [unknown] when it couldn't run (offline, rate
+/// limited, server error): then the photo simply has no badge. Never an error, so Riverpod doesn't
+/// retry it (each check runs the model on the server).
+class PhotoVerdict {
+  const PhotoVerdict.animal(Species this.species) : noAnimal = false;
+  const PhotoVerdict.noAnimal() : species = null, noAnimal = true;
+  const PhotoVerdict.unknown() : species = null, noAnimal = false;
+
+  final Species? species;
+  final bool noAnimal;
+}
+
+/// One check per file, kept while the photo is on screen.
+final photoVerdictProvider = FutureProvider.autoDispose.family<PhotoVerdict, String>((ref, path) async {
+  try {
+    final check = await ref.read(apiProvider).checkPhoto(path);
+    return PhotoVerdict.animal(check.species);
+  } on ApiException catch (e) {
+    return e.code == 'no_animal_detected' ? const PhotoVerdict.noAnimal() : const PhotoVerdict.unknown();
+  } catch (_) {
+    return const PhotoVerdict.unknown();
+  }
+});
+
 /// The selected photos with remove buttons, and the guide's "add a photo" control: soft blue, a
 /// dashed outline and a camera in a white circle. Full width until there is a photo, then a tile.
+/// Each photo is checked as soon as it's added: a badge says "Cat ✓", or warns when no animal is
+/// visible (tap to retake) or when it looks like another species than [species].
 class PhotoPickerStrip extends StatelessWidget {
-  const PhotoPickerStrip({super.key, required this.photos, required this.max, required this.onChanged});
+  const PhotoPickerStrip({super.key, required this.photos, required this.max, required this.onChanged, this.species});
 
   final List<PickedPhoto> photos;
   final int max;
   final ValueChanged<List<PickedPhoto>> onChanged;
+  final Species? species; // what the user says the animal is
 
   Future<void> _add(BuildContext context) async {
     final added = await addPhotos(context, max - photos.length);
@@ -282,12 +312,25 @@ class PhotoPickerStrip extends StatelessWidget {
         children: [
           for (final photo in photos)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsetsDirectional.only(end: 8),
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.file(File(photo.file.path), width: 96, height: 96, fit: BoxFit.cover),
+                  ),
+                  PositionedDirectional(
+                    start: 4,
+                    bottom: 4,
+                    child: PhotoCheckBadge(
+                      photo,
+                      expected: species,
+                      onRetake: () async {
+                        if (!await _askRetake(context, photo.file)) return;
+                        final retaken = await takePhoto();
+                        if (retaken != null) onChanged([for (final p in photos) p == photo ? retaken : p]);
+                      },
+                    ),
                   ),
                   Positioned(
                     top: 0,
@@ -305,6 +348,68 @@ class PhotoPickerStrip extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// The check result on a photo: dark pill, readable on any photo. [onRetake] when no animal is found.
+class PhotoCheckBadge extends ConsumerWidget {
+  const PhotoCheckBadge(this.photo, {super.key, required this.expected, required this.onRetake});
+
+  final PickedPhoto photo;
+  final Species? expected;
+  final VoidCallback onRetake;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final verdict = ref.watch(photoVerdictProvider(photo.file.path));
+    Widget pill(IconData? icon, Color color, String text, {VoidCallback? onTap, String? tooltip}) {
+      final body = Container(
+        constraints: const BoxConstraints(maxWidth: 88),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.62), borderRadius: BorderRadius.circular(10)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 3,
+          children: [
+            if (icon != null) Icon(icon, size: 12, color: color),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+      return Tooltip(
+        message: tooltip ?? text,
+        child: onTap == null ? body : GestureDetector(onTap: onTap, child: body),
+      );
+    }
+
+    return switch (verdict) {
+      AsyncData(value: PhotoVerdict(noAnimal: true)) => pill(
+        LucideIcons.triangleAlert,
+        Brand.amber,
+        l10n.photoNoAnimal,
+        onTap: onRetake,
+        tooltip: l10n.photoNoAnimalHelp,
+      ),
+      AsyncData(value: PhotoVerdict(:final species?))
+          when expected != null && expected != Species.other && species != expected =>
+        pill(LucideIcons.triangleAlert, Brand.amber, l10n.photoLooksLike(speciesLabel(l10n, species))),
+      AsyncData(value: PhotoVerdict(:final species?)) => pill(
+        LucideIcons.check,
+        Brand.green,
+        speciesLabel(l10n, species),
+        tooltip: l10n.photoAnimalFound,
+      ),
+      AsyncLoading() => pill(null, Colors.white, l10n.photoChecking),
+      _ => const SizedBox.shrink(),
+    };
   }
 }
 

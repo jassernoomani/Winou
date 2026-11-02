@@ -10,6 +10,11 @@ public interface MlClient {
     /** Detects the animal, crops it and returns its embedding. */
     Embedding embed(byte[] image);
 
+    /** Finds the main cat or dog (cheap: no embedding). Throws NoAnimalDetected if there is none. */
+    Detection detect(byte[] image);
+
+    record Detection(String species, double confidence) {}
+
     /** HEIC to an upright JPEG without metadata (Java has no HEIC decoder; the ML service does). */
     byte[] heicToJpeg(byte[] image, int maxSide);
 

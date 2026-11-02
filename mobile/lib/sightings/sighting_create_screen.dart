@@ -20,10 +20,13 @@ const _maxPhotos = 3;
 /// Gallery photos are allowed too, but then "when" and "where" come from the photo (or the
 /// user), never from "now, here": the photo may have been taken days ago, elsewhere.
 class SightingCreateScreen extends ConsumerStatefulWidget {
-  const SightingCreateScreen({super.key, this.about});
+  const SightingCreateScreen({super.key, this.about, this.photo});
 
   /// "I saw this pet": the lost report it's about; its owner is told at once.
   final LostReport? about;
+
+  /// The photo already taken for a search by photo: no need to take it again.
+  final PickedPhoto? photo;
 
   @override
   ConsumerState<SightingCreateScreen> createState() => _SightingCreateScreenState();
@@ -32,8 +35,9 @@ class SightingCreateScreen extends ConsumerStatefulWidget {
 class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   final _note = TextEditingController();
   final DateTime _openedAt = DateTime.now();
-  List<PickedPhoto> _photos = [];
+  late List<PickedPhoto> _photos = [?widget.photo];
   late Species _species = widget.about?.species ?? Species.cat;
+  late bool _speciesChosen = widget.about != null; // else the first photo's check may set it
   Condition _condition = Condition.healthy;
   bool _isStray = false;
   bool _inCare = false; // the finder took the animal in
@@ -48,7 +52,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   void initState() {
     super.initState();
     _locate();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _firstPhoto());
+    if (widget.photo == null) WidgetsBinding.instance.addPostFrameCallback((_) => _firstPhoto());
   }
 
   @override
@@ -155,6 +159,13 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final busy = _progress != null;
+    if (_photos.isNotEmpty && !_speciesChosen) {
+      ref.listen(photoVerdictProvider(_photos.first.file.path), (_, next) {
+        if (next case AsyncData(value: PhotoVerdict(:final species?)) when !_speciesChosen && species != _species) {
+          setState(() => _species = species);
+        }
+      });
+    }
     final location = _location;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.iSawAnAnimal)),
@@ -165,7 +176,7 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
           children: [
             if (widget.about case final pet?) ...[_AboutPet(pet), const SizedBox(height: 12)],
             if (_photos.length == 1) ...[
-              _BigPhoto(_photos.single, onRetake: _firstPhoto),
+              _BigPhoto(_photos.single, species: _species, onRetake: _firstPhoto),
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: TextButton.icon(
@@ -179,14 +190,22 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
                 Text(l10n.photoHint, style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 8),
               ],
-              PhotoPickerStrip(photos: _photos, max: _maxPhotos, onChanged: (p) => setState(() => _photos = p)),
+              PhotoPickerStrip(
+                photos: _photos,
+                max: _maxPhotos,
+                species: _species,
+                onChanged: (p) => setState(() => _photos = p),
+              ),
             ],
             const SizedBox(height: 12),
             FieldLabel(l10n.speciesTitle),
             SegmentedButton<Species>(
               segments: [for (final s in Species.values) ButtonSegment(value: s, label: Text(speciesLabel(l10n, s)))],
               selected: {_species},
-              onSelectionChanged: (s) => setState(() => _species = s.first),
+              onSelectionChanged: (s) => setState(() {
+                _species = s.first;
+                _speciesChosen = true;
+              }),
             ),
             const SizedBox(height: 16),
             FieldLabel(l10n.condition),
@@ -253,11 +272,12 @@ class _SightingCreateScreenState extends ConsumerState<SightingCreateScreen> {
   }
 }
 
-/// The photo just taken, large, with a "Retake" button on it.
+/// The photo just taken, large, with its check badge and a "Retake" button on it.
 class _BigPhoto extends StatelessWidget {
-  const _BigPhoto(this.photo, {required this.onRetake});
+  const _BigPhoto(this.photo, {required this.species, required this.onRetake});
 
   final PickedPhoto photo;
+  final Species species;
   final VoidCallback onRetake;
 
   @override
@@ -269,6 +289,11 @@ class _BigPhoto extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.file(File(photo.file.path), fit: BoxFit.cover),
+          PositionedDirectional(
+            start: 12,
+            top: 12,
+            child: PhotoCheckBadge(photo, expected: species, onRetake: onRetake),
+          ),
           Positioned(
             right: 12,
             bottom: 12,

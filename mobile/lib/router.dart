@@ -28,12 +28,14 @@ import 'preferences.dart';
 import 'reports/lost_feed_screen.dart';
 import 'reports/lost_report_create_screen.dart';
 import 'reports/lost_report_detail_screen.dart';
+import 'reports/photo_search_screen.dart';
 import 'reports/reunion_screen.dart';
 import 'sightings/sighting_create_screen.dart';
 import 'sightings/sighting_detail_screen.dart';
 import 'sightings/sighting_thanks_screen.dart';
 import 'splash_screen.dart';
 import 'widgets/location.dart';
+import 'widgets/photo_upload.dart';
 
 const _publicPaths = {'/welcome', '/login', '/register', '/forgot-password'};
 
@@ -124,6 +126,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => AdminUserScreen(id: state.pathParameters['id']!),
       ),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
+      GoRoute(path: '/search-photo', builder: (_, _) => const PhotoSearchScreen()),
       GoRoute(
         path: '/lost/:id/edit',
         builder: (_, state) => LostReportCreateScreen(editing: state.extra as LostReport?),
@@ -139,7 +142,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/sightings/new',
-        builder: (_, state) => SightingCreateScreen(about: state.extra as LostReport?), // "I saw this pet"
+        builder: (_, state) => switch (state.extra) {
+          final PickedPhoto photo => SightingCreateScreen(photo: photo), // from a search by photo
+          final extra => SightingCreateScreen(about: extra as LostReport?), // "I saw this pet"
+        },
       ),
       GoRoute(
         path: '/sightings/:id',

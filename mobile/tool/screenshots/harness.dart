@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:winou/api/api_client.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:winou/api/models.dart';
 import 'package:winou/auth/auth_controller.dart';
 import 'package:winou/config.dart';
@@ -865,6 +866,34 @@ class FakeApi implements WinouApi {
     Set<Condition> conditions = const {},
     DateTime? since,
   }) => _answer(() => [for (final i in mapItems) MapItem.fromJson(i)]);
+
+  @override
+  Future<PhotoCheck> checkPhoto(String filePath) =>
+      _answer(() => PhotoCheck.fromJson({'species': 'dog', 'confidence': 0.93}));
+
+  /// The open reports of that species in [lost], best first, the first ones above the threshold.
+  @override
+  Future<PhotoSearch> searchByPhoto(String filePath, LatLng at, {Species? species}) => _answer(() {
+    final wanted = species?.api ?? 'dog';
+    final candidates = [
+      for (final r in lost)
+        if (r['species'] == wanted && r['status'] == 'OPEN') r,
+    ];
+    const scores = [0.86, 0.74, 0.63, 0.61];
+    return PhotoSearch.fromJson({
+      'species': wanted,
+      'confidence': 0.93,
+      'results': [
+        for (final (i, report) in candidates.take(scores.length).indexed)
+          {
+            'report': report,
+            'score': scores[i],
+            'likely': scores[i] >= 0.70,
+            'matched_image_url': (report['photos'] as List).first['url'],
+          },
+      ],
+    });
+  });
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

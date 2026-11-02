@@ -145,6 +145,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 PhotoPickerStrip(
                   photos: _photos,
                   max: _maxPhotos - _kept.length,
+                  species: _species,
                   onChanged: (p) => setState(() => _photos = p),
                 ),
               const SizedBox(height: 20),

@@ -40,6 +40,7 @@ import 'package:winou/pets/pet_form_screen.dart';
 import 'package:winou/reports/lost_feed_screen.dart';
 import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
+import 'package:winou/reports/photo_search_screen.dart';
 import 'package:winou/reports/reunion_screen.dart';
 import 'package:winou/sightings/sighting_create_screen.dart';
 import 'package:winou/sightings/sighting_detail_screen.dart';
@@ -111,6 +112,22 @@ final _manyLost = [
       seen: Duration(hours: 2 + i * 9),
     ),
 ];
+
+/// Two dogs that look alike enough, one weaker look-alike.
+FakeApi _searchApi() => FakeApi(
+  lost: [
+    lostJson(id: 'rocky', name: 'Rocky', species: 'dog', seen: const Duration(days: 1)),
+    lostJson(id: 'max', name: 'Max', species: 'dog', seen: const Duration(days: 3)),
+    lostJson(id: 'bella', name: 'Bella', species: 'dog', seen: const Duration(days: 9)),
+    lostJson(),
+  ],
+);
+
+/// The screen opens the camera/gallery sheet: choose the camera (the picker returns a dog photo).
+Future<void> _searchWithCamera(WidgetTester tester) async {
+  await _tap(tester, find.text(_l10n.camera));
+  await settle(tester, rounds: 8);
+}
 
 final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('01_splash', () => const SplashScreen(), FakeApi.new, null),
@@ -449,6 +466,8 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('80_home_search', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'red collar')),
   ('81_home_no_results', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'zebra')),
   ('82_home_sort', () => const LostFeedScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.sortBy))),
+  ('86_search_by_photo', () => const PhotoSearchScreen(), _searchApi, _searchWithCamera),
+  ('87_search_no_results', () => const PhotoSearchScreen(), () => FakeApi(lost: []), _searchWithCamera),
   (
     '78_chat_media',
     () => const ChatScreen(id: 'c1'),

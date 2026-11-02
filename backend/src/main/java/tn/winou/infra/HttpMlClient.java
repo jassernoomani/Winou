@@ -51,6 +51,24 @@ public class HttpMlClient implements MlClient {
     }
 
     @Override
+    public Detection detect(byte[] image) {
+        return http.post().uri("/detect")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(file(image))
+                .exchange((request, response) -> {
+                    JsonNode body = response.bodyTo(JsonNode.class);
+                    if (response.getStatusCode().value() == 422 && body != null
+                            && "no_animal_detected".equals(body.path("detail").path("code").asString())) {
+                        throw new NoAnimalDetected();
+                    }
+                    if (response.getStatusCode().isError() || body == null) {
+                        throw new IllegalStateException("ml-service /detect returned " + response.getStatusCode());
+                    }
+                    return new Detection(body.path("species").asString(), body.path("confidence").asDouble());
+                });
+    }
+
+    @Override
     public byte[] heicToJpeg(byte[] image, int maxSide) {
         return http.post().uri("/convert?max_side={side}", maxSide)
                 .contentType(MediaType.MULTIPART_FORM_DATA)

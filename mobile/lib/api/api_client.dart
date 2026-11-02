@@ -423,6 +423,23 @@ class WinouApi {
     (data) => Photo.fromJson(data),
   );
 
+  /// Is there a cat or dog in this photo? Asked while a post is being written; nothing is stored.
+  /// Throws ApiException code "no_animal_detected" when there is none.
+  Future<PhotoCheck> checkPhoto(String filePath) => _call(
+    () async => _dio.post('/photos/check', data: FormData.fromMap({'file': await MultipartFile.fromFile(filePath)})),
+    (data) => PhotoCheck.fromJson(data),
+  );
+
+  /// Open lost reports near [at] that look like this photo, best first. Nothing is stored.
+  Future<PhotoSearch> searchByPhoto(String filePath, LatLng at, {Species? species}) => _call(
+    () async => _dio.post(
+      '/search/by-photo',
+      data: FormData.fromMap({'file': await MultipartFile.fromFile(filePath)}),
+      queryParameters: {'lat': at.latitude, 'lon': at.longitude, 'species': ?species?.api},
+    ),
+    (data) => PhotoSearch.fromJson(data),
+  );
+
   Future<Photo> photo(String id) => _call(() => _dio.get('/photos/$id'), (data) => Photo.fromJson(data));
 
   Future<void> deletePhoto(String id) => _call(() => _dio.delete('/photos/$id'), (_) {});

@@ -106,6 +106,9 @@ winou:
     sightings-per-hour: ${RATE_LIMIT_SIGHTINGS_PER_HOUR:20}
     photos-per-hour: ${RATE_LIMIT_PHOTOS_PER_HOUR:60}
     messages-per-hour: ${RATE_LIMIT_MESSAGES_PER_HOUR:60}
+    # Each one runs the ML model without storing anything (see search/PhotoSearchController)
+    photo-checks-per-hour: ${RATE_LIMIT_PHOTO_CHECKS_PER_HOUR:60}
+    photo-searches-per-hour: ${RATE_LIMIT_PHOTO_SEARCHES_PER_HOUR:20}
   matching:
     threshold-dog: ${MATCH_THRESHOLD_DOG:0.60}
     threshold-cat: ${MATCH_THRESHOLD_CAT:0.70}

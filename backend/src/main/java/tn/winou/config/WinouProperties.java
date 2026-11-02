@@ -48,7 +48,8 @@ public record WinouProperties(
 
     public record Map(int maxResults) {}
 
-    public record RateLimits(int lostReportsPerDay, int sightingsPerHour, int photosPerHour, int messagesPerHour) {}
+    public record RateLimits(int lostReportsPerDay, int sightingsPerHour, int photosPerHour, int messagesPerHour,
+            int photoChecksPerHour, int photoSearchesPerHour) {}
 
     public record Matching(
             double thresholdDog,

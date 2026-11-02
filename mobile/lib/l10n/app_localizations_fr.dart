@@ -1936,4 +1936,85 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careUpdated => 'Fiche mise à jour';
+
+  @override
+  String get photoChecking => 'Vérification…';
+
+  @override
+  String get photoNoAnimalHelp =>
+      'Nous ne voyons ni chat ni chien sur cette photo. Touchez pour la reprendre.';
+
+  @override
+  String photoLooksLike(String species) {
+    return 'On dirait : $species';
+  }
+
+  @override
+  String get photoAnimalFound => 'Animal repéré sur la photo';
+
+  @override
+  String get searchByPhoto => 'Rechercher par photo';
+
+  @override
+  String get searchByPhotoIntro =>
+      'Vous avez trouvé un animal ? Prenez-le en photo : nous le comparons aux animaux perdus à proximité. Rien n\'est publié.';
+
+  @override
+  String get takeOrChoosePhoto => 'Prendre ou choisir une photo';
+
+  @override
+  String get changePhoto => 'Changer de photo';
+
+  @override
+  String get searchComparing =>
+      'Comparaison avec les animaux perdus à proximité…';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count animaux perdus lui ressemblent',
+      one: '1 animal perdu lui ressemble',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchStrongMatch => 'Forte ressemblance';
+
+  @override
+  String get searchPossibleMatch => 'Possible';
+
+  @override
+  String get searchNoResults =>
+      'Aucun animal perdu à proximité ne lui ressemble.';
+
+  @override
+  String get searchNoResultsHelp =>
+      'Publiez-le comme signalement : si son propriétaire le déclare perdu plus tard, il sera prévenu tout de suite.';
+
+  @override
+  String get searchResultsHelp =>
+      'Ouvrez-en un pour comparer les photos. C\'est le même animal ? Prévenez son propriétaire avec « J\'ai vu cet animal ».';
+
+  @override
+  String get postAsSighting => 'Publier comme signalement';
+
+  @override
+  String get searchNearYou => 'Autour de vous';
+
+  @override
+  String get searchNearPhoto => 'Autour du lieu de la photo';
+
+  @override
+  String get searchNearPicked => 'Autour du lieu choisi';
+
+  @override
+  String get searchNeedsPlace =>
+      'Où l\'avez-vous vu ? Nous cherchons les animaux perdus autour de ce lieu.';
+
+  @override
+  String get searchNoAnimal =>
+      'Nous ne voyons ni chat ni chien sur cette photo. Essayez de plus près, en montrant la tête.';
 }

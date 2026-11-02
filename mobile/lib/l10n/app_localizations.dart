@@ -3285,6 +3285,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Care card updated'**
   String get careUpdated;
+
+  /// No description provided for @photoChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get photoChecking;
+
+  /// No description provided for @photoNoAnimalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'We can\'t see a cat or dog in this photo. Tap to retake it.'**
+  String get photoNoAnimalHelp;
+
+  /// No description provided for @photoLooksLike.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like: {species}'**
+  String photoLooksLike(String species);
+
+  /// No description provided for @photoAnimalFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Animal found in the photo'**
+  String get photoAnimalFound;
+
+  /// No description provided for @searchByPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by photo'**
+  String get searchByPhoto;
+
+  /// No description provided for @searchByPhotoIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Found an animal? Take its photo: we compare it with the lost pets nearby. Nothing is posted.'**
+  String get searchByPhotoIntro;
+
+  /// No description provided for @takeOrChoosePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take or choose a photo'**
+  String get takeOrChoosePhoto;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get changePhoto;
+
+  /// No description provided for @searchComparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparing with the lost pets nearby…'**
+  String get searchComparing;
+
+  /// No description provided for @searchResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 lost pet looks alike} other{{count} lost pets look alike}}'**
+  String searchResultsCount(int count);
+
+  /// No description provided for @searchStrongMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong match'**
+  String get searchStrongMatch;
+
+  /// No description provided for @searchPossibleMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible'**
+  String get searchPossibleMatch;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No lost pet nearby looks like this one.'**
+  String get searchNoResults;
+
+  /// No description provided for @searchNoResultsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Post it as a sighting: if its owner reports it lost later, they\'ll be told right away.'**
+  String get searchNoResultsHelp;
+
+  /// No description provided for @searchResultsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open one to compare the photos. Is it the same animal? Tell its owner with \"I saw this pet\".'**
+  String get searchResultsHelp;
+
+  /// No description provided for @postAsSighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Post as a sighting'**
+  String get postAsSighting;
+
+  /// No description provided for @searchNearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Around you'**
+  String get searchNearYou;
+
+  /// No description provided for @searchNearPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Around where the photo was taken'**
+  String get searchNearPhoto;
+
+  /// No description provided for @searchNearPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'Around the place you chose'**
+  String get searchNearPicked;
+
+  /// No description provided for @searchNeedsPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did you see it? We search the lost pets around that place.'**
+  String get searchNeedsPlace;
+
+  /// No description provided for @searchNoAnimal.
+  ///
+  /// In en, this message translates to:
+  /// **'We can\'t see a cat or dog in this photo. Try a closer one, showing the head.'**
+  String get searchNoAnimal;
 }
 
 class _AppLocalizationsDelegate

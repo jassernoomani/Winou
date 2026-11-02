@@ -1918,4 +1918,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careUpdated => 'Care card updated';
+
+  @override
+  String get photoChecking => 'Checking…';
+
+  @override
+  String get photoNoAnimalHelp =>
+      'We can\'t see a cat or dog in this photo. Tap to retake it.';
+
+  @override
+  String photoLooksLike(String species) {
+    return 'Looks like: $species';
+  }
+
+  @override
+  String get photoAnimalFound => 'Animal found in the photo';
+
+  @override
+  String get searchByPhoto => 'Search by photo';
+
+  @override
+  String get searchByPhotoIntro =>
+      'Found an animal? Take its photo: we compare it with the lost pets nearby. Nothing is posted.';
+
+  @override
+  String get takeOrChoosePhoto => 'Take or choose a photo';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get searchComparing => 'Comparing with the lost pets nearby…';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lost pets look alike',
+      one: '1 lost pet looks alike',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchStrongMatch => 'Strong match';
+
+  @override
+  String get searchPossibleMatch => 'Possible';
+
+  @override
+  String get searchNoResults => 'No lost pet nearby looks like this one.';
+
+  @override
+  String get searchNoResultsHelp =>
+      'Post it as a sighting: if its owner reports it lost later, they\'ll be told right away.';
+
+  @override
+  String get searchResultsHelp =>
+      'Open one to compare the photos. Is it the same animal? Tell its owner with \"I saw this pet\".';
+
+  @override
+  String get postAsSighting => 'Post as a sighting';
+
+  @override
+  String get searchNearYou => 'Around you';
+
+  @override
+  String get searchNearPhoto => 'Around where the photo was taken';
+
+  @override
+  String get searchNearPicked => 'Around the place you chose';
+
+  @override
+  String get searchNeedsPlace =>
+      'Where did you see it? We search the lost pets around that place.';
+
+  @override
+  String get searchNoAnimal =>
+      'We can\'t see a cat or dog in this photo. Try a closer one, showing the head.';
 }

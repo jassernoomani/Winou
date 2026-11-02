@@ -1967,4 +1967,85 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get careUpdated => 'تم تحديث البطاقة';
+
+  @override
+  String get photoChecking => 'جارٍ التحقق…';
+
+  @override
+  String get photoNoAnimalHelp =>
+      'لا نرى قطة أو كلبًا في هذه الصورة. المس لإعادة التقاطها.';
+
+  @override
+  String photoLooksLike(String species) {
+    return 'يبدو: $species';
+  }
+
+  @override
+  String get photoAnimalFound => 'تم العثور على حيوان في الصورة';
+
+  @override
+  String get searchByPhoto => 'البحث بالصورة';
+
+  @override
+  String get searchByPhotoIntro =>
+      'وجدت حيوانًا؟ التقط صورته: نقارنها بالحيوانات الضائعة القريبة. لا يُنشر أي شيء.';
+
+  @override
+  String get takeOrChoosePhoto => 'التقط صورة أو اخترها';
+
+  @override
+  String get changePhoto => 'تغيير الصورة';
+
+  @override
+  String get searchComparing => 'جارٍ المقارنة مع الحيوانات الضائعة القريبة…';
+
+  @override
+  String searchResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count حيوانًا ضائعًا يشبهه',
+      few: '$count حيوانات ضائعة تشبهه',
+      two: 'حيوانان ضائعان يشبهانه',
+      one: 'حيوان ضائع واحد يشبهه',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchStrongMatch => 'تشابه قوي';
+
+  @override
+  String get searchPossibleMatch => 'محتمل';
+
+  @override
+  String get searchNoResults => 'لا يوجد حيوان ضائع قريب يشبهه.';
+
+  @override
+  String get searchNoResultsHelp =>
+      'انشره كمشاهدة: إذا أبلغ صاحبه عن فقدانه لاحقًا، فسيُعلَم فورًا.';
+
+  @override
+  String get searchResultsHelp =>
+      'افتح أحدها لمقارنة الصور. هل هو الحيوان نفسه؟ أخبر صاحبه عبر «رأيت هذا الحيوان».';
+
+  @override
+  String get postAsSighting => 'انشره كمشاهدة';
+
+  @override
+  String get searchNearYou => 'حولك';
+
+  @override
+  String get searchNearPhoto => 'حول مكان التقاط الصورة';
+
+  @override
+  String get searchNearPicked => 'حول المكان الذي اخترته';
+
+  @override
+  String get searchNeedsPlace =>
+      'أين رأيته؟ نبحث عن الحيوانات الضائعة حول ذلك المكان.';
+
+  @override
+  String get searchNoAnimal =>
+      'لا نرى قطة أو كلبًا في هذه الصورة. جرّب صورة أقرب تُظهر الرأس.';
 }

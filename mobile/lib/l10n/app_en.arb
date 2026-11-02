@@ -1179,5 +1179,40 @@
     }
   },
   "iFeedIt": "I feed it",
-  "careUpdated": "Care card updated"
+  "careUpdated": "Care card updated",
+  "photoChecking": "Checking…",
+  "photoNoAnimalHelp": "We can't see a cat or dog in this photo. Tap to retake it.",
+  "photoLooksLike": "Looks like: {species}",
+  "@photoLooksLike": {
+    "placeholders": {
+      "species": {
+        "type": "String"
+      }
+    }
+  },
+  "photoAnimalFound": "Animal found in the photo",
+  "searchByPhoto": "Search by photo",
+  "searchByPhotoIntro": "Found an animal? Take its photo: we compare it with the lost pets nearby. Nothing is posted.",
+  "takeOrChoosePhoto": "Take or choose a photo",
+  "changePhoto": "Change photo",
+  "searchComparing": "Comparing with the lost pets nearby…",
+  "searchResultsCount": "{count, plural, =1{1 lost pet looks alike} other{{count} lost pets look alike}}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchStrongMatch": "Strong match",
+  "searchPossibleMatch": "Possible",
+  "searchNoResults": "No lost pet nearby looks like this one.",
+  "searchNoResultsHelp": "Post it as a sighting: if its owner reports it lost later, they'll be told right away.",
+  "searchResultsHelp": "Open one to compare the photos. Is it the same animal? Tell its owner with \"I saw this pet\".",
+  "postAsSighting": "Post as a sighting",
+  "searchNearYou": "Around you",
+  "searchNearPhoto": "Around where the photo was taken",
+  "searchNearPicked": "Around the place you chose",
+  "searchNeedsPlace": "Where did you see it? We search the lost pets around that place.",
+  "searchNoAnimal": "We can't see a cat or dog in this photo. Try a closer one, showing the head."
 }
