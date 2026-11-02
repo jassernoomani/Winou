@@ -13,6 +13,7 @@ import '../widgets/animations.dart';
 import '../widgets/common.dart';
 import '../widgets/location.dart';
 import '../widgets/report_sheet.dart';
+import 'adoption.dart';
 import 'stray_care.dart';
 
 class SightingDetailScreen extends ConsumerWidget {
@@ -104,6 +105,9 @@ class SightingDetailScreen extends ConsumerWidget {
               ),
               if (value.isStray) ...[
                 const SizedBox(height: 16),
+                FadeSlideIn(child: AdoptionCard(value)),
+                if (value.adoption != null || isAdmin || ref.watch(meProvider).value?.associationName != null)
+                  const SizedBox(height: 12),
                 FadeSlideIn(child: StrayCareCard(value)),
                 const SizedBox(height: 12),
                 FadeSlideIn(index: 1, child: _StrayStatusCard(value)),

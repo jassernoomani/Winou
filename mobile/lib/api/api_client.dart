@@ -387,6 +387,40 @@ class WinouApi {
     (data) => Sighting.fromJson(data),
   );
 
+  /// An association offers a stray for adoption (or updates its offer).
+  Future<Sighting> offerAdoption(String id, {String? note, required String contact}) => _call(
+    () => _dio.put('/sightings/$id/adoption', data: {'note': ?note, 'contact': contact}),
+    (data) => Sighting.fromJson(data),
+  );
+
+  Future<Sighting> markAdopted(String id) =>
+      _call(() => _dio.post('/sightings/$id/adoption/adopted'), (data) => Sighting.fromJson(data));
+
+  Future<Sighting> withdrawAdoption(String id) =>
+      _call(() => _dio.delete('/sightings/$id/adoption'), (data) => Sighting.fromJson(data));
+
+  /// Up for adoption: nearest first around [near], else newest first.
+  Future<List<Sighting>> adoptable({LatLng? near}) => _call(
+    () => _dio.get(
+      '/adoption',
+      queryParameters: {
+        if (near != null) ...{'lat': near.latitude, 'lon': near.longitude},
+      },
+    ),
+    (data) => [for (final s in data) Sighting.fromJson(s)],
+  );
+
+  /// Vets and shelters in a map area.
+  Future<List<Place>> places({
+    required double west,
+    required double south,
+    required double east,
+    required double north,
+  }) => _call(
+    () => _dio.get('/places', queryParameters: {'bbox': '$west,$south,$east,$north'}),
+    (data) => [for (final p in data) Place.fromJson(p)],
+  );
+
   Future<Sighting> sighting(String id) => _call(() => _dio.get('/sightings/$id'), (data) => Sighting.fromJson(data));
 
   Future<List<Sighting>> mySightings() =>

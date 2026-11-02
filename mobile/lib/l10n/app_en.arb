@@ -1251,5 +1251,48 @@
     }
   },
   "chatSending": "Sending…",
-  "chatNotSent": "Not sent · tap to retry"
+  "chatNotSent": "Not sent · tap to retry",
+  "forAdoption": "For adoption",
+  "upForAdoption": "Up for adoption",
+  "offeredBy": "Offered by {association}",
+  "@offeredBy": {
+    "placeholders": {
+      "association": {
+        "type": "String"
+      }
+    }
+  },
+  "adoptedTitle": "Adopted!",
+  "adoptedBody": "A new home, thanks to {association}.",
+  "@adoptedBody": {
+    "placeholders": {
+      "association": {
+        "type": "String"
+      }
+    }
+  },
+  "adoptedBodyNoAssociation": "It found a new home.",
+  "whatsapp": "WhatsApp",
+  "offerForAdoption": "Offer for adoption",
+  "editOffer": "Edit the offer",
+  "markAdopted": "It was adopted",
+  "withdrawOffer": "Withdraw",
+  "adoptionNoteLabel": "About this animal (optional)",
+  "adoptionNoteHint": "Temperament, age, health, who it would suit…",
+  "adoptionContactLabel": "Phone for adopters",
+  "noAdoptionNearby": "No animal up for adoption nearby yet.",
+  "adoptionIntro": "Street animals cared for by associations, looking for a home.",
+  "vetsAndShelters": "Vets & shelters",
+  "placeVet": "Vet",
+  "placeShelter": "Animal shelter",
+  "directions": "Directions",
+  "openingHours": "Hours: {hours}",
+  "@openingHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "adoptedSnack": "Wonderful! Marked as adopted."
 }

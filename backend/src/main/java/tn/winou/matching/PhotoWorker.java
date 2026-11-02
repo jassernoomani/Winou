@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
 
+import tn.winou.places.Places;
 import tn.winou.reports.StillMissingReminders;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ public class PhotoWorker implements SmartLifecycle {
     private static final Logger log = LoggerFactory.getLogger(PhotoWorker.class);
     private static final Duration LEASE = Duration.ofMinutes(10);
     private static final Duration REMINDERS_EVERY = Duration.ofHours(1);
+    private static final Duration PLACES_CHECK_EVERY = Duration.ofHours(6); // refreshes weekly, see Places
 
     private final JdbcClient jdbc;
     private final TransactionTemplate tx;
@@ -40,12 +42,15 @@ public class PhotoWorker implements SmartLifecycle {
     private final Matcher matcher;
     private final WinouProperties.Worker settings;
     private final StillMissingReminders reminders;
+    private final Places places;
     private volatile Thread thread;
     private Instant nextReminders = Instant.now();
+    private Instant nextPlaces = Instant.now();
 
     public PhotoWorker(JdbcClient jdbc, TransactionTemplate tx, PhotoRepository photos, Matcher matcher,
-            WinouProperties properties, StillMissingReminders reminders) {
+            WinouProperties properties, StillMissingReminders reminders, Places places) {
         this.reminders = reminders;
+        this.places = places;
         this.jdbc = jdbc;
         this.tx = tx;
         this.photos = photos;
@@ -110,6 +115,15 @@ public class PhotoWorker implements SmartLifecycle {
         });
     }
 
+    /** Vets and shelters from OpenStreetMap; if Overpass is down, the old copy stays and we try later. */
+    private void refreshPlaces() {
+        try {
+            places.refreshIfStale();
+        } catch (RuntimeException e) {
+            log.warn("places refresh failed: {}", e.getMessage());
+        }
+    }
+
     private void loop() {
         log.info("worker started");
         while (thread != null) {
@@ -121,6 +135,10 @@ public class PhotoWorker implements SmartLifecycle {
                     if (sent > 0) {
                         log.info("sent {} still-missing reminders", sent);
                     }
+                }
+                if (Instant.now().isAfter(nextPlaces)) {
+                    nextPlaces = Instant.now().plus(PLACES_CHECK_EVERY);
+                    refreshPlaces();
                 }
                 busy = runOnce();
             } catch (RuntimeException e) {

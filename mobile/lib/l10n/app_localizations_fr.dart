@@ -2020,4 +2020,76 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chatNotSent => 'Non envoyé · touchez pour réessayer';
+
+  @override
+  String get forAdoption => 'À adopter';
+
+  @override
+  String get upForAdoption => 'À adopter';
+
+  @override
+  String offeredBy(String association) {
+    return 'Proposé par $association';
+  }
+
+  @override
+  String get adoptedTitle => 'Adopté !';
+
+  @override
+  String adoptedBody(String association) {
+    return 'Un nouveau foyer, grâce à $association.';
+  }
+
+  @override
+  String get adoptedBodyNoAssociation => 'Il a trouvé un nouveau foyer.';
+
+  @override
+  String get whatsapp => 'WhatsApp';
+
+  @override
+  String get offerForAdoption => 'Proposer à l\'adoption';
+
+  @override
+  String get editOffer => 'Modifier l\'annonce';
+
+  @override
+  String get markAdopted => 'Il a été adopté';
+
+  @override
+  String get withdrawOffer => 'Retirer';
+
+  @override
+  String get adoptionNoteLabel => 'À propos de cet animal (facultatif)';
+
+  @override
+  String get adoptionNoteHint => 'Caractère, âge, santé, pour quel foyer…';
+
+  @override
+  String get adoptionContactLabel => 'Téléphone pour les adoptants';
+
+  @override
+  String get noAdoptionNearby => 'Aucun animal à adopter à proximité pour l\'instant.';
+
+  @override
+  String get adoptionIntro => 'Des animaux des rues soignés par des associations, qui cherchent un foyer.';
+
+  @override
+  String get vetsAndShelters => 'Vétos et refuges';
+
+  @override
+  String get placeVet => 'Vétérinaire';
+
+  @override
+  String get placeShelter => 'Refuge';
+
+  @override
+  String get directions => 'Itinéraire';
+
+  @override
+  String openingHours(String hours) {
+    return 'Horaires : $hours';
+  }
+
+  @override
+  String get adoptedSnack => 'Merveilleux ! Marqué comme adopté.';
 }

@@ -22,6 +22,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import tn.winou.common.ApiException;
+import tn.winou.domain.GeoPoint;
+import tn.winou.web.ApiModels.AdoptionIn;
 import tn.winou.domain.PhotoSource;
 import tn.winou.domain.Sighting;
 import tn.winou.web.ApiModels.StrayStatusUpdate;
@@ -81,6 +86,39 @@ public class SightingController {
     public SightingOut care(@PathVariable UUID sightingId, @Valid @RequestBody StrayCareUpdate body,
             @CurrentUser User user) {
         return sightings.updateCare(sightingId, body, user);
+    }
+
+    @PutMapping("/sightings/{sightingId}/adoption")
+    @Operation(summary = "Offer a stray for adoption, or update the offer (associations and admins)",
+            description = "403 associations_only for other accounts; strays still around only.")
+    public SightingOut offerAdoption(@PathVariable UUID sightingId, @Valid @RequestBody AdoptionIn body,
+            @CurrentUser User user) {
+        return sightings.offerAdoption(sightingId, body, user);
+    }
+
+    @PostMapping("/sightings/{sightingId}/adoption/adopted")
+    @Operation(summary = "It found a home: the offer becomes ADOPTED and the stray HELPED (the offering association)")
+    public SightingOut adopted(@PathVariable UUID sightingId, @CurrentUser User user) {
+        return sightings.markAdopted(sightingId, user);
+    }
+
+    @DeleteMapping("/sightings/{sightingId}/adoption")
+    @Operation(summary = "Withdraw the offer (the offering association or an admin)")
+    public SightingOut withdrawAdoption(@PathVariable UUID sightingId, @CurrentUser User user) {
+        return sightings.withdrawAdoption(sightingId, user);
+    }
+
+    @GetMapping("/adoption")
+    @Operation(summary = "Animals up for adoption: nearest first around lat/lon (within radius_km), else newest")
+    public List<SightingOut> adoptable(@CurrentUser User user,
+            @RequestParam(required = false) @DecimalMin("-90") @DecimalMax("90") Double lat,
+            @RequestParam(required = false) @DecimalMin("-180") @DecimalMax("180") Double lon,
+            @RequestParam(name = "radius_km", defaultValue = "50") @DecimalMin(value = "0", inclusive = false)
+                    @DecimalMax("300") double radiusKm) {
+        if ((lat == null) != (lon == null)) {
+            throw ApiException.invalid("give both lat and lon, or neither");
+        }
+        return sightings.adoptable(user, lat == null ? null : new GeoPoint(lat, lon), radiusKm);
     }
 
     @PutMapping("/sightings/{sightingId}/feeding")

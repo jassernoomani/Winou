@@ -3542,6 +3542,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not sent · tap to retry'**
   String get chatNotSent;
+
+  /// No description provided for @forAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'For adoption'**
+  String get forAdoption;
+
+  /// No description provided for @upForAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Up for adoption'**
+  String get upForAdoption;
+
+  /// No description provided for @offeredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered by {association}'**
+  String offeredBy(String association);
+
+  /// No description provided for @adoptedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted!'**
+  String get adoptedTitle;
+
+  /// No description provided for @adoptedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new home, thanks to {association}.'**
+  String adoptedBody(String association);
+
+  /// No description provided for @adoptedBodyNoAssociation.
+  ///
+  /// In en, this message translates to:
+  /// **'It found a new home.'**
+  String get adoptedBodyNoAssociation;
+
+  /// No description provided for @whatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsapp;
+
+  /// No description provided for @offerForAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer for adoption'**
+  String get offerForAdoption;
+
+  /// No description provided for @editOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the offer'**
+  String get editOffer;
+
+  /// No description provided for @markAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'It was adopted'**
+  String get markAdopted;
+
+  /// No description provided for @withdrawOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get withdrawOffer;
+
+  /// No description provided for @adoptionNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'About this animal (optional)'**
+  String get adoptionNoteLabel;
+
+  /// No description provided for @adoptionNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Temperament, age, health, who it would suit…'**
+  String get adoptionNoteHint;
+
+  /// No description provided for @adoptionContactLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone for adopters'**
+  String get adoptionContactLabel;
+
+  /// No description provided for @noAdoptionNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'No animal up for adoption nearby yet.'**
+  String get noAdoptionNearby;
+
+  /// No description provided for @adoptionIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Street animals cared for by associations, looking for a home.'**
+  String get adoptionIntro;
+
+  /// No description provided for @vetsAndShelters.
+  ///
+  /// In en, this message translates to:
+  /// **'Vets & shelters'**
+  String get vetsAndShelters;
+
+  /// No description provided for @placeVet.
+  ///
+  /// In en, this message translates to:
+  /// **'Vet'**
+  String get placeVet;
+
+  /// No description provided for @placeShelter.
+  ///
+  /// In en, this message translates to:
+  /// **'Animal shelter'**
+  String get placeShelter;
+
+  /// No description provided for @directions.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get directions;
+
+  /// No description provided for @openingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours: {hours}'**
+  String openingHours(String hours);
+
+  /// No description provided for @adoptedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Wonderful! Marked as adopted.'**
+  String get adoptedSnack;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

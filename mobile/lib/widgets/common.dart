@@ -363,9 +363,14 @@ class StatusPill extends StatelessWidget {
         spacing: 6,
         children: [
           if (icon != null) Icon(icon, size: 16, color: foreground),
-          Text(
-            text,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: foreground),
+          // Shortened with an ellipsis rather than overflowing (long labels, large text)
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: foreground),
+            ),
           ),
         ],
       ),

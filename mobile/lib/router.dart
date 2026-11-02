@@ -30,6 +30,7 @@ import 'reports/lost_report_create_screen.dart';
 import 'reports/lost_report_detail_screen.dart';
 import 'reports/photo_search_screen.dart';
 import 'reports/reunion_screen.dart';
+import 'sightings/adoption.dart';
 import 'sightings/sighting_create_screen.dart';
 import 'sightings/sighting_detail_screen.dart';
 import 'sightings/sighting_thanks_screen.dart';
@@ -127,6 +128,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/lost/new', builder: (_, _) => const LostReportCreateScreen()),
       GoRoute(path: '/search-photo', builder: (_, _) => const PhotoSearchScreen()),
+      GoRoute(path: '/adoption', builder: (_, _) => const AdoptionScreen()),
       GoRoute(
         path: '/lost/:id/edit',
         builder: (_, state) => LostReportCreateScreen(editing: state.extra as LostReport?),

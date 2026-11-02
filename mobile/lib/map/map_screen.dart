@@ -6,10 +6,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api/models.dart';
 import '../auth/auth_controller.dart';
 import '../l10n/app_localizations.dart';
+import '../sightings/adoption.dart' show callNumber;
 import '../theme.dart';
 import '../widgets/animations.dart';
 import '../widgets/common.dart';
@@ -53,6 +55,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   final _map = MapController();
   MapFilters _filters = const MapFilters();
   List<MapItem> _items = [];
+  bool _showPlaces = false; // vets and shelters, from OpenStreetMap
+  List<Place> _places = [];
   bool _loading = false;
   int _zoom = 13; // whole zoom level the markers are grouped at
   Timer? _debounce;
@@ -75,6 +79,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<void> _load() async {
+    if (_showPlaces) _loadPlaces();
     if (_filters.types.isEmpty) {
       setState(() => _items = []);
       return;
@@ -105,6 +110,32 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
+  /// Alongside the map's items (its own request): a slow answer here never holds the markers back.
+  Future<void> _loadPlaces() async {
+    final bounds = _map.camera.visibleBounds;
+    try {
+      final places = await ref
+          .read(apiProvider)
+          .places(
+            west: bounds.west.clamp(-180, 180),
+            south: bounds.south.clamp(-90, 90),
+            east: bounds.east.clamp(-180, 180),
+            north: bounds.north.clamp(-90, 90),
+          );
+      if (mounted && _showPlaces) setState(() => _places = places);
+    } catch (_) {
+      // The layer is a convenience: the map works without it
+    }
+  }
+
+  void _togglePlaces() {
+    setState(() {
+      _showPlaces = !_showPlaces;
+      if (!_showPlaces) _places = [];
+    });
+    if (_showPlaces) _loadPlaces();
+  }
+
   Future<void> _editFilters() async {
     final result = await showModalBottomSheet<MapFilters>(
       context: context,
@@ -132,6 +163,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
             : null,
         actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.heartHandshake),
+            tooltip: l10n.forAdoption,
+            onPressed: () => _open('/adoption'),
+          ),
           IconButton(icon: const Icon(LucideIcons.list), tooltip: l10n.listOnMap, onPressed: _listVisible),
           IconButton(icon: const Icon(LucideIcons.slidersHorizontal), tooltip: l10n.filters, onPressed: _editFilters),
         ],
@@ -153,6 +189,22 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         ),
         children: [
           osmTiles(context),
+          if (_places.isNotEmpty)
+            MarkerLayer(
+              markers: [
+                for (final place in _places)
+                  Marker(
+                    key: ValueKey('place-${place.id}'),
+                    point: place.location,
+                    width: 40,
+                    height: 40,
+                    child: GestureDetector(
+                      onTap: () => showModalBottomSheet<void>(context: context, builder: (_) => PlaceSheet(place)),
+                      child: PlaceMarker(place.kind),
+                    ),
+                  ),
+              ],
+            ),
           MarkerLayer(
             markers: [
               for (final group in groupMarkers(_items, _zoom))
@@ -193,6 +245,21 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ],
           ),
           osmAttribution(),
+          // The vets and shelters layer, on or off
+          Align(
+            alignment: AlignmentDirectional.topStart,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: FilterChip(
+                avatar: const Icon(LucideIcons.stethoscope, size: 18, color: PlaceMarker.vetColor),
+                showCheckmark: false,
+                label: Text(l10n.vetsAndShelters),
+                selected: _showPlaces,
+                onSelected: (_) => _togglePlaces(),
+                elevation: 2,
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: Column(
@@ -373,6 +440,98 @@ List<List<MapItem>> groupMarkers(List<MapItem> items, int zoom) {
 }
 
 /// A group of places: how many, in the brand's blue; red-ringed if one of them needs help.
+/// A vet (teal stethoscope) or a shelter (violet house), smaller than the animals' markers.
+class PlaceMarker extends StatelessWidget {
+  const PlaceMarker(this.kind, {super.key});
+
+  static const vetColor = Color(0xFF0D9488);
+  static const shelterColor = Color(0xFF7C3AED);
+
+  final PlaceKind kind;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = kind == PlaceKind.vet ? vetColor : shelterColor;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: 2.5),
+        boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 6, offset: Offset(0, 2))],
+      ),
+      child: Icon(kind == PlaceKind.vet ? LucideIcons.stethoscope : LucideIcons.house, size: 20, color: color),
+    );
+  }
+}
+
+/// A vet or shelter: name, opening hours, call, directions.
+class PlaceSheet extends StatelessWidget {
+  const PlaceSheet(this.place, {super.key});
+
+  final Place place;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final kind = place.kind == PlaceKind.vet ? l10n.placeVet : l10n.placeShelter;
+    final at = '${place.location.latitude},${place.location.longitude}';
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Row(
+              spacing: 12,
+              children: [
+                SizedBox.square(dimension: 44, child: PlaceMarker(place.kind)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        place.name ?? kind,
+                        textDirection: textDirectionOf(place.name ?? kind),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      if (place.name != null) Text(kind, style: TextStyle(color: context.tokens.muted)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (place.openingHours case final hours?) Text(l10n.openingHours(hours)),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (place.phone case final phone?)
+                  FilledButton.icon(
+                    onPressed: () => callNumber(phone),
+                    icon: const Icon(LucideIcons.phone, size: 18),
+                    label: Text(l10n.call),
+                  ),
+                OutlinedButton.icon(
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$at'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  icon: const Icon(LucideIcons.navigation, size: 18),
+                  label: Text(l10n.directions),
+                ),
+              ],
+            ),
+            Text('© OpenStreetMap', style: TextStyle(fontSize: 11, color: context.tokens.muted)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _GroupIcon extends StatelessWidget {
   const _GroupIcon(this.items);
 

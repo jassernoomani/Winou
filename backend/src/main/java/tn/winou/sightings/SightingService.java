@@ -14,7 +14,10 @@ import tn.winou.associations.AssociationService;
 import tn.winou.common.ApiException;
 import tn.winou.common.RateLimits;
 import tn.winou.config.WinouProperties;
+import tn.winou.domain.AdoptionStatus;
 import tn.winou.domain.Condition;
+import tn.winou.domain.Role;
+import tn.winou.domain.GeoPoint;
 import tn.winou.domain.LostReport;
 import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
@@ -29,6 +32,7 @@ import tn.winou.domain.User;
 import tn.winou.infra.Notifications;
 import tn.winou.matching.Records;
 import tn.winou.security.CurrentUserResolver;
+import tn.winou.web.ApiModels.AdoptionIn;
 import tn.winou.web.ApiModels.SightingIn;
 import tn.winou.web.ApiModels.SightingOut;
 import tn.winou.web.ApiModels.StrayCareUpdate;
@@ -216,6 +220,94 @@ public class SightingService {
                     .param("id", id).param("user", user.getId()).update();
         }
         return views.sighting(sighting, user);
+    }
+
+    // --- adoption ---
+
+    /** An association (or an admin) offers a stray it looks after for adoption, or updates its offer. */
+    @Transactional
+    public SightingOut offerAdoption(UUID id, AdoptionIn body, User user) {
+        Sighting sighting = stray(id, user);
+        if (!user.isAssociation() && user.getRole() != Role.ADMIN) {
+            throw ApiException.coded(HttpStatus.FORBIDDEN, "associations_only",
+                    "Only animal associations can offer an animal for adoption.");
+        }
+        if (sighting.getStrayStatus() == StrayStatus.GONE) {
+            throw ApiException.invalid("This animal is no longer around");
+        }
+        if (sighting.getAdoptionStatus() == AdoptionStatus.AVAILABLE && !offeredBy(sighting, user)) {
+            throw ApiException.forbidden(); // another association's offer
+        }
+        sighting.setAdoptionStatus(AdoptionStatus.AVAILABLE);
+        sighting.setAdoptionNote(blankToNull(body.note()));
+        sighting.setAdoptionContact(body.contact().strip());
+        sighting.setAdoptionBy(user.getId());
+        sighting.setAdoptionAt(OffsetDateTime.now());
+        return views.sighting(sighting, user);
+    }
+
+    /** Adopted: a happy ending, which also marks the stray as helped by that association. */
+    @Transactional
+    public SightingOut markAdopted(UUID id, User user) {
+        Sighting sighting = offer(id, user);
+        OffsetDateTime now = OffsetDateTime.now();
+        sighting.setAdoptionStatus(AdoptionStatus.ADOPTED);
+        sighting.setAdoptionAt(now);
+        sighting.setStrayStatus(StrayStatus.HELPED);
+        sighting.setStrayStatusAt(now);
+        sighting.setStrayStatusBy(sighting.getAdoptionBy());
+        return views.sighting(sighting, user);
+    }
+
+    @Transactional
+    public SightingOut withdrawAdoption(UUID id, User user) {
+        Sighting sighting = offer(id, user);
+        sighting.setAdoptionStatus(null);
+        sighting.setAdoptionNote(null);
+        sighting.setAdoptionContact(null);
+        sighting.setAdoptionBy(null);
+        sighting.setAdoptionAt(null);
+        return views.sighting(sighting, user);
+    }
+
+    /** Animals up for adoption, nearest first around [center] (or newest first without one). */
+    @Transactional(readOnly = true)
+    public List<SightingOut> adoptable(User viewer, GeoPoint center, double radiusKm) {
+        StringBuilder sql = new StringBuilder("""
+                SELECT id FROM sightings
+                WHERE adoption_status = 'AVAILABLE' AND hidden_at IS NULL AND is_stray AND stray_status <> 'GONE'"""
+                + " AND " + Views.notBanned("reporter_id"));
+        var query = new java.util.HashMap<String, Object>();
+        if (center != null) {
+            sql.append(" AND ST_DWithin(point, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, :radius)"
+                    + " ORDER BY ST_Distance(point, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography)");
+            query.put("lat", center.lat());
+            query.put("lon", center.lon());
+            query.put("radius", radiusKm * 1000);
+        } else {
+            sql.append(" ORDER BY adoption_at DESC");
+        }
+        sql.append(" LIMIT 50");
+        List<UUID> ids = jdbc.sql(sql.toString()).params(query).query(UUID.class).list();
+        var byId = sightings.findAllById(ids).stream()
+                .collect(java.util.stream.Collectors.toMap(Sighting::getId, s -> s));
+        return views.sightings(ids.stream().map(byId::get).toList(), viewer);
+    }
+
+    private static boolean offeredBy(Sighting sighting, User user) {
+        return user.getRole() == Role.ADMIN || user.getId().equals(sighting.getAdoptionBy());
+    }
+
+    /** The offer, for the association that made it (or an admin). */
+    private Sighting offer(UUID id, User user) {
+        Sighting sighting = stray(id, user);
+        if (sighting.getAdoptionStatus() == null) {
+            throw ApiException.notFound("Adoption offer");
+        }
+        if (!offeredBy(sighting, user)) {
+            throw ApiException.forbidden();
+        }
+        return sighting;
     }
 
     private Sighting stray(UUID id, User user) {

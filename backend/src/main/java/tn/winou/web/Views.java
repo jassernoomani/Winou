@@ -21,6 +21,7 @@ import tn.winou.domain.Sighting;
 import tn.winou.domain.StrayStatus;
 import tn.winou.domain.User;
 import tn.winou.domain.UserRepository;
+import tn.winou.web.ApiModels.Adoption;
 import tn.winou.web.ApiModels.Location;
 import tn.winou.web.ApiModels.LostReportOut;
 import tn.winou.web.ApiModels.PhotoOut;
@@ -115,6 +116,11 @@ public class Views {
                         .map(Sighting::getStrayStatusBy).filter(Objects::nonNull).distinct().toList())
                 .stream().filter(User::isAssociation)
                 .collect(Collectors.toMap(User::getId, User::getAssociationName));
+        Map<UUID, String> adopters = users.findAllById(sightings.stream()
+                        .filter(s -> s.getAdoptionStatus() != null)
+                        .map(Sighting::getAdoptionBy).filter(Objects::nonNull).distinct().toList())
+                .stream().filter(User::isAssociation)
+                .collect(Collectors.toMap(User::getId, User::getAssociationName));
         Map<UUID, Feeders> feeders = feeders(sightings.stream().filter(Sighting::isStray).map(Sighting::getId).toList(),
                 viewer);
         return sightings.stream().map(s -> new SightingOut(s.getId(), s.getSpecies(), Location.of(s.getLocation()),
@@ -123,7 +129,17 @@ public class Views {
                 viewer != null && viewer.getId().equals(s.getReporterId()),
                 photoList(bySighting.get(s.getId())), s.getHiddenAt() != null, s.getCreatedAt(),
                 isAdmin(viewer) ? s.getReporterId() : null, s.isInCare(),
-                s.isStray() ? care(s, feeders.getOrDefault(s.getId(), Feeders.NONE)) : null)).toList();
+                s.isStray() ? care(s, feeders.getOrDefault(s.getId(), Feeders.NONE)) : null,
+                adoption(s, adopters, viewer))).toList();
+    }
+
+    private static Adoption adoption(Sighting s, Map<UUID, String> adopters, User viewer) {
+        if (s.getAdoptionStatus() == null) {
+            return null;
+        }
+        return new Adoption(s.getAdoptionStatus(), s.getAdoptionNote(), s.getAdoptionContact(),
+                adopters.get(s.getAdoptionBy()),
+                viewer != null && viewer.getId().equals(s.getAdoptionBy()), s.getAdoptionAt());
     }
 
     private record Feeders(int count, boolean viewer) {

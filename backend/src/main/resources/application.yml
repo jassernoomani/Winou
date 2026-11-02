@@ -147,6 +147,12 @@ winou:
   google:
     # The project's Web client ID (Firebase console: Authentication > Google > Web SDK configuration)
     client-ids: ${GOOGLE_CLIENT_IDS:}
+  places:
+    # Vets and animal shelters on the map, from OpenStreetMap (data © OpenStreetMap contributors, ODbL)
+    enabled: ${PLACES_ENABLED:true}
+    overpass-url: ${OVERPASS_URL:https://overpass-api.de/api/interpreter}
+    region: ${PLACES_REGION:30.2,7.5,37.6,11.6}   # south,west,north,east: Tunisia
+    refresh-days: ${PLACES_REFRESH_DAYS:7}
   admin:
     # Comma-separated: these accounts review association requests and reported content in the app
     emails: ${ADMIN_EMAILS:}

@@ -42,6 +42,7 @@ import 'package:winou/reports/lost_report_create_screen.dart';
 import 'package:winou/reports/lost_report_detail_screen.dart';
 import 'package:winou/reports/photo_search_screen.dart';
 import 'package:winou/reports/reunion_screen.dart';
+import 'package:winou/sightings/adoption.dart';
 import 'package:winou/sightings/sighting_create_screen.dart';
 import 'package:winou/sightings/sighting_detail_screen.dart';
 import 'package:winou/sightings/sighting_thanks_screen.dart';
@@ -111,6 +112,27 @@ final _manyLost = [
       species: species,
       seen: Duration(hours: 2 + i * 9),
     ),
+];
+
+Map<String, dynamic> _adoptable(String id, {bool mine = false, String species = 'cat', String? name}) => sightingJson(
+  id: id,
+  species: species,
+  stray: true,
+  care: {'nickname': name ?? 'Mimi', 'sterilised': true, 'vaccinated': true, 'feeders': 3, 'i_feed': false},
+  adoption: {
+    'status': 'AVAILABLE',
+    'note': 'Gentle and curious, about two years old. Sterilised and vaccinated; gets along with children.',
+    'contact': '+216 20 123 456',
+    'association': 'Refuge de Tunis',
+    'mine': mine,
+    'since': DateTime.now().subtract(const Duration(days: 3)).toUtc().toIso8601String(),
+  },
+);
+
+final _adoptables = [
+  _adoptable('s1'),
+  _adoptable('s2', species: 'dog', name: 'Rex'),
+  _adoptable('s3', name: 'Zitouna'),
 ];
 
 /// Two dogs that look alike enough, one weaker look-alike.
@@ -514,6 +536,22 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
       ],
     ),
     null,
+  ),
+  (
+    '90_stray_for_adoption',
+    () => const SightingDetailScreen(id: 's1'),
+    () => FakeApi(sighting: _adoptable('s1', mine: false)),
+    null,
+  ),
+  ('91_adoption_list', () => const AdoptionScreen(), () => FakeApi(sightings: _adoptables), null),
+  (
+    '92_map_vets',
+    () => const MapScreen(),
+    FakeApi.new,
+    (tester) async {
+      await _tap(tester, find.text(_l10n.vetsAndShelters));
+      await settle(tester, rounds: 8);
+    },
   ),
   ('86_search_by_photo', () => const PhotoSearchScreen(), _searchApi, _searchWithCamera),
   ('87_search_no_results', () => const PhotoSearchScreen(), () => FakeApi(lost: []), _searchWithCamera),

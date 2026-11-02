@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -155,6 +156,12 @@ public abstract class ApiTestBase {
 
         @Bean
         @Primary
+        FakePlaces fakePlaces() {
+            return new FakePlaces();
+        }
+
+        @Bean
+        @Primary
         RecordingNotifier recordingNotifier() {
             return new RecordingNotifier();
         }
@@ -217,6 +224,19 @@ public abstract class ApiTestBase {
         @Override
         public synchronized void delete(List<String> keys) {
             keys.forEach(objects::remove);
+        }
+    }
+
+    /** OpenStreetMap stand-in: answers [places] and counts the calls. */
+    public static class FakePlaces implements tn.winou.places.PlaceSource {
+
+        public volatile List<Place> places = List.of();
+        public final AtomicInteger calls = new AtomicInteger();
+
+        @Override
+        public List<Place> fetch(double south, double west, double north, double east) {
+            calls.incrementAndGet();
+            return places;
         }
     }
 
@@ -461,6 +481,11 @@ public abstract class ApiTestBase {
 
     protected Response patchJson(String path, String token, Object payload) {
         return call(patch(path).contentType(MediaType.APPLICATION_JSON).content(body(payload))
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+    }
+
+    protected Response putJson(String path, String token, Object payload) {
+        return call(put(path).contentType(MediaType.APPLICATION_JSON).content(body(payload))
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token));
     }
 

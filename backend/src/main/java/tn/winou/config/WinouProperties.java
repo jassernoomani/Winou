@@ -27,7 +27,14 @@ public record WinouProperties(
         Admin admin,
         Auth auth,
         Google google,
-        Share share) {
+        Share share,
+        Places places) {
+
+    /**
+     * Vets and animal shelters from OpenStreetMap's Overpass API, for [region]
+     * (south,west,north,east), refreshed every [refreshDays] by the worker.
+     */
+    public record Places(boolean enabled, String overpassUrl, String region, int refreshDays) {}
 
     public record Jwt(String secret, Duration expiry) {}
 

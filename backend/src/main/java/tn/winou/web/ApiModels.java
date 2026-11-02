@@ -16,6 +16,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import tn.winou.domain.AdoptionStatus;
 import tn.winou.domain.ApiEnum;
 import tn.winou.domain.Condition;
 import tn.winou.domain.GeoPoint;
@@ -209,7 +210,35 @@ public final class ApiModels {
             OffsetDateTime createdAt,
             UUID authorId, // for admins only: the reporter is never shown to others
             boolean inCare, // the finder has the animal with them
-            StrayCare care) {} // strays only
+            StrayCare care, // strays only
+            Adoption adoption) {} // null unless an association offered it for adoption
+
+    /** A stray up for adoption (or adopted): who offers it, a few words, a number to call. */
+    public record Adoption(
+            AdoptionStatus status,
+            String note,
+            String contact,
+            String association,
+            boolean mine, // offered by the viewer: they may mark it adopted or withdraw it
+            OffsetDateTime since) {}
+
+    public record AdoptionIn(
+            @Size(max = 500) String note,
+            @NotNull @Pattern(regexp = "^[+0-9 ()-]{6,20}$", message = "a phone number: digits, spaces, + ( ) -")
+            String contact) {}
+
+    /** A vet or an animal shelter, from OpenStreetMap. */
+    public record PlaceOut(
+            String id,
+            PlaceKind kind,
+            String name,
+            String phone,
+            String openingHours,
+            Location location) {}
+
+    public enum PlaceKind {
+        VET, SHELTER
+    }
 
     /** A stray's care card. sterilised/vaccinated null: nobody knows. */
     public record StrayCare(

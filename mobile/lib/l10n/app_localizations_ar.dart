@@ -2066,4 +2066,76 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chatNotSent => 'لم يُرسل · المس لإعادة المحاولة';
+
+  @override
+  String get forAdoption => 'للتبنّي';
+
+  @override
+  String get upForAdoption => 'متاح للتبنّي';
+
+  @override
+  String offeredBy(String association) {
+    return 'يقدّمه $association';
+  }
+
+  @override
+  String get adoptedTitle => 'تمّ تبنّيه!';
+
+  @override
+  String adoptedBody(String association) {
+    return 'بيت جديد، بفضل $association.';
+  }
+
+  @override
+  String get adoptedBodyNoAssociation => 'وجد بيتًا جديدًا.';
+
+  @override
+  String get whatsapp => 'واتساب';
+
+  @override
+  String get offerForAdoption => 'اعرضه للتبنّي';
+
+  @override
+  String get editOffer => 'تعديل العرض';
+
+  @override
+  String get markAdopted => 'تمّ تبنّيه';
+
+  @override
+  String get withdrawOffer => 'سحب العرض';
+
+  @override
+  String get adoptionNoteLabel => 'عن هذا الحيوان (اختياري)';
+
+  @override
+  String get adoptionNoteHint => 'الطبع، العمر، الصحة، ولمن يناسب…';
+
+  @override
+  String get adoptionContactLabel => 'هاتف للراغبين في التبنّي';
+
+  @override
+  String get noAdoptionNearby => 'لا يوجد حيوان للتبنّي بالقرب منك حاليًا.';
+
+  @override
+  String get adoptionIntro => 'حيوانات الشارع التي ترعاها الجمعيات، تبحث عن بيت.';
+
+  @override
+  String get vetsAndShelters => 'بياطرة وملاجئ';
+
+  @override
+  String get placeVet => 'طبيب بيطري';
+
+  @override
+  String get placeShelter => 'ملجأ حيوانات';
+
+  @override
+  String get directions => 'الاتجاهات';
+
+  @override
+  String openingHours(String hours) {
+    return 'المواعيد: $hours';
+  }
+
+  @override
+  String get adoptedSnack => 'رائع! تمّ تسجيل التبنّي.';
 }

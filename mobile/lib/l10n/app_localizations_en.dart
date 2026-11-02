@@ -2004,4 +2004,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatNotSent => 'Not sent · tap to retry';
+
+  @override
+  String get forAdoption => 'For adoption';
+
+  @override
+  String get upForAdoption => 'Up for adoption';
+
+  @override
+  String offeredBy(String association) {
+    return 'Offered by $association';
+  }
+
+  @override
+  String get adoptedTitle => 'Adopted!';
+
+  @override
+  String adoptedBody(String association) {
+    return 'A new home, thanks to $association.';
+  }
+
+  @override
+  String get adoptedBodyNoAssociation => 'It found a new home.';
+
+  @override
+  String get whatsapp => 'WhatsApp';
+
+  @override
+  String get offerForAdoption => 'Offer for adoption';
+
+  @override
+  String get editOffer => 'Edit the offer';
+
+  @override
+  String get markAdopted => 'It was adopted';
+
+  @override
+  String get withdrawOffer => 'Withdraw';
+
+  @override
+  String get adoptionNoteLabel => 'About this animal (optional)';
+
+  @override
+  String get adoptionNoteHint => 'Temperament, age, health, who it would suit…';
+
+  @override
+  String get adoptionContactLabel => 'Phone for adopters';
+
+  @override
+  String get noAdoptionNearby => 'No animal up for adoption nearby yet.';
+
+  @override
+  String get adoptionIntro => 'Street animals cared for by associations, looking for a home.';
+
+  @override
+  String get vetsAndShelters => 'Vets & shelters';
+
+  @override
+  String get placeVet => 'Vet';
+
+  @override
+  String get placeShelter => 'Animal shelter';
+
+  @override
+  String get directions => 'Directions';
+
+  @override
+  String openingHours(String hours) {
+    return 'Hours: $hours';
+  }
+
+  @override
+  String get adoptedSnack => 'Wonderful! Marked as adopted.';
 }

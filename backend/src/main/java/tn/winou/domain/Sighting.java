@@ -57,6 +57,14 @@ public class Sighting extends BaseEntity {
     private String careNotes;
     private OffsetDateTime careUpdatedAt;
     private UUID careUpdatedBy;
+
+    // Offered for adoption by an association (V20)
+    @Enumerated(EnumType.STRING)
+    private AdoptionStatus adoptionStatus; // null: not offered
+    private String adoptionNote;
+    private String adoptionContact;
+    private UUID adoptionBy;
+    private OffsetDateTime adoptionAt;
     private OffsetDateTime hiddenAt; // reported by enough people; shown to the reporter and admins only
 
     private OffsetDateTime createdAt = OffsetDateTime.now();

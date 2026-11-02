@@ -173,6 +173,51 @@ class Photo {
   bool get isProcessing => status == 'PENDING' || status == 'PROCESSING';
 }
 
+/// A stray an association offers for adoption (or that found a home).
+class Adoption {
+  Adoption.fromJson(Map<String, dynamic> json)
+    : adopted = json['status'] == 'ADOPTED',
+      note = json['note'],
+      contact = json['contact'],
+      association = json['association'],
+      mine = json['mine'] ?? false,
+      since = _date(json['since']);
+
+  final bool adopted; // false: still up for adoption
+  final String? note;
+  final String? contact;
+  final String? association;
+  final bool mine; // the viewer's association offered it
+  final DateTime since;
+}
+
+enum PlaceKind with ApiEnum {
+  vet('VET'),
+  shelter('SHELTER');
+
+  const PlaceKind(this.api);
+  @override
+  final String api;
+}
+
+/// A vet or an animal shelter, from OpenStreetMap.
+class Place {
+  Place.fromJson(Map<String, dynamic> json)
+    : id = json['id'],
+      kind = _enum(PlaceKind.values, json['kind']),
+      name = json['name'],
+      phone = json['phone'],
+      openingHours = json['opening_hours'],
+      location = _location(json['location']);
+
+  final String id;
+  final PlaceKind kind;
+  final String? name;
+  final String? phone;
+  final String? openingHours; // OpenStreetMap's format, e.g. "Mo-Sa 09:00-19:00"
+  final LatLng location;
+}
+
 /// What the photo check found: the species and how sure the detector is.
 class PhotoCheck {
   PhotoCheck.fromJson(Map<String, dynamic> json)
@@ -288,7 +333,8 @@ class Sighting {
       hidden = json['hidden'] ?? false,
       authorId = json['author_id'],
       inCare = json['in_care'] ?? false,
-      care = json['care'] == null ? null : StrayCare.fromJson(json['care']);
+      care = json['care'] == null ? null : StrayCare.fromJson(json['care']),
+      adoption = json['adoption'] == null ? null : Adoption.fromJson(json['adoption']);
 
   final String id;
   final Species species;
@@ -306,6 +352,7 @@ class Sighting {
   final String? authorId; // sent to admins only
   final bool inCare; // the finder has the animal with them
   final StrayCare? care; // strays only
+  final Adoption? adoption; // offered for adoption by an association
 
   /// A stray the neighbourhood named is called by its name.
   String? get nickname => care?.nickname;

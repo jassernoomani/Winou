@@ -220,7 +220,9 @@ Map<String, dynamic> sightingJson({
   bool hidden = false,
   bool inCare = false,
   Map<String, dynamic>? care,
+  Map<String, dynamic>? adoption,
 }) => {
+  'adoption': adoption,
   'in_care': inCare,
   'care': care ?? (stray ? <String, dynamic>{'feeders': 0, 'i_feed': false} : null),
   'id': id,
@@ -879,6 +881,61 @@ class FakeApi implements WinouApi {
 
   /// What photo checks and searches throw instead of answering (e.g. code "no_animal_detected").
   final ApiException? photoError;
+
+  /// Vets and shelters for the map layer, and what adoption actions were asked.
+  List<Map<String, dynamic>> placeData = [
+    {
+      'id': 'node/1',
+      'kind': 'VET',
+      'name': 'Clinique Vétérinaire du Lac',
+      'phone': '+216 71 000 000',
+      'opening_hours': 'Mo-Sa 09:00-19:00',
+      'location': {'lat': Config.defaultLat + 0.003, 'lon': Config.defaultLon - 0.004},
+    },
+    {
+      'id': 'way/2',
+      'kind': 'SHELTER',
+      'name': 'SPA Tunis',
+      'phone': null,
+      'opening_hours': null,
+      'location': {'lat': Config.defaultLat - 0.004, 'lon': Config.defaultLon + 0.002},
+    },
+  ];
+  final adoptionCalls = <String>[];
+
+  @override
+  Future<List<Place>> places({
+    required double west,
+    required double south,
+    required double east,
+    required double north,
+  }) => _answer(() => [for (final p in placeData) Place.fromJson(p)]);
+
+  @override
+  Future<List<Sighting>> adoptable({LatLng? near}) => _answer(
+    () => [
+      for (final s in sightings)
+        if (s['adoption']?['status'] == 'AVAILABLE') Sighting.fromJson(s),
+    ],
+  );
+
+  @override
+  Future<Sighting> offerAdoption(String id, {String? note, required String contact}) => _answer(() {
+    adoptionCalls.add('offer $note $contact');
+    return Sighting.fromJson(sightingData);
+  });
+
+  @override
+  Future<Sighting> markAdopted(String id) => _answer(() {
+    adoptionCalls.add('adopted');
+    return Sighting.fromJson(sightingData);
+  });
+
+  @override
+  Future<Sighting> withdrawAdoption(String id) => _answer(() {
+    adoptionCalls.add('withdraw');
+    return Sighting.fromJson(sightingData);
+  });
 
   /// Chat sends wait for this (when set) and fail with [sendError] (when set).
   Completer<void>? sendGate;
