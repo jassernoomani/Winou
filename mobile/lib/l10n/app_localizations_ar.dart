@@ -2060,4 +2060,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String rematchingSince(String date) {
     return 'تتم مقارنة الصور الجديدة بكل المشاهدات منذ $date.';
   }
+
+  @override
+  String get chatSending => 'جارٍ الإرسال…';
+
+  @override
+  String get chatNotSent => 'لم يُرسل · المس لإعادة المحاولة';
 }

@@ -39,7 +39,7 @@ class ConversationsScreen extends ConsumerWidget {
                 ),
         ),
         AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(conversationsProvider)),
-        _ => const Center(child: CircularProgressIndicator()),
+        _ => const SkeletonList(picture: 56),
       },
     );
   }

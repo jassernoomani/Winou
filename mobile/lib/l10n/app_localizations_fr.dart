@@ -2014,4 +2014,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String rematchingSince(String date) {
     return 'Les nouvelles photos sont comparées à tous les signalements depuis le $date.';
   }
+
+  @override
+  String get chatSending => 'Envoi…';
+
+  @override
+  String get chatNotSent => 'Non envoyé · touchez pour réessayer';
 }

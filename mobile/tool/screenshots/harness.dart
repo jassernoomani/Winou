@@ -880,6 +880,24 @@ class FakeApi implements WinouApi {
   /// What photo checks and searches throw instead of answering (e.g. code "no_animal_detected").
   final ApiException? photoError;
 
+  /// Chat sends wait for this (when set) and fail with [sendError] (when set).
+  Completer<void>? sendGate;
+  ApiException? sendError;
+  final sent = <String>[];
+
+  @override
+  Future<ChatMessage> sendMessage(String conversationId, {String? body, LatLng? location}) async {
+    await sendGate?.future;
+    if (sendError case final error?) throw error;
+    sent.add(body ?? '');
+    return ChatMessage.fromJson({
+      'id': 'sent-${sent.length}',
+      'body': body,
+      'mine': true,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+    });
+  }
+
   @override
   Future<PhotoCheck> checkPhoto(String filePath) => _answer(() {
     if (photoError case final error?) throw error;

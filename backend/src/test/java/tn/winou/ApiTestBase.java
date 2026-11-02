@@ -210,6 +210,11 @@ public abstract class ApiTestBase {
         }
 
         @Override
+        public synchronized java.util.Optional<byte[]> find(String key) {
+            return java.util.Optional.ofNullable(objects.get(key));
+        }
+
+        @Override
         public synchronized void delete(List<String> keys) {
             keys.forEach(objects::remove);
         }

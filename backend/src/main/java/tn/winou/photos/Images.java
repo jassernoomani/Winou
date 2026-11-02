@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -163,6 +164,22 @@ public class Images {
             g.dispose();
         }
         return target;
+    }
+
+    /**
+     * A smaller copy of a public JPEG, at most [width] pixels wide (never enlarged), for lists and
+     * cards that don't need the full photo.
+     */
+    public static byte[] resized(byte[] jpeg, int width) {
+        try {
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(jpeg));
+            if (image == null || image.getWidth() <= width) {
+                return jpeg;
+            }
+            return jpeg(Thumbnails.of(image).width(width).keepAspectRatio(true).asBufferedImage());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /** Only ever shrinks, keeping the aspect ratio. */

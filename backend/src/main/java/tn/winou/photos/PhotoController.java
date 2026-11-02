@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,9 +41,14 @@ public class PhotoController {
     }
 
     @GetMapping(value = "/photos/{photoId}/image", produces = MediaType.IMAGE_JPEG_VALUE)
-    @Operation(summary = "The photo as an EXIF-free JPEG (no login needed, so the app can load it directly)")
-    public ResponseEntity<byte[]> image(@PathVariable UUID photoId) {
-        return jpeg(photos.get(photoId).getPublicKey());
+    @Operation(summary = "The photo as an EXIF-free JPEG (no login needed, so the app can load it directly)",
+            description = "With w (160, 320, 640 or 1080): a copy at most that wide, for lists and cards.")
+    public ResponseEntity<byte[]> image(@PathVariable UUID photoId, @RequestParam(required = false) Integer w) {
+        Photo photo = photos.get(photoId);
+        if (w == null) {
+            return jpeg(photo.getPublicKey());
+        }
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).cacheControl(FOREVER).body(photos.sized(photo, w));
     }
 
     @GetMapping(value = "/photos/{photoId}/crop", produces = MediaType.IMAGE_JPEG_VALUE)

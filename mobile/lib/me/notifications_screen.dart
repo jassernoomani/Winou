@@ -54,7 +54,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 ),
         ),
         AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(notificationsProvider)),
-        _ => const Center(child: CircularProgressIndicator()),
+        _ => const SkeletonList(picture: 40),
       },
     );
   }

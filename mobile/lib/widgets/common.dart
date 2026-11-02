@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -159,8 +161,22 @@ class NetworkPhoto extends StatelessWidget {
       child: Center(child: Icon(LucideIcons.pawPrint, size: 32, color: colors.primary.withValues(alpha: 0.5))),
     );
     if (url == null) return placeholder;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // As many pixels as the box shows, not the full 2048 px photo: much less to download
+        // on a weak connection, and much less to decode
+        final dpr = MediaQuery.devicePixelRatioOf(context);
+        final side = [constraints.maxWidth, constraints.maxHeight].where((v) => v.isFinite).fold(0.0, math.max);
+        final width = sizedPhotoWidth(side * dpr);
+        return _image(width == null ? url! : sizedPhotoUrl(url!, width), width, placeholder);
+      },
+    );
+  }
+
+  Widget _image(String url, int? width, Widget placeholder) {
     return Image.network(
-      url!,
+      url,
+      cacheWidth: width,
       fit: fit,
       errorBuilder: (_, _, _) => placeholder,
       // Fades in over the placeholder once loaded (cached images show at once)
@@ -581,4 +597,23 @@ class PrivateDetailField extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The widths the API can resize photos to (GET /photos/{id}/image?w=).
+const photoWidths = [160, 320, 640, 1080];
+
+/// The smallest width covering [pixels], or null when even the largest is too small (full photo).
+int? sizedPhotoWidth(double pixels) {
+  if (pixels <= 0) return null;
+  for (final w in photoWidths) {
+    if (w >= pixels) return w;
+  }
+  return null;
+}
+
+/// Winou photo URLs (/photos/{id}/image) at [width]; any other URL as it is.
+String sizedPhotoUrl(String url, int width) {
+  final uri = Uri.tryParse(url);
+  if (uri == null || uri.hasQuery || !RegExp(r'/photos/[^/]+/image$').hasMatch(uri.path)) return url;
+  return uri.replace(queryParameters: {'w': '$width'}).toString();
 }

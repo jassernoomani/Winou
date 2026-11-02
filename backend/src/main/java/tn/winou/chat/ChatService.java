@@ -3,8 +3,13 @@ package tn.winou.chat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -104,7 +109,45 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public List<ConversationOut> mine(User user) {
-        return conversations.findForUser(user.getId()).stream().map(c -> out(c, user)).toList();
+        List<Conversation> found = conversations.findForUser(user.getId());
+        if (found.isEmpty()) {
+            return List.of();
+        }
+        // A fixed number of queries for the whole list, not five per conversation
+        List<UUID> ids = found.stream().map(Conversation::getId).toList();
+        Map<UUID, LostReport> reportsById = byId(reports.findAllById(
+                found.stream().map(Conversation::getLostReportId).distinct().toList()), LostReport::getId);
+        Map<UUID, Match> matchesById = byId(matches.findAllById(
+                found.stream().map(Conversation::getMatchId).filter(Objects::nonNull).toList()), Match::getId);
+        Map<UUID, User> usersById = byId(users.findAllById(
+                found.stream().map(c -> c.otherParticipant(user.getId())).distinct().toList()), User::getId);
+        // The newest message each one can see (as findVisible), per conversation
+        List<UUID> lastIds = jdbc.sql("""
+                        SELECT DISTINCT ON (conversation_id) id FROM messages
+                        WHERE conversation_id IN (:ids) AND (hidden_at IS NULL OR sender_id = :me)
+                        ORDER BY conversation_id, created_at DESC""")
+                .param("ids", ids).param("me", user.getId()).query(UUID.class).list();
+        Map<UUID, ChatMessage> lastByConversation = byId(messages.findAllById(lastIds), ChatMessage::getConversationId);
+        // Unread: the other one's visible messages since I last read (as the per-conversation counts)
+        Map<UUID, Long> unread = new HashMap<>();
+        jdbc.sql("""
+                        SELECT m.conversation_id, count(*) AS n FROM messages m
+                        JOIN conversations c ON c.id = m.conversation_id
+                        WHERE c.id IN (:ids) AND m.sender_id <> :me AND m.hidden_at IS NULL
+                          AND m.created_at > coalesce(
+                              CASE WHEN c.owner_id = :me THEN c.owner_read_at ELSE c.finder_read_at END,
+                              '-infinity'::timestamptz)
+                        GROUP BY m.conversation_id""")
+                .param("ids", ids).param("me", user.getId())
+                .query((rs, i) -> unread.put(rs.getObject("conversation_id", UUID.class), rs.getLong("n"))).list();
+        return found.stream().map(c -> out(c, user, reportsById.get(c.getLostReportId()),
+                c.getMatchId() == null ? null : matchesById.get(c.getMatchId()),
+                usersById.get(c.otherParticipant(user.getId())), lastByConversation.get(c.getId()),
+                unread.getOrDefault(c.getId(), 0L))).toList();
+    }
+
+    private static <T> Map<UUID, T> byId(List<T> items, Function<T, UUID> id) {
+        return items.stream().collect(Collectors.toMap(id, Function.identity(), (a, b) -> a));
     }
 
     @Transactional(readOnly = true)
@@ -196,6 +239,11 @@ public class ChatService {
                 ? messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNull(c.getId(), viewer.getId())
                 : messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNullAndCreatedAtGreaterThan(c.getId(),
                         viewer.getId(), readAt);
+        return out(c, viewer, report, match, otherUser, last, unread);
+    }
+
+    private ConversationOut out(Conversation c, User viewer, LostReport report, Match match, User otherUser,
+            ChatMessage last, long unread) {
         boolean owner = c.getOwnerId().equals(viewer.getId());
         boolean confirmed = match != null && match.getStatus() == MatchStatus.CONFIRMED;
         return new ConversationOut(c.getId(), report.getId(), report.getName(), report.getStatus(), c.getMatchId(),

@@ -572,5 +572,7 @@
   "strengthStrong": "Excellent : Winou peut reconnaître votre animal sous plusieurs angles.",
   "strengthTips": "Idéal : le visage de près, le corps entier de profil, ses marques particulières.",
   "morePhotosHint": "Ajoutez des photos pour une meilleure recherche",
-  "rematchingSince": "Les nouvelles photos sont comparées à tous les signalements depuis le {date}."
+  "rematchingSince": "Les nouvelles photos sont comparées à tous les signalements depuis le {date}.",
+  "chatSending": "Envoi…",
+  "chatNotSent": "Non envoyé · touchez pour réessayer"
 }

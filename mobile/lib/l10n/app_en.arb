@@ -1249,5 +1249,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "chatSending": "Sending…",
+  "chatNotSent": "Not sent · tap to retry"
 }

@@ -40,9 +40,13 @@ public class VectorIndex {
 
     public VectorIndex(WinouProperties properties) {
         WinouProperties.Qdrant qdrant = properties.qdrant();
+        // Without timeouts, a stuck Qdrant would hold API requests and the worker forever
+        var requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(5_000);
+        requestFactory.setReadTimeout(30_000);
         var builder = RestClient.builder()
                 .baseUrl(qdrant.url() + "/collections/" + qdrant.collection())
-                .requestFactory(new SimpleClientHttpRequestFactory());
+                .requestFactory(requestFactory);
         if (qdrant.apiKey() != null && !qdrant.apiKey().isBlank()) {
             builder.defaultHeader("api-key", qdrant.apiKey());
         }

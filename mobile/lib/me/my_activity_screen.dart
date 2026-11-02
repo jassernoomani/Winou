@@ -178,7 +178,7 @@ class _AsyncList<T> extends ConsumerWidget {
               ),
       ),
       AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(provider)),
-      _ => const Center(child: CircularProgressIndicator()),
+      _ => const SkeletonList(picture: 64),
     };
   }
 }

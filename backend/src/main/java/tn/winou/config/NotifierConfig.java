@@ -48,7 +48,11 @@ public class NotifierConfig {
         }
         try (InputStream in = Files.newInputStream(key)) {
             GoogleCredentials credentials = GoogleCredentials.fromStream(in);
-            FirebaseOptions options = FirebaseOptions.builder().setCredentials(credentials).build();
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(credentials)
+                    .setConnectTimeout(10_000) // the default waits forever
+                    .setReadTimeout(20_000)
+                    .build();
             FirebaseApp app = FirebaseApp.initializeApp(options, "winou");
             log.info("push notifications enabled (Firebase project {})",
                     credentials instanceof ServiceAccountCredentials account ? account.getProjectId() : "?");

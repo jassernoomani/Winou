@@ -1998,4 +1998,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String rematchingSince(String date) {
     return 'The new photos are being compared with every sighting since $date.';
   }
+
+  @override
+  String get chatSending => 'Sending…';
+
+  @override
+  String get chatNotSent => 'Not sent · tap to retry';
 }

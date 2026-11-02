@@ -1,6 +1,8 @@
 package tn.winou.infra;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,15 @@ public class SmtpMailer implements Mailer {
         this.fromName = fromName;
     }
 
+    /** Sending takes 1-3 s (Gmail SMTP): done in the background so nobody waits for it. */
+    private final ExecutorService background = Executors.newVirtualThreadPerTaskExecutor();
+
     @Override
     public void send(String to, String subject, String text, String html) {
+        background.execute(() -> sendNow(to, subject, text, html));
+    }
+
+    void sendNow(String to, String subject, String text, String html) {
         try {
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());

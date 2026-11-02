@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -120,10 +121,31 @@ public class PhotoService {
         deleteFilesAfterCommit(List.of(photo));
     }
 
+    /** Widths the app may ask for (a row, a card, a page, full screen). Each is made once, then kept. */
+    public static final Set<Integer> WIDTHS = Set.of(160, 320, 640, 1080);
+
+    /** The public copy at most [width] wide, made on first request and stored for the next ones. */
+    public byte[] sized(Photo photo, int width) {
+        if (!WIDTHS.contains(width)) {
+            throw ApiException.invalid("w is one of " + WIDTHS.stream().sorted().toList());
+        }
+        String key = sizedKey(photo.getId(), width);
+        return storage.find(key).orElseGet(() -> {
+            byte[] resized = Images.resized(storage.get(photo.getPublicKey()), width);
+            storage.put(key, resized, "image/jpeg");
+            return resized;
+        });
+    }
+
+    private static String sizedKey(UUID photoId, int width) {
+        return "sized/" + photoId + "_" + width + ".jpg";
+    }
+
     /** Files go once the rows are gone, so a failed transaction never leaves a photo without its files. */
     public void deleteFilesAfterCommit(List<Photo> deleted) {
         List<String> keys = deleted.stream()
-                .flatMap(p -> Stream.of(p.getOriginalKey(), p.getPublicKey(), p.getCropKey()))
+                .flatMap(p -> Stream.concat(Stream.of(p.getOriginalKey(), p.getPublicKey(), p.getCropKey()),
+                        WIDTHS.stream().map(w -> sizedKey(p.getId(), w)))) // made or not: S3 ignores missing keys
                 .filter(Objects::nonNull)
                 .toList();
         if (!keys.isEmpty()) {

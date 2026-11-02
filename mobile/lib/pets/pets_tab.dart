@@ -55,7 +55,7 @@ class PetsTab extends ConsumerWidget {
         ),
       ),
       AsyncError(:final error) => ErrorView(error: error, onRetry: () => ref.invalidate(myPetsProvider)),
-      _ => const Center(child: CircularProgressIndicator()),
+      _ => const SkeletonList(picture: 76),
     };
   }
 }

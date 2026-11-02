@@ -204,3 +204,70 @@ class _BobState extends State<Bob> with SingleTickerProviderStateMixin {
     child: widget.child,
   );
 }
+
+/// Placeholder rows while a list loads: the shape of what's coming (a picture, two lines),
+/// gently pulsing, instead of a spinner on an empty screen.
+class SkeletonList extends StatefulWidget {
+  const SkeletonList({super.key, this.rows = 6, this.picture = 56});
+
+  final int rows;
+  final double picture; // the size of the row's photo or avatar
+
+  @override
+  State<SkeletonList> createState() => _SkeletonListState();
+}
+
+class _SkeletonListState extends State<SkeletonList> with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))
+    ..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = Theme.of(context).extension<WinouTokens>()!;
+    Widget bar(double widthFactor) => FractionallySizedBox(
+      widthFactor: widthFactor,
+      alignment: AlignmentDirectional.centerStart,
+      child: Container(
+        height: 10,
+        decoration: BoxDecoration(color: tokens.tonal, borderRadius: BorderRadius.circular(5)),
+      ),
+    );
+    return Semantics(
+      label: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+      child: FadeTransition(
+        opacity: Tween(begin: 1.0, end: 0.55).animate(_controller),
+        child: ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          itemCount: widget.rows,
+          itemBuilder: (context, i) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              spacing: 14,
+              children: [
+                Container(
+                  width: widget.picture,
+                  height: widget.picture,
+                  decoration: BoxDecoration(color: tokens.tonal, borderRadius: BorderRadius.circular(16)),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 10,
+                    children: [bar(i.isEven ? 0.5 : 0.65), bar(i.isEven ? 0.85 : 0.7)],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

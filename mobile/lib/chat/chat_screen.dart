@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../api/api_client.dart';
 import '../api/models.dart';
 import '../api/providers.dart';
 import '../auth/auth_controller.dart';
@@ -43,6 +44,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _sending = false;
   Object? _error;
   final Set<String> _arrived = {}; // received or sent while open: these pop in
+  final List<_Outgoing> _outbox = []; // typed and shown at once, until the server has them
+  Future<void> _sendQueue = Future.value(); // one at a time, so they arrive in order
   Timer? _timer;
   StreamSubscription<String>? _incoming;
 
@@ -112,11 +115,36 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return byId.values.toList()..sort((x, y) => x.createdAt.compareTo(y.createdAt));
   }
 
+  /// The message shows at once ("Sending…"), and becomes a normal one when the server has it.
+  /// If it can't be sent, it stays with "Not sent · tap to retry": the text is never lost.
   Future<void> _send() async {
     final text = _input.text.trim();
     if (text.isEmpty) return;
-    await _deliver(() => ref.read(apiProvider).sendMessage(widget.id, body: text), clearInput: true);
+    _input.clear();
+    final outgoing = _Outgoing(text);
+    setState(() => _outbox.add(outgoing));
+    await (_sendQueue = _sendQueue.then((_) => _deliverText(outgoing)));
   }
+
+  Future<void> _deliverText(_Outgoing outgoing) async {
+    if (mounted) setState(() => outgoing.failed = false);
+    try {
+      final sent = await ref.read(apiProvider).sendMessage(widget.id, body: outgoing.text);
+      if (mounted) {
+        setState(() {
+          _outbox.remove(outgoing);
+          _arrived.add(sent.id);
+          _messages = _merge(_messages, [sent]);
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => outgoing.failed = true);
+      if (e is! ApiException || e.code != 'network') showError(context, e); // e.g. too many messages
+    }
+  }
+
+  void _retry(_Outgoing outgoing) => _sendQueue = _sendQueue.then((_) => _deliverText(outgoing));
 
   /// Camera, gallery, or "share a place" (where the animal is right now).
   Future<void> _attach() async {
@@ -160,12 +188,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (photo != null) await _deliver(() => api.sendChatPhoto(widget.id, photo.file.path));
   }
 
-  Future<void> _deliver(Future<ChatMessage> Function() send, {bool clearInput = false}) async {
+  Future<void> _deliver(Future<ChatMessage> Function() send) async {
     if (_sending) return;
     setState(() => _sending = true);
     try {
       final sent = await send();
-      if (clearInput) _input.clear();
       if (mounted) {
         setState(() {
           _arrived.add(sent.id);
@@ -242,7 +269,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final l10n = context.l10n;
     if (_error != null) return ErrorView(error: _error!, onRetry: _refresh);
     if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_messages.isEmpty) {
+    if (_messages.isEmpty && _outbox.isEmpty) {
       return Center(
         child: SingleChildScrollView(
           child: FadeSlideIn(
@@ -255,9 +282,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       controller: _scroll,
       reverse: true, // newest at the bottom, and the list stays there as messages arrive
       padding: const EdgeInsets.all(12),
-      itemCount: _messages.length,
+      itemCount: _outbox.length + _messages.length,
       itemBuilder: (context, i) {
-        final message = _messages[_messages.length - 1 - i];
+        // Reversed: index 0 is the bottom, where the messages being sent are
+        if (i < _outbox.length) {
+          final outgoing = _outbox[_outbox.length - 1 - i];
+          return _OutgoingBubble(outgoing, onRetry: () => _retry(outgoing));
+        }
+        final message = _messages[_messages.length - 1 - (i - _outbox.length)];
         final bubble = _Bubble(message, onReport: message.mine ? null : () => _report(message));
         return _arrived.contains(message.id)
             ? FadeSlideIn(
@@ -269,6 +301,61 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               )
             : bubble;
       },
+    );
+  }
+}
+
+class _Outgoing {
+  _Outgoing(this.text);
+
+  final String text;
+  final DateTime createdAt = DateTime.now();
+  bool failed = false;
+}
+
+/// A message on its way: faded with "Sending…", or "Not sent · tap to retry".
+class _OutgoingBubble extends StatelessWidget {
+  const _OutgoingBubble(this.outgoing, {required this.onRetry});
+
+  final _Outgoing outgoing;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final failed = outgoing.failed;
+    final message = ChatMessage.fromJson({
+      'id': 'outgoing',
+      'body': outgoing.text,
+      'mine': true,
+      'created_at': outgoing.createdAt.toUtc().toIso8601String(),
+    });
+    return GestureDetector(
+      onTap: failed ? onRetry : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Opacity(opacity: failed ? 0.5 : 0.7, child: _Bubble(message)),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 4, bottom: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: [
+                Icon(
+                  failed ? LucideIcons.circleAlert : LucideIcons.clock,
+                  size: 12,
+                  color: failed ? Brand.red : context.tokens.muted,
+                ),
+                Text(
+                  failed ? l10n.chatNotSent : l10n.chatSending,
+                  style: TextStyle(fontSize: 11, color: failed ? Brand.red : context.tokens.muted),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

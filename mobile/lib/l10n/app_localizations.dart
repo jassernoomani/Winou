@@ -3530,6 +3530,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The new photos are being compared with every sighting since {date}.'**
   String rematchingSince(String date);
+
+  /// No description provided for @chatSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get chatSending;
+
+  /// No description provided for @chatNotSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent · tap to retry'**
+  String get chatNotSent;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectsArgs;
 import io.minio.Result;
+import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import tn.winou.config.WinouProperties;
@@ -33,6 +35,8 @@ public class S3Storage implements Storage {
                 .endpoint((s3.secure() ? "https://" : "http://") + s3.endpoint())
                 .credentials(s3.accessKey(), s3.secretKey())
                 .build();
+        // The library's default is 5 minutes per step: a stuck MinIO would hold requests that long
+        client.setTimeout(10_000, 60_000, 60_000);
     }
 
     @Override
@@ -54,6 +58,20 @@ public class S3Storage implements Storage {
     public byte[] get(String key) {
         try (InputStream in = client.getObject(GetObjectArgs.builder().bucket(bucket).object(key).build())) {
             return in.readAllBytes();
+        } catch (Exception e) {
+            throw new StorageException("could not read " + key, e);
+        }
+    }
+
+    @Override
+    public Optional<byte[]> find(String key) {
+        try (InputStream in = client.getObject(GetObjectArgs.builder().bucket(bucket).object(key).build())) {
+            return Optional.of(in.readAllBytes());
+        } catch (ErrorResponseException e) {
+            if ("NoSuchKey".equals(e.errorResponse().code()) || "NoSuchBucket".equals(e.errorResponse().code())) {
+                return Optional.empty();
+            }
+            throw new StorageException("could not read " + key, e);
         } catch (Exception e) {
             throw new StorageException("could not read " + key, e);
         }
