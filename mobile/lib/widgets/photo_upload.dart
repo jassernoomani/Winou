@@ -455,3 +455,58 @@ Future<DateTime?> pickDateTime(BuildContext context, DateTime initial) async {
   final picked = DateTime(date.year, date.month, date.day, time.hour, time.minute);
   return picked.isAfter(now) ? now : picked;
 }
+
+/// How many usable photos there are of the animal, and what would help: more angles make matching
+/// much better. [count] counts the photos that show an animal (see [usablePhotos]).
+class MatchStrength extends StatelessWidget {
+  const MatchStrength(this.count, {super.key});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tokens = context.tokens;
+    final (level, text) = switch (count) {
+      0 => (0, l10n.strengthNone),
+      1 => (1, l10n.strengthWeak),
+      2 => (2, l10n.strengthFair),
+      _ => (3, l10n.strengthStrong),
+    };
+    final color = level >= 3 ? Brand.green : Brand.amber;
+    return Semantics(
+      container: true,
+      label: text,
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 6,
+        children: [
+          Row(
+            spacing: 4,
+            children: [
+              for (var i = 0; i < 3; i++)
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: i < level ? color : tokens.tonal,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+          if (level < 3) Text(l10n.strengthTips, style: TextStyle(fontSize: 12, height: 1.35, color: tokens.muted)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Photos that may show the animal: every one already saved, and the new ones unless their check
+/// found no animal (a check still running counts).
+int usablePhotos(WidgetRef ref, int saved, List<PickedPhoto> added) =>
+    saved + added.where((p) => ref.watch(photoVerdictProvider(p.file.path)).value?.noAnimal != true).length;

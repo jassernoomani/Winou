@@ -21,7 +21,13 @@ void main() {
 
   Future<void> openChat(WidgetTester tester, FakeApi api) async {
     phoneSize(tester);
-    await tester.pumpWidget(app(const ChatScreen(id: 'c1'), brightness: Brightness.light, api: api));
+    await tester.pumpWidget(
+      app(
+        const ChatScreen(id: 'c1'),
+        brightness: Brightness.light,
+        api: api,
+      ),
+    );
     await settle(tester);
   }
 
@@ -92,7 +98,11 @@ void main() {
     addTearDown(controller.dispose);
     phoneSize(tester);
     await tester.pumpWidget(
-      app(Scaffold(body: PrivateDetailField(controller)), brightness: Brightness.light, api: FakeApi()),
+      app(
+        Scaffold(body: PrivateDetailField(controller)),
+        brightness: Brightness.light,
+        api: FakeApi(),
+      ),
     );
     await settle(tester);
     expect(find.text(l10n.privateDetailLabel), findsOneWidget);

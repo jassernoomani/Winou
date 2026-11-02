@@ -1975,4 +1975,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get warningLink => 'Careful with links: Winou never asks you to pay or sign in through one.';
+
+  @override
+  String get strengthNone => 'Add photos so Winou can recognise your pet.';
+
+  @override
+  String get strengthWeak => '1 photo: matching works, more angles make it much better.';
+
+  @override
+  String get strengthFair => 'Good start. Add another angle or its markings.';
+
+  @override
+  String get strengthStrong => 'Strong: Winou can recognise your pet from different angles.';
+
+  @override
+  String get strengthTips => 'Best: the face up close, the whole body from the side, any special markings.';
+
+  @override
+  String get morePhotosHint => 'Add more photos for better matching';
+
+  @override
+  String rematchingSince(String date) {
+    return 'The new photos are being compared with every sighting since $date.';
+  }
 }

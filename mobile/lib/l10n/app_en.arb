@@ -1235,5 +1235,19 @@
   "handoverTipProof": "Owner: bring older photos or the vet booklet.",
   "handoverTipNoPay": "Never pay anything before you see the pet. A reward is given at the handover.",
   "warningPayment": "Careful: never pay before you see your pet. Rewards are given at the handover.",
-  "warningLink": "Careful with links: Winou never asks you to pay or sign in through one."
+  "warningLink": "Careful with links: Winou never asks you to pay or sign in through one.",
+  "strengthNone": "Add photos so Winou can recognise your pet.",
+  "strengthWeak": "1 photo: matching works, more angles make it much better.",
+  "strengthFair": "Good start. Add another angle or its markings.",
+  "strengthStrong": "Strong: Winou can recognise your pet from different angles.",
+  "strengthTips": "Best: the face up close, the whole body from the side, any special markings.",
+  "morePhotosHint": "Add more photos for better matching",
+  "rematchingSince": "The new photos are being compared with every sighting since {date}.",
+  "@rematchingSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

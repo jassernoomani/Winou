@@ -3488,6 +3488,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Careful with links: Winou never asks you to pay or sign in through one.'**
   String get warningLink;
+
+  /// No description provided for @strengthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photos so Winou can recognise your pet.'**
+  String get strengthNone;
+
+  /// No description provided for @strengthWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'1 photo: matching works, more angles make it much better.'**
+  String get strengthWeak;
+
+  /// No description provided for @strengthFair.
+  ///
+  /// In en, this message translates to:
+  /// **'Good start. Add another angle or its markings.'**
+  String get strengthFair;
+
+  /// No description provided for @strengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong: Winou can recognise your pet from different angles.'**
+  String get strengthStrong;
+
+  /// No description provided for @strengthTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Best: the face up close, the whole body from the side, any special markings.'**
+  String get strengthTips;
+
+  /// No description provided for @morePhotosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more photos for better matching'**
+  String get morePhotosHint;
+
+  /// No description provided for @rematchingSince.
+  ///
+  /// In en, this message translates to:
+  /// **'The new photos are being compared with every sighting since {date}.'**
+  String rematchingSince(String date);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -148,6 +148,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   species: _species,
                   onChanged: (p) => setState(() => _photos = p),
                 ),
+              const SizedBox(height: 12),
+              MatchStrength(usablePhotos(ref, _kept.length, _photos)),
               const SizedBox(height: 20),
               FieldLabel(l10n.petName),
               TextFormField(

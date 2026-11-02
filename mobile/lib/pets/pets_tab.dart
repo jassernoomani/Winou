@@ -106,7 +106,15 @@ class _PetCard extends StatelessWidget {
                       )
                     else if (pet.photos.isEmpty)
                       Text(l10n.addPhotoToMarkLost, style: TextStyle(color: context.tokens.muted, fontSize: 12))
-                    else
+                    else ...[
+                      if (pet.photos.length < 3)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            l10n.morePhotosHint,
+                            style: const TextStyle(color: Brand.amber, fontSize: 12, fontWeight: FontWeight.w700),
+                          ),
+                        ),
                       FilledButton.tonalIcon(
                         onPressed: onLost,
                         style: FilledButton.styleFrom(
@@ -117,6 +125,7 @@ class _PetCard extends StatelessWidget {
                         icon: const Icon(LucideIcons.megaphone, size: 18),
                         label: Text(l10n.markLost),
                       ),
+                    ],
                   ],
                 ),
               ),

@@ -35,6 +35,8 @@ String statusLabel(AppLocalizations l10n, ReportStatus status) => switch (status
 String formatDateTime(BuildContext context, DateTime date) =>
     DateFormat.yMMMd(dateLocale(context)).add_Hm().format(date);
 
+String formatDate(BuildContext context, DateTime date) => DateFormat.yMMMd(dateLocale(context)).format(date);
+
 /// The locale for dates. Arabic uses the Maghreb month names (جانفي, أفريل...), as in Tunisia,
 /// with Western digits.
 String dateLocale(BuildContext context) {

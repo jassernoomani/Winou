@@ -116,6 +116,12 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
         ..invalidate(lostReportProvider(id))
         ..invalidate(myLostReportsProvider);
       if (!mounted) return;
+      if (_editing && _photos.isNotEmpty && widget.editing!.status == ReportStatus.open) {
+        // New photos of an open case are matched against everything seen since it went missing
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.rematchingSince(formatDate(context, widget.editing!.lastSeenAt)))),
+        );
+      }
       _editing ? context.pop() : context.pop('/lost/$id'); // a new report opens next
     } catch (e) {
       if (mounted) {
@@ -152,6 +158,8 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
                   species: _species,
                   onChanged: (p) => setState(() => _photos = p),
                 ),
+              const SizedBox(height: 12),
+              MatchStrength(usablePhotos(ref, _kept.length, _photos)),
               const SizedBox(height: 20),
               FieldLabel(l10n.petName),
               TextFormField(

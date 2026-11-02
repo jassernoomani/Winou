@@ -2037,4 +2037,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get warningLink => 'احذر من الروابط: Winou لا يطلب منك أبدًا الدفع أو تسجيل الدخول عبر رابط.';
+
+  @override
+  String get strengthNone => 'أضف صورًا ليتعرّف Winou على حيوانك.';
+
+  @override
+  String get strengthWeak => 'صورة واحدة: المطابقة تعمل، وزوايا أخرى تحسّنها كثيرًا.';
+
+  @override
+  String get strengthFair => 'بداية جيدة. أضف زاوية أخرى أو علاماته المميزة.';
+
+  @override
+  String get strengthStrong => 'ممتاز: يستطيع Winou التعرّف على حيوانك من زوايا مختلفة.';
+
+  @override
+  String get strengthTips => 'الأفضل: الوجه عن قرب، الجسم كاملًا من الجانب، وأي علامات مميزة.';
+
+  @override
+  String get morePhotosHint => 'أضف صورًا أكثر لمطابقة أفضل';
+
+  @override
+  String rematchingSince(String date) {
+    return 'تتم مقارنة الصور الجديدة بكل المشاهدات منذ $date.';
+  }
 }

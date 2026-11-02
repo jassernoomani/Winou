@@ -565,5 +565,12 @@
   "handoverTipProof": "Propriétaire : apportez d'anciennes photos ou le carnet de santé.",
   "handoverTipNoPay": "Ne payez jamais rien avant de voir l'animal. Une récompense se donne à la remise.",
   "warningPayment": "Attention : ne payez jamais avant d'avoir vu votre animal. La récompense se donne à la remise.",
-  "warningLink": "Prudence avec les liens : Winou ne vous demande jamais de payer ou de vous connecter par un lien."
+  "warningLink": "Prudence avec les liens : Winou ne vous demande jamais de payer ou de vous connecter par un lien.",
+  "strengthNone": "Ajoutez des photos pour que Winou reconnaisse votre animal.",
+  "strengthWeak": "1 photo : la recherche fonctionne, d'autres angles l'améliorent beaucoup.",
+  "strengthFair": "Bon début. Ajoutez un autre angle ou ses marques.",
+  "strengthStrong": "Excellent : Winou peut reconnaître votre animal sous plusieurs angles.",
+  "strengthTips": "Idéal : le visage de près, le corps entier de profil, ses marques particulières.",
+  "morePhotosHint": "Ajoutez des photos pour une meilleure recherche",
+  "rematchingSince": "Les nouvelles photos sont comparées à tous les signalements depuis le {date}."
 }

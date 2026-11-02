@@ -1991,4 +1991,27 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get warningLink =>
       'Prudence avec les liens : Winou ne vous demande jamais de payer ou de vous connecter par un lien.';
+
+  @override
+  String get strengthNone => 'Ajoutez des photos pour que Winou reconnaisse votre animal.';
+
+  @override
+  String get strengthWeak => '1 photo : la recherche fonctionne, d\'autres angles l\'améliorent beaucoup.';
+
+  @override
+  String get strengthFair => 'Bon début. Ajoutez un autre angle ou ses marques.';
+
+  @override
+  String get strengthStrong => 'Excellent : Winou peut reconnaître votre animal sous plusieurs angles.';
+
+  @override
+  String get strengthTips => 'Idéal : le visage de près, le corps entier de profil, ses marques particulières.';
+
+  @override
+  String get morePhotosHint => 'Ajoutez des photos pour une meilleure recherche';
+
+  @override
+  String rematchingSince(String date) {
+    return 'Les nouvelles photos sont comparées à tous les signalements depuis le $date.';
+  }
 }
