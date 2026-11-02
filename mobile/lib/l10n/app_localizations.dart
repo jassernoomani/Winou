@@ -63,8 +63,7 @@ import 'app_localizations_fr.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -72,8 +71,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -85,20 +83,15 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[
-    Locale('ar'),
-    Locale('en'),
-    Locale('fr'),
-  ];
+  static const List<Locale> supportedLocales = <Locale>[Locale('ar'), Locale('en'), Locale('fr')];
 
   /// No description provided for @tagline.
   ///
@@ -3411,10 +3404,93 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We can\'t see a cat or dog in this photo. Try a closer one, showing the head.'**
   String get searchNoAnimal;
+
+  /// No description provided for @privateDetailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Private detail (optional)'**
+  String get privateDetailLabel;
+
+  /// No description provided for @privateDetailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A hidden marking, the collar, the microchip number…'**
+  String get privateDetailHint;
+
+  /// No description provided for @privateDetailHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Never shown publicly. Once you confirm a match, the finder sees it, to check it\'s really your pet.'**
+  String get privateDetailHelp;
+
+  /// No description provided for @handoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe handover'**
+  String get handoverTitle;
+
+  /// No description provided for @checkOwnerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check it\'s their pet'**
+  String get checkOwnerTitle;
+
+  /// No description provided for @ownerDetailSays.
+  ///
+  /// In en, this message translates to:
+  /// **'The owner says: “{detail}”'**
+  String ownerDetailSays(String detail);
+
+  /// No description provided for @ownerDetailCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this on the animal before handing it over.'**
+  String get ownerDetailCheck;
+
+  /// No description provided for @ownerDetailAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a detail that isn\'t in the photos: a marking, the collar, the microchip.'**
+  String get ownerDetailAsk;
+
+  /// No description provided for @microchippedTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Microchipped: any vet can read the chip to confirm.'**
+  String get microchippedTip;
+
+  /// No description provided for @handoverTipPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet in a busy public place, in daylight.'**
+  String get handoverTipPublic;
+
+  /// No description provided for @handoverTipProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner: bring older photos or the vet booklet.'**
+  String get handoverTipProof;
+
+  /// No description provided for @handoverTipNoPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Never pay anything before you see the pet. A reward is given at the handover.'**
+  String get handoverTipNoPay;
+
+  /// No description provided for @warningPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Careful: never pay before you see your pet. Rewards are given at the handover.'**
+  String get warningPayment;
+
+  /// No description provided for @warningLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Careful with links: Winou never asks you to pay or sign in through one.'**
+  String get warningLink;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -3423,8 +3499,7 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ar', 'en', 'fr'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['ar', 'en', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

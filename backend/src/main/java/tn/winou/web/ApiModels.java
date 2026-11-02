@@ -132,7 +132,8 @@ public final class ApiModels {
             @NotNull @PastOrPresent OffsetDateTime lastSeenAt,
             @Min(1) @Max(100000) Integer rewardTnd,
             Boolean microchipped,
-            @Pattern(regexp = "^[+0-9 ()-]{6,20}$", message = "a phone number: digits, spaces, + ( ) -") String contactPhone) {}
+            @Pattern(regexp = "^[+0-9 ()-]{6,20}$", message = "a phone number: digits, spaces, + ( ) -") String contactPhone,
+            @Size(max = 300) String privateDetail) {}
 
     /**
      * Null fields are left unchanged. reward_tnd 0 and an empty contact_phone remove them;
@@ -148,7 +149,8 @@ public final class ApiModels {
             @Min(0) @Max(100000) Integer rewardTnd,
             Boolean microchipped,
             @Pattern(regexp = "^([+0-9 ()-]{6,20})?$", message = "a phone number: digits, spaces, + ( ) -")
-            String contactPhone) {}
+            String contactPhone,
+            @Size(max = 300) String privateDetail) {} // empty removes it
 
     public record LostReportOut(
             UUID id,
@@ -165,7 +167,8 @@ public final class ApiModels {
             UUID authorId, // for admins only, null for everyone else
             Integer rewardTnd,
             Boolean microchipped, // null: not said
-            String contactPhone) {}
+            String contactPhone,
+            String privateDetail) {} // the owner's only; null for everyone else
 
     // --- sightings ---
 
@@ -300,7 +303,8 @@ public final class ApiModels {
             boolean hidden,
             OffsetDateTime createdAt,
             String photoUrl,
-            Location location) {}
+            Location location,
+            String warning) {} // for the recipient: "payment" or "link" (chat/ScamCheck), else null
 
     /** A sighting matched to a lost pet, for the owner's map of where it was seen. */
     public record TrailPoint(
@@ -326,7 +330,10 @@ public final class ApiModels {
             String otherAssociation, // the other person's association, if they are one
             MessageOut lastMessage,
             long unread,
-            OffsetDateTime createdAt) {}
+            OffsetDateTime createdAt,
+            boolean matchConfirmed, // the owner said "that's my pet": time to arrange the handover
+            String ownerDetail, // the owner's private detail, for the finder once the match is confirmed
+            Boolean microchipped) {}
 
     // --- notifications ---
 
@@ -371,7 +378,8 @@ public final class ApiModels {
             @Size(max = 2000) String description,
             @Min(1) @Max(100000) Integer rewardTnd,
             @Pattern(regexp = "^([+0-9 ()-]{6,20})?$", message = "a phone number: digits, spaces, + ( ) -")
-            String contactPhone) {}
+            String contactPhone,
+            @Size(max = 300) String privateDetail) {}
 
     // --- alert areas ---
 

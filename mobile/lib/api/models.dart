@@ -249,7 +249,8 @@ class LostReport {
       authorId = json['author_id'],
       rewardTnd = json['reward_tnd'],
       microchipped = json['microchipped'],
-      contactPhone = json['contact_phone'];
+      contactPhone = json['contact_phone'],
+      privateDetail = json['private_detail'];
 
   final String id;
   final String name;
@@ -265,6 +266,7 @@ class LostReport {
   final int? rewardTnd;
   final bool? microchipped; // null: not said
   final String? contactPhone; // the owner chose to show it
+  final String? privateDetail; // the owner's only: shown to a finder once the match is confirmed
 
   bool get isMine => !locationIsApproximate;
 }
@@ -371,7 +373,8 @@ class ChatMessage {
       hidden = json['hidden'] ?? false,
       createdAt = _date(json['created_at']),
       photoPath = json['photo_url'],
-      location = json['location'] == null ? null : _location(json['location']);
+      location = json['location'] == null ? null : _location(json['location']),
+      warning = json['warning'];
 
   final String id;
   final String? body; // null for a photo or a place alone
@@ -380,6 +383,7 @@ class ChatMessage {
   final DateTime createdAt;
   final String? photoPath; // private to the two participants: load it with WinouApi.messagePhoto
   final LatLng? location; // a place shared in the chat
+  final String? warning; // "payment" or "link": the server thinks it may be a scam (only on others' messages)
 }
 
 /// A sighting matched to the owner's lost pet, on the map of where it was seen.
@@ -418,7 +422,10 @@ class Conversation {
       otherAssociation = json['other_association'],
       lastMessage = json['last_message'] == null ? null : ChatMessage.fromJson(json['last_message']),
       unread = json['unread'],
-      createdAt = _date(json['created_at']);
+      createdAt = _date(json['created_at']),
+      matchConfirmed = json['match_confirmed'] ?? false,
+      ownerDetail = json['owner_detail'],
+      microchipped = json['microchipped'];
 
   final String id;
   final String lostReportId;
@@ -432,6 +439,9 @@ class Conversation {
   final ChatMessage? lastMessage;
   final int unread;
   final DateTime createdAt;
+  final bool matchConfirmed; // the owner said "that's my pet": time to arrange the handover
+  final String? ownerDetail; // for the finder, once confirmed: the owner's private detail, to check on the animal
+  final bool? microchipped;
 
   bool get caseClosed => reportStatus != ReportStatus.open;
 }

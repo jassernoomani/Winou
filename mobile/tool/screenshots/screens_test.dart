@@ -466,6 +466,55 @@ final _scenes = <(String, Widget Function(), FakeApi Function(), Act?)>[
   ('80_home_search', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'red collar')),
   ('81_home_no_results', () => const LostFeedScreen(), FakeApi.new, (tester) => _search(tester, 'zebra')),
   ('82_home_sort', () => const LostFeedScreen(), FakeApi.new, (tester) => _tap(tester, find.byTooltip(_l10n.sortBy))),
+  (
+    '88_chat_finder_check',
+    () => const ChatScreen(id: 'c1'),
+    () => FakeApi(
+      conversations: [
+        conversationJson(
+          other: 'Amira',
+          finder: true,
+          confirmed: true,
+          ownerDetail: 'A small white star under her chin, and a blue collar with a bell',
+          microchipped: true,
+        ),
+      ],
+      messages: [
+        messageJson(
+          '1',
+          'Hello! I think she is Luna, she is safe with me.',
+          mine: true,
+          ago: const Duration(minutes: 40),
+        ),
+        messageJson(
+          '2',
+          "That's her!! Thank you so much. Can we meet today?",
+          mine: false,
+          ago: const Duration(minutes: 38),
+        ),
+      ],
+    ),
+    null,
+  ),
+  (
+    '89_chat_scam_warning',
+    () => const ChatScreen(id: 'c1'),
+    () => FakeApi(
+      conversations: [conversationJson(confirmed: true)],
+      messages: [
+        messageJson('1', 'I have your cat, she is fine.', mine: false, ago: const Duration(minutes: 20)),
+        messageJson('2', 'Oh thank you! Where are you?', mine: true, ago: const Duration(minutes: 19)),
+        messageJson(
+          '3',
+          'Send 150 dt on D17 first for her food, then I bring her.',
+          mine: false,
+          ago: const Duration(minutes: 18),
+          warning: 'payment',
+        ),
+      ],
+    ),
+    null,
+  ),
   ('86_search_by_photo', () => const PhotoSearchScreen(), _searchApi, _searchWithCamera),
   ('87_search_no_results', () => const PhotoSearchScreen(), () => FakeApi(lost: []), _searchWithCamera),
   (

@@ -229,6 +229,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
               child: Note(l10n.caseClosedChat(conversation.petName), tone: Tone.found, icon: LucideIcons.house),
             ),
+          if (conversation != null && conversation.matchConfirmed && !conversation.caseClosed)
+            Padding(padding: const EdgeInsets.fromLTRB(12, 4, 12, 0), child: HandoverCard(conversation)),
           Expanded(child: _body(context)),
           _Composer(controller: _input, sending: _sending, onSend: _send, onAttach: _attach),
         ],
@@ -349,7 +351,101 @@ class _Bubble extends StatelessWidget {
         ),
       );
     }
-    return onReport == null ? bubble : GestureDetector(onLongPress: onReport, child: bubble);
+    final shown = onReport == null ? bubble : GestureDetector(onLongPress: onReport, child: bubble);
+    final warning = switch (message.warning) {
+      'payment' => context.l10n.warningPayment,
+      'link' => context.l10n.warningLink,
+      _ => null,
+    };
+    if (warning == null || mine) return shown;
+    // A scam pattern in the other person's message: say so right under it
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        shown,
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Brand.amber.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Brand.amber.withValues(alpha: 0.6)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
+              children: [
+                const Icon(LucideIcons.shieldAlert, size: 16, color: Brand.amber),
+                Expanded(child: Text(warning, style: const TextStyle(fontSize: 12.5, height: 1.35))),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Once the owner confirmed the match. The finder: the owner's private detail to check on the
+/// animal, and the handover tips (open). The owner: the tips (closed, to keep the chat in view).
+class HandoverCard extends StatelessWidget {
+  const HandoverCard(this.conversation, {super.key});
+
+  final Conversation conversation;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final tokens = context.tokens;
+    final finder = !conversation.isOwner;
+    Widget line(IconData icon, String text, {bool strong = false}) => Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10,
+        children: [
+          Icon(icon, size: 18, color: tokens.accent),
+          Expanded(
+            child: Text(
+              text,
+              textDirection: textDirectionOf(text),
+              style: TextStyle(fontSize: 14, height: 1.35, fontWeight: strong ? FontWeight.w800 : null),
+            ),
+          ),
+        ],
+      ),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(color: tokens.card, borderRadius: BorderRadius.circular(20), boxShadow: cardShadow),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: finder,
+          shape: const RoundedRectangleBorder(),
+          leading: Icon(finder ? LucideIcons.shieldCheck : LucideIcons.handshake, color: tokens.accent),
+          title: Text(
+            finder ? l10n.checkOwnerTitle : l10n.handoverTitle,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          children: [
+            if (finder) ...[
+              if (conversation.ownerDetail case final detail?) ...[
+                line(LucideIcons.lock, l10n.ownerDetailSays(detail), strong: true),
+                line(LucideIcons.scanEye, l10n.ownerDetailCheck),
+              ] else
+                line(LucideIcons.messageCircleQuestion, l10n.ownerDetailAsk),
+              if (conversation.microchipped == true) line(LucideIcons.cpu, l10n.microchippedTip),
+            ],
+            line(LucideIcons.sun, l10n.handoverTipPublic),
+            line(LucideIcons.images, l10n.handoverTipProof),
+            line(LucideIcons.banknote, l10n.handoverTipNoPay),
+          ],
+        ),
+      ),
+    );
   }
 }
 

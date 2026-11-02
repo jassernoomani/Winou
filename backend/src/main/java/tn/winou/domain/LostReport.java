@@ -45,6 +45,7 @@ public class LostReport extends BaseEntity {
     private Integer rewardTnd;
     private Boolean microchipped;
     private String contactPhone; // shown to people who see the report, if the owner gave one
+    private String privateDetail; // never public: the owner, and a finder holding the animal (see V18)
 
     public GeoPoint getLastSeen() {
         return GeoPoint.parse(lastSeenPoint);

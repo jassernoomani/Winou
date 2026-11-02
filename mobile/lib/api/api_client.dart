@@ -194,6 +194,7 @@ class WinouApi {
     String? description,
     int? rewardTnd,
     String? contactPhone,
+    String? privateDetail,
   }) => _call(
     () => _dio.post(
       '/pets/$id/lost',
@@ -203,6 +204,7 @@ class WinouApi {
         if (description != null && description.isNotEmpty) 'description': description,
         'reward_tnd': ?rewardTnd,
         if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
+        if (privateDetail != null && privateDetail.isNotEmpty) 'private_detail': privateDetail,
       },
     ),
     (data) => LostReport.fromJson(data),
@@ -271,6 +273,7 @@ class WinouApi {
     int? rewardTnd,
     bool? microchipped,
     String? contactPhone,
+    String? privateDetail,
   }) => _call(
     () => _dio.post(
       '/lost-reports',
@@ -283,12 +286,14 @@ class WinouApi {
         'reward_tnd': ?rewardTnd,
         'microchipped': ?microchipped,
         if (contactPhone != null && contactPhone.isNotEmpty) 'contact_phone': contactPhone,
+        if (privateDetail != null && privateDetail.isNotEmpty) 'private_detail': privateDetail,
       },
     ),
     (data) => LostReport.fromJson(data),
   );
 
-  /// Null fields are left as they are; [rewardTnd] 0 and an empty [contactPhone] remove them.
+  /// Null fields are left as they are; [rewardTnd] 0 and an empty [contactPhone] or [privateDetail]
+  /// remove them.
   Future<LostReport> updateLostReport(
     String id, {
     String? name,
@@ -299,6 +304,7 @@ class WinouApi {
     int? rewardTnd,
     bool? microchipped,
     String? contactPhone,
+    String? privateDetail,
   }) => _call(
     () => _dio.patch(
       '/lost-reports/$id',
@@ -311,6 +317,7 @@ class WinouApi {
         'reward_tnd': ?rewardTnd,
         'microchipped': ?microchipped,
         'contact_phone': ?contactPhone,
+        'private_detail': ?privateDetail,
       },
     ),
     (data) => LostReport.fromJson(data),

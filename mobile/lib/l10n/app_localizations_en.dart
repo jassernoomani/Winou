@@ -49,12 +49,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorNetwork => 'Cannot reach the server. Check your connection.';
 
   @override
-  String get errorRateLimited =>
-      'You\'ve posted a lot recently. Try again later.';
+  String get errorRateLimited => 'You\'ve posted a lot recently. Try again later.';
 
   @override
-  String get errorInvalidImage =>
-      'This photo can\'t be read. Use a JPEG, PNG, WebP or HEIC image.';
+  String get errorInvalidImage => 'This photo can\'t be read. Use a JPEG, PNG, WebP or HEIC image.';
 
   @override
   String get errorImageTooLarge => 'This photo is too large.';
@@ -173,8 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get photoHint =>
-      'Get close and show the face: it helps us recognise the animal.';
+  String get photoHint => 'Get close and show the face: it helps us recognise the animal.';
 
   @override
   String get condition => 'Condition';
@@ -220,8 +217,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noAnimalTitle => 'No animal found';
 
   @override
-  String get noAnimalBody =>
-      'We couldn\'t find a cat or dog in this photo. A closer photo of the head works best.';
+  String get noAnimalBody => 'We couldn\'t find a cat or dog in this photo. A closer photo of the head works best.';
 
   @override
   String get keepPhoto => 'Keep it';
@@ -230,8 +226,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retakePhoto => 'Retake';
 
   @override
-  String get lostPhotosHint =>
-      'Add 1–5 clear photos, ideally of the face from different angles.';
+  String get lostPhotosHint => 'Add 1–5 clear photos, ideally of the face from different angles.';
 
   @override
   String get petName => 'Pet\'s name';
@@ -249,8 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastSeenWhere => 'Where was it last seen?';
 
   @override
-  String get locationPrivacyNote =>
-      'Others only see an area of about 300 m around it';
+  String get locationPrivacyNote => 'Others only see an area of about 300 m around it';
 
   @override
   String get publishReport => 'Publish report';
@@ -290,8 +284,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get approximateArea =>
-      'Approximate area, to protect the owner\'s privacy.';
+  String get approximateArea => 'Approximate area, to protect the owner\'s privacy.';
 
   @override
   String get photoProcessing => 'Checking…';
@@ -315,8 +308,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabMySightings => 'My sightings';
 
   @override
-  String get noMatches =>
-      'No possible matches yet. We check every new sighting nearby.';
+  String get noMatches => 'No possible matches yet. We check every new sighting nearby.';
 
   @override
   String get noLostReports => 'You haven\'t reported a lost pet.';
@@ -392,8 +384,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMissingPets => 'No missing pets reported. Good news!';
 
   @override
-  String get noMissingPetsNearby =>
-      'No missing pets near you. Try “Everywhere”.';
+  String get noMissingPetsNearby => 'No missing pets near you. Try “Everywhere”.';
 
   @override
   String kmAway(String km) {
@@ -479,12 +470,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get send => 'Send';
 
   @override
-  String get noMessagesYet =>
-      'No messages yet. Say hello and explain how you can help.';
+  String get noMessagesYet => 'No messages yet. Say hello and explain how you can help.';
 
   @override
-  String get chatPrivacy =>
-      'Only your display name is shown. Never share your address before you\'re sure.';
+  String get chatPrivacy => 'Only your display name is shown. Never share your address before you\'re sure.';
 
   @override
   String caseClosedChat(String name) {
@@ -536,12 +525,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String daysAgo(int n) {
-    String _temp0 = intl.Intl.pluralLogic(
-      n,
-      locale: localeName,
-      other: '$n days ago',
-      one: 'yesterday',
-    );
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: '$n days ago', one: 'yesterday');
     return '$_temp0';
   }
 
@@ -608,8 +592,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get strayGone => 'Not seen anymore';
 
   @override
-  String get strayAroundHelp =>
-      'Seen it again? Tap “Still around”: it keeps the animal on the map.';
+  String get strayAroundHelp => 'Seen it again? Tap “Still around”: it keeps the animal on the map.';
 
   @override
   String get strayUpdated => 'Thanks for the update!';
@@ -620,12 +603,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get injuredBanner =>
-      'This animal is injured. If you\'re nearby, see if you can help.';
+  String get injuredBanner => 'This animal is injured. If you\'re nearby, see if you can help.';
 
   @override
-  String get needsHelpBanner =>
-      'This animal needs help. If you\'re nearby, see if you can help.';
+  String get needsHelpBanner => 'This animal needs help. If you\'re nearby, see if you can help.';
 
   @override
   String get report => 'Report';
@@ -661,8 +642,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportHiddenNow => 'Thanks. It\'s hidden while we look at it.';
 
   @override
-  String get hiddenNotice =>
-      'People reported this, so others can\'t see it until we review it.';
+  String get hiddenNotice => 'People reported this, so others can\'t see it until we review it.';
 
   @override
   String get messageHidden => 'Hidden after a report';
@@ -684,8 +664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contact => 'Phone, website or social page';
 
   @override
-  String get contactHelp =>
-      'So we can check who you are. Never shown to others.';
+  String get contactHelp => 'So we can check who you are. Never shown to others.';
 
   @override
   String get associationNote => 'Anything else? (optional)';
@@ -710,8 +689,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get requestRejected =>
-      'We couldn\'t verify your last request. You can send a new one with more details.';
+  String get requestRejected => 'We couldn\'t verify your last request. You can send a new one with more details.';
 
   @override
   String get verifiedAssociation => 'Verified association';
@@ -742,12 +720,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reportsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count reports',
-      one: '1 report',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count reports', one: '1 report');
     return '$_temp0';
   }
 
@@ -782,8 +755,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serverOk => 'Connected';
 
   @override
-  String get serverUnreachable =>
-      'Can\'t reach it. Same network? Is the laptop\'s firewall open?';
+  String get serverUnreachable => 'Can\'t reach it. Same network? Is the laptop\'s firewall open?';
 
   @override
   String get save => 'Save';
@@ -866,12 +838,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String daysCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count days',
-      one: '1 day',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count days', one: '1 day');
     return '$_temp0';
   }
 
@@ -1086,8 +1053,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Lost reports, sightings and pets back home per week. Touch and drag to see a week\'s numbers.';
 
   @override
-  String get errorTooManyAttempts =>
-      'Too many attempts. Wait a few minutes and try again.';
+  String get errorTooManyAttempts => 'Too many attempts. Wait a few minutes and try again.';
 
   @override
   String get errorWrongPassword => 'The password is wrong.';
@@ -1126,19 +1092,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newPassword => 'New password';
 
   @override
-  String get passwordChanged =>
-      'Password changed. Your other phones were signed out.';
+  String get passwordChanged => 'Password changed. Your other phones were signed out.';
 
   @override
   String get signOutEverywhere => 'Sign out of all phones';
 
   @override
-  String get signOutEverywhereHelp =>
-      'If you lost a phone, or used someone else\'s';
+  String get signOutEverywhereHelp => 'If you lost a phone, or used someone else\'s';
 
   @override
-  String get signOutEverywhereQuestion =>
-      'Sign out of Winou on every phone, this one included?';
+  String get signOutEverywhereQuestion => 'Sign out of Winou on every phone, this one included?';
 
   @override
   String get deleteAccount => 'Delete account';
@@ -1172,12 +1135,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setPassword => 'Set a password';
 
   @override
-  String get setPasswordHelp =>
-      'To sign in with your email too, not only with Google';
+  String get setPasswordHelp => 'To sign in with your email too, not only with Google';
 
   @override
-  String get errorGoogleDisabled =>
-      'Google sign-in isn\'t available on this server.';
+  String get errorGoogleDisabled => 'Google sign-in isn\'t available on this server.';
 
   @override
   String get errorGoogleNoEmail => 'This Google account has no verified email.';
@@ -1192,8 +1153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordTitle => 'Choose a new password';
 
   @override
-  String get forgotPasswordHelp =>
-      'Enter your email: we\'ll send you a 6-digit code.';
+  String get forgotPasswordHelp => 'Enter your email: we\'ll send you a 6-digit code.';
 
   @override
   String get sendCode => 'Send the code';
@@ -1225,8 +1185,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmEmail => 'Confirm your email';
 
   @override
-  String get confirmEmailHelp =>
-      'So you can get a new password if you forget it';
+  String get confirmEmailHelp => 'So you can get a new password if you forget it';
 
   @override
   String get emailConfirmed => 'Email confirmed.';
@@ -1241,12 +1200,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorWrongCode => 'This code isn\'t right.';
 
   @override
-  String get errorCodeExpired =>
-      'This code expired or was tried too many times. Ask for a new one.';
+  String get errorCodeExpired => 'This code expired or was tried too many times. Ask for a new one.';
 
   @override
-  String get errorTooManyCodes =>
-      'We already sent several codes. Check your spam, or try again in an hour.';
+  String get errorTooManyCodes => 'We already sent several codes. Check your spam, or try again in an hour.';
 
   @override
   String get sharePosterButton => 'Share a poster';
@@ -1298,8 +1255,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posterSeenIt => 'Seen this pet?';
 
   @override
-  String get posterScan =>
-      'Scan the code to see the photos and tell the owner, for free.';
+  String get posterScan => 'Scan the code to see the photos and tell the owner, for free.';
 
   @override
   String sightingAboutPet(String name) {
@@ -1312,15 +1268,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get finderMatchBody =>
-      'They recognised your pet from your report. Compare the photos, then write to them.';
+  String get finderMatchBody => 'They recognised your pet from your report. Compare the photos, then write to them.';
 
   @override
   String get seenByFinder => 'Seen by someone';
 
   @override
-  String get finderMatchTip =>
-      'Look closely at markings and features before writing to them: people can be mistaken.';
+  String get finderMatchTip => 'Look closely at markings and features before writing to them: people can be mistaken.';
 
   @override
   String get tabHome => 'Home';
@@ -1388,22 +1342,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeStraysTitle => 'Help street animals';
 
   @override
-  String get welcomeStraysBody =>
-      'Put strays on the map, say when one is hurt, and associations nearby are alerted.';
+  String get welcomeStraysBody => 'Put strays on the map, say when one is hurt, and associations nearby are alerted.';
 
   @override
   String get welcomePermissionsTitle => 'Two things that help';
 
   @override
-  String get welcomePermissionsBody =>
-      'Winou works without them, but works better with them.';
+  String get welcomePermissionsBody => 'Winou works without them, but works better with them.';
 
   @override
   String get permissionNotificationsTitle => 'Notifications';
 
   @override
-  String get permissionNotificationsBody =>
-      'Hear at once when someone may have seen your pet, or writes to you.';
+  String get permissionNotificationsBody => 'Hear at once when someone may have seen your pet, or writes to you.';
 
   @override
   String get permissionLocationTitle => 'Location';
@@ -1463,8 +1414,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reunionBody =>
-      'Thank you for not giving up. Everyone who helped has been told the good news.';
+  String get reunionBody => 'Thank you for not giving up. Everyone who helped has been told the good news.';
 
   @override
   String reunionShareText(String name, String species) {
@@ -1509,8 +1459,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alertAnimalsInNeed => 'Animals in need';
 
   @override
-  String get alertAnimalsInNeedHelp =>
-      'Someone reports an injured animal, or one in need of help';
+  String get alertAnimalsInNeedHelp => 'Someone reports an injured animal, or one in need of help';
 
   @override
   String get turnOnAlerts => 'Turn on alerts';
@@ -1522,8 +1471,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get turnOffAlerts => 'Turn off alerts';
 
   @override
-  String get alertsSaved =>
-      'Alerts saved. We\'ll tell you what happens nearby.';
+  String get alertsSaved => 'Alerts saved. We\'ll tell you what happens nearby.';
 
   @override
   String get alertsOff => 'Off';
@@ -1573,16 +1521,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pushHelpTitle => 'An animal needs help near you';
 
   @override
-  String get pushHelpInjuredBody =>
-      'Someone reported an injured animal nearby. Tap to see where.';
+  String get pushHelpInjuredBody => 'Someone reported an injured animal nearby. Tap to see where.';
 
   @override
-  String get pushHelpNeedsHelpBody =>
-      'Someone reported an animal in need of help nearby. Tap to see where.';
+  String get pushHelpNeedsHelpBody => 'Someone reported an animal in need of help nearby. Tap to see where.';
 
   @override
-  String get pushAssociationApprovedTitle =>
-      'You are now a verified association';
+  String get pushAssociationApprovedTitle => 'You are now a verified association';
 
   @override
   String pushAssociationApprovedBody(String a) {
@@ -1619,16 +1564,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pushAdminHiddenTitle => 'Hidden after reports';
 
   @override
-  String get pushAdminHiddenLostBody =>
-      'A lost pet report was hidden. Tap to review it.';
+  String get pushAdminHiddenLostBody => 'A lost pet report was hidden. Tap to review it.';
 
   @override
-  String get pushAdminHiddenSightingBody =>
-      'A sighting was hidden. Tap to review it.';
+  String get pushAdminHiddenSightingBody => 'A sighting was hidden. Tap to review it.';
 
   @override
-  String get pushAdminHiddenMessageBody =>
-      'A chat message was hidden. Tap to review it.';
+  String get pushAdminHiddenMessageBody => 'A chat message was hidden. Tap to review it.';
 
   @override
   String get pushAdminRequestTitle => 'New association request';
@@ -1642,8 +1584,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
-  String get noNotifications =>
-      'Nothing yet. Matches, messages and alerts near you will show up here.';
+  String get noNotifications => 'Nothing yet. Matches, messages and alerts near you will show up here.';
 
   @override
   String get listOnMap => 'List what\'s here';
@@ -1661,8 +1602,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get nothingHere =>
-      'Nothing in this part of the map. Move or zoom out.';
+  String get nothingHere => 'Nothing in this part of the map. Move or zoom out.';
 
   @override
   String get editReport => 'Edit';
@@ -1770,8 +1710,7 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          'Its profile and $count photos make the report. Just say when and where.',
+      other: 'Its profile and $count photos make the report. Just say when and where.',
       one: 'Its profile and photo make the report. Just say when and where.',
     );
     return '$_temp0';
@@ -1781,15 +1720,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inCare => 'I have it with me';
 
   @override
-  String get inCareHelp =>
-      'You took it in and keep it safe until its owner is found';
+  String get inCareHelp => 'You took it in and keep it safe until its owner is found';
 
   @override
   String get keptSafe => 'Kept safe';
 
   @override
-  String get keptSafeNote =>
-      'The person who found it has it with them and is keeping it safe.';
+  String get keptSafeNote => 'The person who found it has it with them and is keeping it safe.';
 
   @override
   String get pushMessagePhotoBody => '📷 Sent a photo';
@@ -1871,8 +1808,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careCardTitle => 'Care card';
 
   @override
-  String get careCardIntro =>
-      'What the neighbourhood knows about this animal. Anyone can update it.';
+  String get careCardIntro => 'What the neighbourhood knows about this animal. Anyone can update it.';
 
   @override
   String get careEmpty => 'Nothing known yet. Add what you know.';
@@ -1923,8 +1859,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get photoChecking => 'Checking…';
 
   @override
-  String get photoNoAnimalHelp =>
-      'We can\'t see a cat or dog in this photo. Tap to retake it.';
+  String get photoNoAnimalHelp => 'We can\'t see a cat or dog in this photo. Tap to retake it.';
 
   @override
   String photoLooksLike(String species) {
@@ -1991,10 +1926,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchNearPicked => 'Around the place you chose';
 
   @override
-  String get searchNeedsPlace =>
-      'Where did you see it? We search the lost pets around that place.';
+  String get searchNeedsPlace => 'Where did you see it? We search the lost pets around that place.';
 
   @override
-  String get searchNoAnimal =>
-      'We can\'t see a cat or dog in this photo. Try a closer one, showing the head.';
+  String get searchNoAnimal => 'We can\'t see a cat or dog in this photo. Try a closer one, showing the head.';
+
+  @override
+  String get privateDetailLabel => 'Private detail (optional)';
+
+  @override
+  String get privateDetailHint => 'A hidden marking, the collar, the microchip number…';
+
+  @override
+  String get privateDetailHelp =>
+      'Never shown publicly. Once you confirm a match, the finder sees it, to check it\'s really your pet.';
+
+  @override
+  String get handoverTitle => 'Safe handover';
+
+  @override
+  String get checkOwnerTitle => 'Check it\'s their pet';
+
+  @override
+  String ownerDetailSays(String detail) {
+    return 'The owner says: “$detail”';
+  }
+
+  @override
+  String get ownerDetailCheck => 'Check this on the animal before handing it over.';
+
+  @override
+  String get ownerDetailAsk => 'Ask for a detail that isn\'t in the photos: a marking, the collar, the microchip.';
+
+  @override
+  String get microchippedTip => 'Microchipped: any vet can read the chip to confirm.';
+
+  @override
+  String get handoverTipPublic => 'Meet in a busy public place, in daylight.';
+
+  @override
+  String get handoverTipProof => 'Owner: bring older photos or the vet booklet.';
+
+  @override
+  String get handoverTipNoPay => 'Never pay anything before you see the pet. A reward is given at the handover.';
+
+  @override
+  String get warningPayment => 'Careful: never pay before you see your pet. Rewards are given at the handover.';
+
+  @override
+  String get warningLink => 'Careful with links: Winou never asks you to pay or sign in through one.';
 }

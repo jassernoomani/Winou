@@ -1,18 +1,19 @@
 // Winou CI/CD, run by the Jenkins in deploy/jenkins/ on the home server for every push to main:
-// tests -> SonarCloud analysis and quality gate -> redeploy the server -> new APK if the app changed.
+// tests -> SonarCloud analysis and quality gate -> redeploy the server. The APK is built on request
+// (Build with Parameters -> FORCE_APK): it's the heaviest step for the laptop that also runs the server.
 pipeline {
     agent any
 
     options {
         timestamps()
-        timeout(time: 60, unit: 'MINUTES')
+        timeout(time: 150, unit: 'MINUTES')
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '30'))
     }
 
     parameters {
         booleanParam(name: 'FORCE_APK', defaultValue: false,
-                description: 'Build and publish the APK even if mobile/ did not change')
+                description: 'Build the release APK and publish it at /download/winou.apk')
         booleanParam(name: 'SKIP_DEPLOY', defaultValue: false,
                 description: 'Only test and analyse; leave the server and the APK alone')
     }
@@ -101,11 +102,12 @@ pipeline {
             when {
                 allOf {
                     expression { !params.SKIP_DEPLOY }
-                    anyOf {
-                        expression { params.FORCE_APK }
-                        changeset 'mobile/**'
-                    }
+                    expression { params.FORCE_APK }
                 }
+            }
+            options {
+                // The first run downloads Gradle, its plugins and the Android SDK
+                timeout(time: 90, unit: 'MINUTES')
             }
             steps {
                 sh 'bash deploy/jenkins/build-apk.sh'

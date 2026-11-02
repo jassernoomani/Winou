@@ -10,8 +10,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get tagline =>
-      'Retrouver les animaux perdus, aider les animaux des rues';
+  String get tagline => 'Retrouver les animaux perdus, aider les animaux des rues';
 
   @override
   String get email => 'E-mail';
@@ -47,16 +46,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordTooShort => 'Au moins 8 caractères';
 
   @override
-  String get errorNetwork =>
-      'Impossible de joindre le serveur. Vérifiez votre connexion.';
+  String get errorNetwork => 'Impossible de joindre le serveur. Vérifiez votre connexion.';
 
   @override
-  String get errorRateLimited =>
-      'Vous avez beaucoup publié récemment. Réessayez plus tard.';
+  String get errorRateLimited => 'Vous avez beaucoup publié récemment. Réessayez plus tard.';
 
   @override
-  String get errorInvalidImage =>
-      'Cette photo est illisible. Utilisez une image JPEG, PNG, WebP ou HEIC.';
+  String get errorInvalidImage => 'Cette photo est illisible. Utilisez une image JPEG, PNG, WebP ou HEIC.';
 
   @override
   String get errorImageTooLarge => 'Cette photo est trop grande.';
@@ -175,8 +171,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get photoHint =>
-      'Approchez-vous et montrez la tête : cela nous aide à reconnaître l\'animal.';
+  String get photoHint => 'Approchez-vous et montrez la tête : cela nous aide à reconnaître l\'animal.';
 
   @override
   String get condition => 'État';
@@ -194,8 +189,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get locating => 'Localisation en cours…';
 
   @override
-  String get locationMissing =>
-      'Pas encore de position : choisissez-la sur la carte';
+  String get locationMissing => 'Pas encore de position : choisissez-la sur la carte';
 
   @override
   String locationFromGps(int meters) {
@@ -233,8 +227,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retakePhoto => 'Reprendre';
 
   @override
-  String get lostPhotosHint =>
-      'Ajoutez 1 à 5 photos nettes, idéalement de la tête sous différents angles.';
+  String get lostPhotosHint => 'Ajoutez 1 à 5 photos nettes, idéalement de la tête sous différents angles.';
 
   @override
   String get petName => 'Nom de l\'animal';
@@ -252,8 +245,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get lastSeenWhere => 'Où a-t-il été vu pour la dernière fois ?';
 
   @override
-  String get locationPrivacyNote =>
-      'Les autres ne voient qu\'une zone d\'environ 300 m autour';
+  String get locationPrivacyNote => 'Les autres ne voient qu\'une zone d\'environ 300 m autour';
 
   @override
   String get publishReport => 'Publier l\'avis';
@@ -262,8 +254,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pickLocationTitle => 'Choisir le lieu';
 
   @override
-  String get pickLocationHint =>
-      'Touchez la carte à l\'endroit où se trouvait l\'animal.';
+  String get pickLocationHint => 'Touchez la carte à l\'endroit où se trouvait l\'animal.';
 
   @override
   String get confirmLocation => 'Utiliser ce lieu';
@@ -281,8 +272,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteReportQuestion => 'Supprimer cet avis et ses photos ?';
 
   @override
-  String get deleteSightingQuestion =>
-      'Supprimer ce signalement et ses photos ?';
+  String get deleteSightingQuestion => 'Supprimer ce signalement et ses photos ?';
 
   @override
   String lastSeenOn(String date) {
@@ -295,8 +285,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get approximateArea =>
-      'Zone approximative, pour protéger la vie privée du propriétaire.';
+  String get approximateArea => 'Zone approximative, pour protéger la vie privée du propriétaire.';
 
   @override
   String get photoProcessing => 'Analyse…';
@@ -397,8 +386,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noMissingPets => 'Aucun animal perdu signalé. Bonne nouvelle !';
 
   @override
-  String get noMissingPetsNearby =>
-      'Aucun animal perdu près de vous. Essayez « Partout ».';
+  String get noMissingPetsNearby => 'Aucun animal perdu près de vous. Essayez « Partout ».';
 
   @override
   String kmAway(String km) {
@@ -406,8 +394,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get locationOffForNearby =>
-      'Activez la localisation pour voir les animaux près de vous.';
+  String get locationOffForNearby => 'Activez la localisation pour voir les animaux près de vous.';
 
   @override
   String matchNotification(String name) {
@@ -485,12 +472,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get send => 'Envoyer';
 
   @override
-  String get noMessagesYet =>
-      'Aucun message. Dites bonjour et expliquez comment vous pouvez aider.';
+  String get noMessagesYet => 'Aucun message. Dites bonjour et expliquez comment vous pouvez aider.';
 
   @override
-  String get chatPrivacy =>
-      'Seul votre nom affiché est visible. Ne donnez pas votre adresse avant d\'être sûr.';
+  String get chatPrivacy => 'Seul votre nom affiché est visible. Ne donnez pas votre adresse avant d\'être sûr.';
 
   @override
   String caseClosedChat(String name) {
@@ -542,12 +527,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String daysAgo(int n) {
-    String _temp0 = intl.Intl.pluralLogic(
-      n,
-      locale: localeName,
-      other: 'il y a $n jours',
-      one: 'hier',
-    );
+    String _temp0 = intl.Intl.pluralLogic(n, locale: localeName, other: 'il y a $n jours', one: 'hier');
     return '$_temp0';
   }
 
@@ -565,8 +545,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get possibleVisualMatch => 'Correspondance visuelle possible';
 
   @override
-  String get notConfirmedIdentity =>
-      'Une ressemblance, pas une identité confirmée.';
+  String get notConfirmedIdentity => 'Une ressemblance, pas une identité confirmée.';
 
   @override
   String get addClearPhoto => 'Ajouter une photo nette';
@@ -615,8 +594,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get strayGone => 'Plus revu';
 
   @override
-  String get strayAroundHelp =>
-      'Vous l\'avez revu ? Touchez « Toujours là » : il reste sur la carte.';
+  String get strayAroundHelp => 'Vous l\'avez revu ? Touchez « Toujours là » : il reste sur la carte.';
 
   @override
   String get strayUpdated => 'Merci pour la mise à jour !';
@@ -627,12 +605,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get injuredBanner =>
-      'Cet animal est blessé. Si vous êtes à proximité, voyez si vous pouvez aider.';
+  String get injuredBanner => 'Cet animal est blessé. Si vous êtes à proximité, voyez si vous pouvez aider.';
 
   @override
-  String get needsHelpBanner =>
-      'Cet animal a besoin d\'aide. Si vous êtes à proximité, voyez si vous pouvez aider.';
+  String get needsHelpBanner => 'Cet animal a besoin d\'aide. Si vous êtes à proximité, voyez si vous pouvez aider.';
 
   @override
   String get report => 'Signaler';
@@ -665,12 +641,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportThanks => 'Merci. Nous allons vérifier.';
 
   @override
-  String get reportHiddenNow =>
-      'Merci. C\'est masqué le temps que nous vérifions.';
+  String get reportHiddenNow => 'Merci. C\'est masqué le temps que nous vérifions.';
 
   @override
-  String get hiddenNotice =>
-      'Des personnes l\'ont signalé : les autres ne le voient plus jusqu\'à notre vérification.';
+  String get hiddenNotice => 'Des personnes l\'ont signalé : les autres ne le voient plus jusqu\'à notre vérification.';
 
   @override
   String get messageHidden => 'Masqué après un signalement';
@@ -692,8 +666,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contact => 'Téléphone, site web ou page sociale';
 
   @override
-  String get contactHelp =>
-      'Pour vérifier qui vous êtes. Jamais montré aux autres.';
+  String get contactHelp => 'Pour vérifier qui vous êtes. Jamais montré aux autres.';
 
   @override
   String get associationNote => 'Autre chose ? (facultatif)';
@@ -774,8 +747,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get helpNotification => 'Un animal a besoin d\'aide près de vous';
 
   @override
-  String get associationNotification =>
-      'Votre demande d\'association a reçu une réponse';
+  String get associationNotification => 'Votre demande d\'association a reçu une réponse';
 
   @override
   String get serverAddress => 'Adresse du serveur';
@@ -791,8 +763,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get serverOk => 'Connecté';
 
   @override
-  String get serverUnreachable =>
-      'Injoignable. Même réseau ? Le pare-feu de l\'ordinateur est-il ouvert ?';
+  String get serverUnreachable => 'Injoignable. Même réseau ? Le pare-feu de l\'ordinateur est-il ouvert ?';
 
   @override
   String get save => 'Enregistrer';
@@ -875,12 +846,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String daysCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count jours',
-      one: '1 jour',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count jours', one: '1 jour');
     return '$_temp0';
   }
 
@@ -1095,8 +1061,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Animaux perdus, vus et rentrés par semaine. Touchez et glissez pour voir les chiffres d\'une semaine.';
 
   @override
-  String get errorTooManyAttempts =>
-      'Trop de tentatives. Attendez quelques minutes et réessayez.';
+  String get errorTooManyAttempts => 'Trop de tentatives. Attendez quelques minutes et réessayez.';
 
   @override
   String get errorWrongPassword => 'Le mot de passe est incorrect.';
@@ -1135,26 +1100,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newPassword => 'Nouveau mot de passe';
 
   @override
-  String get passwordChanged =>
-      'Mot de passe changé. Vos autres téléphones ont été déconnectés.';
+  String get passwordChanged => 'Mot de passe changé. Vos autres téléphones ont été déconnectés.';
 
   @override
   String get signOutEverywhere => 'Se déconnecter de tous les téléphones';
 
   @override
-  String get signOutEverywhereHelp =>
-      'Si vous avez perdu un téléphone, ou utilisé celui de quelqu\'un d\'autre';
+  String get signOutEverywhereHelp => 'Si vous avez perdu un téléphone, ou utilisé celui de quelqu\'un d\'autre';
 
   @override
-  String get signOutEverywhereQuestion =>
-      'Se déconnecter de Winou sur tous les téléphones, y compris celui-ci ?';
+  String get signOutEverywhereQuestion => 'Se déconnecter de Winou sur tous les téléphones, y compris celui-ci ?';
 
   @override
   String get deleteAccount => 'Supprimer le compte';
 
   @override
-  String get deleteAccountHelp =>
-      'Votre compte et tout ce que vous avez publié';
+  String get deleteAccountHelp => 'Votre compte et tout ce que vous avez publié';
 
   @override
   String get deleteAccountQuestion => 'Supprimer votre compte ?';
@@ -1182,20 +1143,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get setPassword => 'Choisir un mot de passe';
 
   @override
-  String get setPasswordHelp =>
-      'Pour vous connecter aussi avec votre e-mail, pas seulement avec Google';
+  String get setPasswordHelp => 'Pour vous connecter aussi avec votre e-mail, pas seulement avec Google';
 
   @override
-  String get errorGoogleDisabled =>
-      'La connexion avec Google n\'est pas disponible sur ce serveur.';
+  String get errorGoogleDisabled => 'La connexion avec Google n\'est pas disponible sur ce serveur.';
 
   @override
-  String get errorGoogleNoEmail =>
-      'Ce compte Google n\'a pas d\'e-mail vérifié.';
+  String get errorGoogleNoEmail => 'Ce compte Google n\'a pas d\'e-mail vérifié.';
 
   @override
-  String get errorGoogleFailed =>
-      'La connexion avec Google n\'a pas fonctionné. Réessayez.';
+  String get errorGoogleFailed => 'La connexion avec Google n\'a pas fonctionné. Réessayez.';
 
   @override
   String get forgotPassword => 'Mot de passe oublié ?';
@@ -1204,8 +1161,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get forgotPasswordTitle => 'Choisir un nouveau mot de passe';
 
   @override
-  String get forgotPasswordHelp =>
-      'Saisissez votre e-mail : nous vous enverrons un code à 6 chiffres.';
+  String get forgotPasswordHelp => 'Saisissez votre e-mail : nous vous enverrons un code à 6 chiffres.';
 
   @override
   String get sendCode => 'Envoyer le code';
@@ -1214,8 +1170,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sendNewCode => 'Envoyer un nouveau code';
 
   @override
-  String get codeSent =>
-      'Code envoyé. Regardez votre boîte de réception, et les spams.';
+  String get codeSent => 'Code envoyé. Regardez votre boîte de réception, et les spams.';
 
   @override
   String get enterCodeTitle => 'Regardez vos e-mails';
@@ -1238,8 +1193,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirmEmail => 'Confirmer votre e-mail';
 
   @override
-  String get confirmEmailHelp =>
-      'Pour pouvoir choisir un nouveau mot de passe si vous l\'oubliez';
+  String get confirmEmailHelp => 'Pour pouvoir choisir un nouveau mot de passe si vous l\'oubliez';
 
   @override
   String get emailConfirmed => 'E-mail confirmé.';
@@ -1254,8 +1208,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errorWrongCode => 'Ce code n\'est pas le bon.';
 
   @override
-  String get errorCodeExpired =>
-      'Ce code a expiré ou a été essayé trop de fois. Demandez-en un nouveau.';
+  String get errorCodeExpired => 'Ce code a expiré ou a été essayé trop de fois. Demandez-en un nouveau.';
 
   @override
   String get errorTooManyCodes =>
@@ -1311,8 +1264,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get posterSeenIt => 'Vous l\'avez vu ?';
 
   @override
-  String get posterScan =>
-      'Scannez le code pour voir les photos et prévenir le propriétaire, gratuitement.';
+  String get posterScan => 'Scannez le code pour voir les photos et prévenir le propriétaire, gratuitement.';
 
   @override
   String sightingAboutPet(String name) {
@@ -1332,8 +1284,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get seenByFinder => 'Vu par quelqu\'un';
 
   @override
-  String get finderMatchTip =>
-      'Regardez bien les marques et les détails avant d\'écrire : on peut se tromper.';
+  String get finderMatchTip => 'Regardez bien les marques et les détails avant d\'écrire : on peut se tromper.';
 
   @override
   String get tabHome => 'Accueil';
@@ -1369,8 +1320,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get permissions => 'Notifications et position';
 
   @override
-  String get permissionsHelp =>
-      'Les autoriser ou les bloquer dans les réglages d\'Android';
+  String get permissionsHelp => 'Les autoriser ou les bloquer dans les réglages d\'Android';
 
   @override
   String get about => 'À propos de Winou';
@@ -1409,8 +1359,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get welcomePermissionsTitle => 'Deux choses qui aident';
 
   @override
-  String get welcomePermissionsBody =>
-      'Winou fonctionne sans, mais mieux avec.';
+  String get welcomePermissionsBody => 'Winou fonctionne sans, mais mieux avec.';
 
   @override
   String get permissionNotificationsTitle => 'Notifications';
@@ -1427,8 +1376,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher les animaux perdus près de vous, et situer vos signalements. Jamais partagée : les autres ne voient qu\'une zone approximative.';
 
   @override
-  String get permissionsLater =>
-      'Vous pourrez changer cela dans les paramètres.';
+  String get permissionsLater => 'Vous pourrez changer cela dans les paramètres.';
 
   @override
   String get allow => 'Autoriser';
@@ -1478,8 +1426,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get reunionBody =>
-      'Merci de ne pas avoir abandonné. Tous ceux qui ont aidé ont appris la bonne nouvelle.';
+  String get reunionBody => 'Merci de ne pas avoir abandonné. Tous ceux qui ont aidé ont appris la bonne nouvelle.';
 
   @override
   String reunionShareText(String name, String species) {
@@ -1524,8 +1471,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get alertAnimalsInNeed => 'Animaux en détresse';
 
   @override
-  String get alertAnimalsInNeedHelp =>
-      'Quelqu\'un signale un animal blessé ou qui a besoin d\'aide';
+  String get alertAnimalsInNeedHelp => 'Quelqu\'un signale un animal blessé ou qui a besoin d\'aide';
 
   @override
   String get turnOnAlerts => 'Activer les alertes';
@@ -1537,8 +1483,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get turnOffAlerts => 'Désactiver les alertes';
 
   @override
-  String get alertsSaved =>
-      'Alertes enregistrées. Nous vous préviendrons de ce qui se passe près de chez vous.';
+  String get alertsSaved => 'Alertes enregistrées. Nous vous préviendrons de ce qui se passe près de chez vous.';
 
   @override
   String get alertsOff => 'Désactivées';
@@ -1562,8 +1507,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get pushConfirmedTitle =>
-      'Vous avez peut-être retrouvé un animal perdu';
+  String get pushConfirmedTitle => 'Vous avez peut-être retrouvé un animal perdu';
 
   @override
   String pushConfirmedBody(String a) {
@@ -1589,16 +1533,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pushHelpTitle => 'Un animal a besoin d\'aide près de vous';
 
   @override
-  String get pushHelpInjuredBody =>
-      'Un animal blessé a été signalé à proximité. Touchez pour voir où.';
+  String get pushHelpInjuredBody => 'Un animal blessé a été signalé à proximité. Touchez pour voir où.';
 
   @override
-  String get pushHelpNeedsHelpBody =>
-      'Un animal qui a besoin d\'aide a été signalé à proximité. Touchez pour voir où.';
+  String get pushHelpNeedsHelpBody => 'Un animal qui a besoin d\'aide a été signalé à proximité. Touchez pour voir où.';
 
   @override
-  String get pushAssociationApprovedTitle =>
-      'Vous êtes maintenant une association vérifiée';
+  String get pushAssociationApprovedTitle => 'Vous êtes maintenant une association vérifiée';
 
   @override
   String pushAssociationApprovedBody(String a) {
@@ -1635,16 +1576,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pushAdminHiddenTitle => 'Masqué après des signalements';
 
   @override
-  String get pushAdminHiddenLostBody =>
-      'Un avis de perte a été masqué. Touchez pour l\'examiner.';
+  String get pushAdminHiddenLostBody => 'Un avis de perte a été masqué. Touchez pour l\'examiner.';
 
   @override
-  String get pushAdminHiddenSightingBody =>
-      'Un signalement a été masqué. Touchez pour l\'examiner.';
+  String get pushAdminHiddenSightingBody => 'Un signalement a été masqué. Touchez pour l\'examiner.';
 
   @override
-  String get pushAdminHiddenMessageBody =>
-      'Un message a été masqué. Touchez pour l\'examiner.';
+  String get pushAdminHiddenMessageBody => 'Un message a été masqué. Touchez pour l\'examiner.';
 
   @override
   String get pushAdminRequestTitle => 'Nouvelle demande d\'association';
@@ -1677,8 +1615,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get nothingHere =>
-      'Rien dans cette partie de la carte. Déplacez-vous ou dézoomez.';
+  String get nothingHere => 'Rien dans cette partie de la carte. Déplacez-vous ou dézoomez.';
 
   @override
   String get editReport => 'Modifier';
@@ -1786,8 +1723,7 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other:
-          'Son profil et ses $count photos font l\'avis. Dites juste quand et où.',
+      other: 'Son profil et ses $count photos font l\'avis. Dites juste quand et où.',
       one: 'Son profil et sa photo font l\'avis. Dites juste quand et où.',
     );
     return '$_temp0';
@@ -1797,15 +1733,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get inCare => 'Je l\'ai avec moi';
 
   @override
-  String get inCareHelp =>
-      'Vous l\'avez recueilli et le gardez en sécurité en attendant son propriétaire';
+  String get inCareHelp => 'Vous l\'avez recueilli et le gardez en sécurité en attendant son propriétaire';
 
   @override
   String get keptSafe => 'En sécurité';
 
   @override
-  String get keptSafeNote =>
-      'La personne qui l\'a trouvé l\'a avec elle et le garde en sécurité.';
+  String get keptSafeNote => 'La personne qui l\'a trouvé l\'a avec elle et le garde en sécurité.';
 
   @override
   String get pushMessagePhotoBody => '📷 A envoyé une photo';
@@ -1887,12 +1821,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careCardTitle => 'Fiche de soins';
 
   @override
-  String get careCardIntro =>
-      'Ce que le quartier sait de cet animal. Tout le monde peut la mettre à jour.';
+  String get careCardIntro => 'Ce que le quartier sait de cet animal. Tout le monde peut la mettre à jour.';
 
   @override
-  String get careEmpty =>
-      'Rien de connu pour l\'instant. Ajoutez ce que vous savez.';
+  String get careEmpty => 'Rien de connu pour l\'instant. Ajoutez ce que vous savez.';
 
   @override
   String get editCareCard => 'Modifier';
@@ -1916,8 +1848,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get careNotes => 'Notes de soins';
 
   @override
-  String get careNotesHint =>
-      'Oreille marquée, mange à la boulangerie vers 18 h…';
+  String get careNotesHint => 'Oreille marquée, mange à la boulangerie vers 18 h…';
 
   @override
   String fedBy(int count) {
@@ -1941,8 +1872,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get photoChecking => 'Vérification…';
 
   @override
-  String get photoNoAnimalHelp =>
-      'Nous ne voyons ni chat ni chien sur cette photo. Touchez pour la reprendre.';
+  String get photoNoAnimalHelp => 'Nous ne voyons ni chat ni chien sur cette photo. Touchez pour la reprendre.';
 
   @override
   String photoLooksLike(String species) {
@@ -1966,8 +1896,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get changePhoto => 'Changer de photo';
 
   @override
-  String get searchComparing =>
-      'Comparaison avec les animaux perdus à proximité…';
+  String get searchComparing => 'Comparaison avec les animaux perdus à proximité…';
 
   @override
   String searchResultsCount(int count) {
@@ -1987,8 +1916,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchPossibleMatch => 'Possible';
 
   @override
-  String get searchNoResults =>
-      'Aucun animal perdu à proximité ne lui ressemble.';
+  String get searchNoResults => 'Aucun animal perdu à proximité ne lui ressemble.';
 
   @override
   String get searchNoResultsHelp =>
@@ -2011,10 +1939,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchNearPicked => 'Autour du lieu choisi';
 
   @override
-  String get searchNeedsPlace =>
-      'Où l\'avez-vous vu ? Nous cherchons les animaux perdus autour de ce lieu.';
+  String get searchNeedsPlace => 'Où l\'avez-vous vu ? Nous cherchons les animaux perdus autour de ce lieu.';
 
   @override
   String get searchNoAnimal =>
       'Nous ne voyons ni chat ni chien sur cette photo. Essayez de plus près, en montrant la tête.';
+
+  @override
+  String get privateDetailLabel => 'Détail privé (facultatif)';
+
+  @override
+  String get privateDetailHint => 'Une marque cachée, le collier, le numéro de puce…';
+
+  @override
+  String get privateDetailHelp =>
+      'Jamais public. Quand vous confirmez une correspondance, la personne qui l\'a trouvé le voit, pour vérifier que c\'est bien le vôtre.';
+
+  @override
+  String get handoverTitle => 'Remise en toute sécurité';
+
+  @override
+  String get checkOwnerTitle => 'Vérifiez que c\'est bien le sien';
+
+  @override
+  String ownerDetailSays(String detail) {
+    return 'Le propriétaire indique : « $detail »';
+  }
+
+  @override
+  String get ownerDetailCheck => 'Vérifiez-le sur l\'animal avant de le rendre.';
+
+  @override
+  String get ownerDetailAsk => 'Demandez un détail absent des photos : une marque, le collier, la puce.';
+
+  @override
+  String get microchippedTip => 'Pucé : n\'importe quel vétérinaire peut lire la puce pour confirmer.';
+
+  @override
+  String get handoverTipPublic => 'Retrouvez-vous dans un lieu public fréquenté, en journée.';
+
+  @override
+  String get handoverTipProof => 'Propriétaire : apportez d\'anciennes photos ou le carnet de santé.';
+
+  @override
+  String get handoverTipNoPay => 'Ne payez jamais rien avant de voir l\'animal. Une récompense se donne à la remise.';
+
+  @override
+  String get warningPayment =>
+      'Attention : ne payez jamais avant d\'avoir vu votre animal. La récompense se donne à la remise.';
+
+  @override
+  String get warningLink =>
+      'Prudence avec les liens : Winou ne vous demande jamais de payer ou de vous connecter par un lien.';
 }

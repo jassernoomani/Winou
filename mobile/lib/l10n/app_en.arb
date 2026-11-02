@@ -1214,5 +1214,26 @@
   "searchNearPhoto": "Around where the photo was taken",
   "searchNearPicked": "Around the place you chose",
   "searchNeedsPlace": "Where did you see it? We search the lost pets around that place.",
-  "searchNoAnimal": "We can't see a cat or dog in this photo. Try a closer one, showing the head."
+  "searchNoAnimal": "We can't see a cat or dog in this photo. Try a closer one, showing the head.",
+  "privateDetailLabel": "Private detail (optional)",
+  "privateDetailHint": "A hidden marking, the collar, the microchip number…",
+  "privateDetailHelp": "Never shown publicly. Once you confirm a match, the finder sees it, to check it's really your pet.",
+  "handoverTitle": "Safe handover",
+  "checkOwnerTitle": "Check it's their pet",
+  "ownerDetailSays": "The owner says: “{detail}”",
+  "@ownerDetailSays": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ownerDetailCheck": "Check this on the animal before handing it over.",
+  "ownerDetailAsk": "Ask for a detail that isn't in the photos: a marking, the collar, the microchip.",
+  "microchippedTip": "Microchipped: any vet can read the chip to confirm.",
+  "handoverTipPublic": "Meet in a busy public place, in daylight.",
+  "handoverTipProof": "Owner: bring older photos or the vet booklet.",
+  "handoverTipNoPay": "Never pay anything before you see the pet. A reward is given at the handover.",
+  "warningPayment": "Careful: never pay before you see your pet. Rewards are given at the handover.",
+  "warningLink": "Careful with links: Winou never asks you to pay or sign in through one."
 }

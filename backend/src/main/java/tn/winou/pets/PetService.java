@@ -113,7 +113,8 @@ public class PetService {
         String description = body.description() != null && !body.description().isBlank() ? body.description()
                 : pet.getDescription();
         LostReportOut created = reportService.create(new LostReportIn(pet.getName(), pet.getSpecies(), description,
-                body.lastSeen(), body.lastSeenAt(), body.rewardTnd(), pet.getMicrochipped(), body.contactPhone()), user);
+                body.lastSeen(), body.lastSeenAt(), body.rewardTnd(), pet.getMicrochipped(), body.contactPhone(),
+                body.privateDetail()), user);
         LostReport report = reports.findById(created.id()).orElseThrow();
         report.setPetId(pet.getId());
         reports.save(report);

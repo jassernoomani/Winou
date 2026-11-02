@@ -27,6 +27,7 @@ class _MarkLostScreenState extends ConsumerState<MarkLostScreen> {
   final _form = GlobalKey<FormState>();
   final _reward = TextEditingController();
   final _phone = TextEditingController();
+  final _privateDetail = TextEditingController();
   DateTime _lastSeenAt = DateTime.now();
   LatLng? _lastSeen;
   bool _busy = false;
@@ -35,6 +36,7 @@ class _MarkLostScreenState extends ConsumerState<MarkLostScreen> {
   void dispose() {
     _reward.dispose();
     _phone.dispose();
+    _privateDetail.dispose();
     super.dispose();
   }
 
@@ -57,6 +59,7 @@ class _MarkLostScreenState extends ConsumerState<MarkLostScreen> {
             lastSeenAt: _lastSeenAt,
             rewardTnd: int.tryParse(_reward.text.trim()),
             contactPhone: _phone.text.trim(),
+            privateDetail: _privateDetail.text.trim(),
           );
       ref
         ..invalidate(myPetsProvider)
@@ -146,6 +149,8 @@ class _MarkLostScreenState extends ConsumerState<MarkLostScreen> {
                   ? null
                   : l10n.phoneInvalid,
             ),
+            const SizedBox(height: 16),
+            PrivateDetailField(_privateDetail),
           ],
         ),
       ),

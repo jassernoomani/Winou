@@ -10,7 +10,7 @@ GitHub push ──webhook──> Caddy (/jenkins/github-webhook/) ──> Jenkin
    SonarCloud:        analysis of all three, waits for the quality gate
    Deploy:            laptop repo -> tested commit, docker compose up -d --build, Caddy reload,
                       waits for the API to be healthy
-   APK:               only when mobile/ changed (or FORCE_APK): release APK -> /download/winou.apk
+   APK:               on request (FORCE_APK): release APK -> /download/winou.apk
 ```
 
 Jenkins runs in Docker, next to the Winou stack but as its own compose project (`winou-ci`), and
@@ -44,7 +44,8 @@ internet, Caddy forwards GitHub's webhook path and nothing else.
 - **Deploy** works on the laptop's copy of the repo (it holds `.env` and `secrets/`). It is left
   alone, and the build marked unstable, if that copy has uncommitted changes or commits not on
   GitHub yet; pushing those commits deploys them.
-- *Build with Parameters*: `FORCE_APK` rebuilds the APK, `SKIP_DEPLOY` only tests and analyses.
+- *Build with Parameters*: `FORCE_APK` builds the APK and publishes it (after app changes; the first
+  run downloads the Android SDK and can take most of an hour), `SKIP_DEPLOY` only tests and analyses.
 - Jenkins data (job history, caches, Android SDK) is in the `winou-ci_jenkins_home` volume.
 - After editing anything in this folder: `docker compose up -d --build`.
 

@@ -548,3 +548,35 @@ String timeAgo(AppLocalizations l10n, DateTime date) {
   if (elapsed.inDays < 14) return l10n.daysAgo(elapsed.inDays);
   return DateFormat.yMMMd(l10n.localeName).format(date);
 }
+
+/// The owner's private detail (a hidden marking, the collar, a microchip number): never public,
+/// shown to a finder once the owner confirms the match, so they can check it on the animal.
+class PrivateDetailField extends StatelessWidget {
+  const PrivateDetailField(this.controller, {super.key});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FieldLabel(l10n.privateDetailLabel),
+        TextFormField(
+          controller: controller,
+          maxLength: 300,
+          minLines: 1,
+          maxLines: 3,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(LucideIcons.lock),
+            hintText: l10n.privateDetailHint,
+            helperText: l10n.privateDetailHelp,
+            helperMaxLines: 3,
+          ),
+        ),
+      ],
+    );
+  }
+}

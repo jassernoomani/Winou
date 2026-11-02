@@ -551,5 +551,19 @@
   "searchNearPhoto": "Autour du lieu de la photo",
   "searchNearPicked": "Autour du lieu choisi",
   "searchNeedsPlace": "Où l'avez-vous vu ? Nous cherchons les animaux perdus autour de ce lieu.",
-  "searchNoAnimal": "Nous ne voyons ni chat ni chien sur cette photo. Essayez de plus près, en montrant la tête."
+  "searchNoAnimal": "Nous ne voyons ni chat ni chien sur cette photo. Essayez de plus près, en montrant la tête.",
+  "privateDetailLabel": "Détail privé (facultatif)",
+  "privateDetailHint": "Une marque cachée, le collier, le numéro de puce…",
+  "privateDetailHelp": "Jamais public. Quand vous confirmez une correspondance, la personne qui l'a trouvé le voit, pour vérifier que c'est bien le vôtre.",
+  "handoverTitle": "Remise en toute sécurité",
+  "checkOwnerTitle": "Vérifiez que c'est bien le sien",
+  "ownerDetailSays": "Le propriétaire indique : « {detail} »",
+  "ownerDetailCheck": "Vérifiez-le sur l'animal avant de le rendre.",
+  "ownerDetailAsk": "Demandez un détail absent des photos : une marque, le collier, la puce.",
+  "microchippedTip": "Pucé : n'importe quel vétérinaire peut lire la puce pour confirmer.",
+  "handoverTipPublic": "Retrouvez-vous dans un lieu public fréquenté, en journée.",
+  "handoverTipProof": "Propriétaire : apportez d'anciennes photos ou le carnet de santé.",
+  "handoverTipNoPay": "Ne payez jamais rien avant de voir l'animal. Une récompense se donne à la remise.",
+  "warningPayment": "Attention : ne payez jamais avant d'avoir vu votre animal. La récompense se donne à la remise.",
+  "warningLink": "Prudence avec les liens : Winou ne vous demande jamais de payer ou de vous connecter par un lien."
 }

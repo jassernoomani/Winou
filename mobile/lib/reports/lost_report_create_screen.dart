@@ -32,6 +32,7 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
   late final _description = TextEditingController(text: widget.editing?.description);
   late final _reward = TextEditingController(text: widget.editing?.rewardTnd?.toString());
   late final _phone = TextEditingController(text: widget.editing?.contactPhone);
+  late final _privateDetail = TextEditingController(text: widget.editing?.privateDetail);
   late Species _species = widget.editing?.species ?? Species.cat;
   late DateTime _lastSeenAt = widget.editing?.lastSeenAt ?? DateTime.now();
   late LatLng? _lastSeen = widget.editing?.lastSeen;
@@ -44,7 +45,7 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
 
   @override
   void dispose() {
-    for (final controller in [_name, _description, _reward, _phone]) {
+    for (final controller in [_name, _description, _reward, _phone, _privateDetail]) {
       controller.dispose();
     }
     super.dispose();
@@ -84,6 +85,7 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
           rewardTnd: reward ?? 0,
           microchipped: _microchipped,
           contactPhone: _phone.text.trim(),
+          privateDetail: _privateDetail.text.trim(),
         );
         for (final removed in report.photos.where((p) => !_kept.contains(p))) {
           await api.deletePhoto(removed.id);
@@ -98,6 +100,7 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
           rewardTnd: reward,
           microchipped: _microchipped,
           contactPhone: _phone.text.trim(),
+          privateDetail: _privateDetail.text.trim(),
         )).id;
       }
       if (!mounted) return;
@@ -227,6 +230,8 @@ class _LostReportCreateScreenState extends ConsumerState<LostReportCreateScreen>
                     ? null
                     : l10n.phoneInvalid,
               ),
+              const SizedBox(height: 16),
+              PrivateDetailField(_privateDetail),
             ],
           ),
         ),

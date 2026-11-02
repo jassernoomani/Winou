@@ -23,6 +23,7 @@ import tn.winou.domain.LostReport;
 import tn.winou.domain.LostReportRepository;
 import tn.winou.domain.Match;
 import tn.winou.domain.MatchRepository;
+import tn.winou.domain.MatchStatus;
 import tn.winou.domain.Sighting;
 import tn.winou.domain.SightingRepository;
 import tn.winou.domain.User;
@@ -195,17 +196,23 @@ public class ChatService {
                 ? messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNull(c.getId(), viewer.getId())
                 : messages.countByConversationIdAndSenderIdNotAndHiddenAtIsNullAndCreatedAtGreaterThan(c.getId(),
                         viewer.getId(), readAt);
+        boolean owner = c.getOwnerId().equals(viewer.getId());
+        boolean confirmed = match != null && match.getStatus() == MatchStatus.CONFIRMED;
         return new ConversationOut(c.getId(), report.getId(), report.getName(), report.getStatus(), c.getMatchId(),
                 match == null ? null : Views.imageUrl(match.getSightingPhotoId()),
-                c.getOwnerId().equals(viewer.getId()) ? ConversationRole.OWNER : ConversationRole.FINDER,
+                owner ? ConversationRole.OWNER : ConversationRole.FINDER,
                 otherUser == null ? "" : otherUser.getDisplayName(),
                 otherUser != null && otherUser.isAssociation() ? otherUser.getAssociationName() : null,
-                last == null ? null : out(last, viewer), unread, c.getCreatedAt());
+                last == null ? null : out(last, viewer), unread, c.getCreatedAt(), confirmed,
+                // Before confirmation it would help anyone claim the animal; afterwards it lets the
+                // finder check the claim on the animal itself
+                !owner && confirmed ? report.getPrivateDetail() : null, report.getMicrochipped());
     }
 
     private static MessageOut out(ChatMessage m, User viewer) {
-        return new MessageOut(m.getId(), m.getBody(), m.getSenderId().equals(viewer.getId()), m.getHiddenAt() != null,
+        boolean mine = m.getSenderId().equals(viewer.getId());
+        return new MessageOut(m.getId(), m.getBody(), mine, m.getHiddenAt() != null,
                 m.getCreatedAt(), m.getPhotoKey() == null ? null : "/messages/" + m.getId() + "/photo",
-                m.getLocation() == null ? null : Location.of(m.getLocation()));
+                m.getLocation() == null ? null : Location.of(m.getLocation()), mine ? null : ScamCheck.warning(m.getBody()));
     }
 }

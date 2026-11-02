@@ -98,6 +98,7 @@ public class LostReportService {
         report.setRewardTnd(body.rewardTnd());
         report.setMicrochipped(body.microchipped());
         report.setContactPhone(blankToNull(body.contactPhone()));
+        report.setPrivateDetail(blankToNull(body.privateDetail()));
         reports.save(report);
         List<UUID> watching = areas.watchingLost(report.getLastSeen(), user.getId());
         if (!watching.isEmpty()) {
@@ -196,6 +197,9 @@ public class LostReportService {
         }
         if (body.contactPhone() != null) {
             report.setContactPhone(blankToNull(body.contactPhone()));
+        }
+        if (body.privateDetail() != null) {
+            report.setPrivateDetail(blankToNull(body.privateDetail()));
         }
         if (body.species() != null) {
             report.setSpecies(body.species());
