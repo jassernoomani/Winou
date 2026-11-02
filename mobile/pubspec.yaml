@@ -77,6 +77,7 @@ flutter:
     - assets/fonts/OFL.txt # shown in the app's licenses page
     - assets/fonts/OFL-Tajawal.txt
     - assets/icon/icon.png
+    - assets/icon/splash.png # the pin on the launch screen
 
   fonts:
     - family: Nunito
